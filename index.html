@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übertragungsmedien – Probeklausur (70 Fragen)</title>
+<style>
+  :root {
+    --blue: #111827; --blue-light: #f3f4f6; --green: #1b7a3d; --green-light: #eaf7ee;
+    --red: #b00020; --red-light: #fdecee; --gray: #6b7280; --bg: #f4f6f8;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; padding: 0; color: #1f2937; }
+  #app { max-width: 720px; margin: 0 auto; padding: 24px 16px 60px; }
+  header { text-align: center; margin-bottom: 20px; }
+  header h1 { color: var(--blue); font-size: 1.5rem; margin-bottom: 4px; }
+  header p { color: var(--gray); font-size: 0.9rem; margin-top: 0; }
+  .progress-wrap { background: #dfe4ea; border-radius: 8px; height: 10px; overflow: hidden; margin: 16px 0 6px; }
+  .progress-bar { background: var(--blue); height: 100%; width: 0%; transition: width .25s ease; }
+  .progress-label { text-align: right; font-size: 0.8rem; color: var(--gray); margin-bottom: 12px; }
+  .card { background: white; border-radius: 12px; padding: 22px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .topic-tag { display: inline-block; background: var(--blue-light); color: var(--blue); font-size: 0.72rem; font-weight: 600; letter-spacing: .02em; padding: 3px 10px; border-radius: 999px; margin-bottom: 12px; text-transform: uppercase; }
+  .question-text { font-size: 1.08rem; font-weight: 600; margin: 0 0 18px; line-height: 1.4; }
+  .option { display: flex; align-items: center; gap: 10px; border: 1.5px solid #e2e5ea; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; cursor: pointer; transition: border-color .15s, background .15s; }
+  .option:hover { border-color: var(--blue); }
+  .option.selected { border-color: var(--blue); background: var(--blue-light); }
+  .option.locked { cursor: default; }
+  .option.correct-answer { border-color: var(--green); background: var(--green-light); }
+  .option.wrong-answer { border-color: var(--red); background: var(--red-light); }
+  .option input { accent-color: var(--blue); width: 18px; height: 18px; flex-shrink: 0; }
+  .option span { font-size: 0.98rem; }
+  .mark { margin-left: auto; font-weight: 700; font-size: 1rem; }
+  .mark.ok { color: var(--green); }
+  .mark.bad { color: var(--red); }
+  .feedback-box { border-radius: 10px; padding: 14px 16px; margin: 14px 0 4px; font-size: 0.92rem; line-height: 1.4; }
+  .feedback-box.ok { background: var(--green-light); color: #145226; }
+  .feedback-box.bad { background: var(--red-light); color: #7a0016; }
+  .feedback-box .title { font-weight: 700; margin-bottom: 4px; display: block; }
+  .nav-row { display: flex; justify-content: space-between; margin-top: 20px; gap: 10px; }
+  button { font-family: inherit; font-size: 0.95rem; font-weight: 600; border: none; border-radius: 8px; padding: 12px 20px; cursor: pointer; transition: opacity .15s, transform .05s; }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-secondary { background: #e5e7eb; color: #374151; }
+  .btn-primary:not(:disabled):hover { opacity: .9; }
+  #start-screen, #results-screen { text-align: center; }
+  #start-screen .card, #results-screen .card { text-align: left; }
+  .big-btn { display: block; width: 100%; padding: 16px; font-size: 1.05rem; margin-top: 18px; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; margin: 10px auto 18px; display: flex; align-items: center; justify-content: center; flex-direction: column; border: 8px solid var(--blue); color: var(--blue); }
+  .score-circle .num { font-size: 2rem; font-weight: 700; }
+  .score-circle .lbl { font-size: 0.75rem; color: var(--gray); }
+  .topic-breakdown { margin: 18px 0; }
+  .topic-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.92rem; }
+  .review-item { border-top: 1px solid #eee; padding: 14px 0; }
+  .review-item .q { font-weight: 600; margin-bottom: 6px; }
+  .review-item .ans { font-size: 0.9rem; margin: 3px 0; }
+  .ok-text { color: var(--green); font-weight: 600; }
+  .bad-text { color: var(--red); font-weight: 600; }
+  .explain { font-size: 0.88rem; color: #374151; background: #f7f8fa; border-radius: 8px; padding: 8px 10px; margin-top: 6px; }
+
+  /* Quiz Selection Grid styling */
+  .quiz-selector-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 10px;
+  }
+  @media (max-width: 600px) {
+    .quiz-selector-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .quiz-select-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .quiz-select-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--blue);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+  .quiz-select-card h3 {
+    margin: 8px 0 6px;
+    color: var(--blue);
+    font-size: 1.2rem;
+  }
+  .quiz-card-meta {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray);
+    margin: 0 0 12px;
+  }
+  .quiz-card-desc {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #4b5563;
+    margin: 0 0 20px;
+    flex-grow: 1;
+  }
+  .select-btn {
+    width: 100%;
+    margin-top: auto;
+  }
+  .btn-review {
+    background: white;
+    color: var(--blue);
+    border: 1.5px solid var(--blue);
+    margin-top: 10px !important;
+  }
+  .btn-review:hover { background: var(--blue-light); }
+
+  /* Toggle Switch styling */
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 10px auto 24px;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    max-width: 360px;
+  }
+  .toggle-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #374151;
+  }
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+  }
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 24px;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+  }
+  input:checked + .slider {
+    background-color: var(--blue);
+  }
+  input:checked + .slider:before {
+    transform: translateX(22px);
+  }
+
+  .hidden { display: none !important; }
+  footer { text-align: center; color: var(--gray); font-size: 0.78rem; margin-top: 24px; }
+
+  /* Quiz top bar (back to menu) */
+  .quiz-topbar { display: flex; justify-content: flex-start; margin-bottom: 10px; }
+  .btn-menu { background: white; color: #374151; border: 1.5px solid #e2e5ea; padding: 8px 14px; font-size: 0.85rem; }
+  .btn-menu:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* Prev/Next arrow buttons */
+  .nav-row { align-items: stretch; }
+  .btn-arrow { background: #e5e7eb; color: #374151; flex: 0 0 52px; font-size: 1.1rem; padding: 12px 0; }
+  .btn-arrow:not(:disabled):hover { background: #d1d5db; }
+  #action-btn { flex: 1; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1 id="quiz-title-display">Übertragungsmedien &amp; Netzwerktechnik</h1>
+    <p id="quiz-desc-display">Wähle eine Probeklausur zum Lernen · direktes Feedback nach jeder Frage</p>
+  </header>
+
+  <div id="start-screen">
+    <div class="toggle-container">
+      <span class="toggle-label">Fragen zufällig mischen</span>
+      <label class="switch">
+        <input type="checkbox" id="shuffle-toggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="quiz-selector-grid">
+      <div class="quiz-select-card" onclick="startQuiz(1)">
+        <h3>Quiz 1: Übertragungsmedien</h3>
+        <p class="quiz-card-meta">70 Fragen · Direktes Feedback</p>
+        <p class="quiz-card-desc">Fragen basieren auf den Original-Foliensätzen, den offiziellen Testfragen daraus, dem Netzwerktechnik-Lernheft und den Beispielfragen (Rechenaufgaben, Klassennetze, Codecs, LEDs u.a.).</p>
+        <button class="btn-primary select-btn">Dieses Quiz starten</button>
+        <button class="btn-review select-btn hidden" id="review-btn-1" onclick="startReview(1, event)">↻ Nur falsche Fragen wiederholen (<span id="review-count-1">0</span>)</button>
+      </div>
+      <div class="quiz-select-card" onclick="startQuiz(2)">
+        <h3>Quiz 2: Netzwerktechnik</h3>
+        <p class="quiz-card-meta">40 Fragen · Detaillierte Erklärungen</p>
+        <p class="quiz-card-desc">Fokus auf Netzwerktechnik (OSI-Modell, IP-Adressierung, Subnetzmasken, Topologien, Protokolle, VPN u.a.) basierend auf dem Netzwerktechnik-Lernheft. Mit besonders ausführlichen Erklärungen zum Lernen.</p>
+        <button class="btn-primary select-btn">Dieses Quiz starten</button>
+        <button class="btn-review select-btn hidden" id="review-btn-2" onclick="startReview(2, event)">↻ Nur falsche Fragen wiederholen (<span id="review-count-2">0</span>)</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="quiz-screen" class="hidden">
+    <div class="quiz-topbar">
+      <button class="btn-menu" id="menu-btn" onclick="backToMenu()">☰ Hauptmenü</button>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div class="card">
+      <span class="topic-tag" id="topic-tag"></span>
+      <div class="question-text" id="question-text"></div>
+      <div id="options-list"></div>
+      <div id="feedback-slot"></div>
+      <div class="nav-row">
+        <button class="btn-arrow" id="arrow-prev-btn" onclick="prevQuestion()" title="Vorherige Frage">◀</button>
+        <button class="btn-primary" id="action-btn" onclick="onActionClick()" disabled>Antwort bestätigen</button>
+        <button class="btn-arrow" id="arrow-next-btn" onclick="skipQuestion()" title="Nächste Frage (überspringen)">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="results-screen" class="hidden"></div>
+
+  <footer>Erstellt als Ergänzung zur Übertragungsmedien-Prüfungsvorbereitung.</footer>
+</div>
+<script>
+const QUESTIONS_1 = [
+{"topic":"Grundlagen","q":"Was versteht man unter „Information“ im Sinne der Nachrichtentechnik?","options":["Eine objektive, immer gleich große Größe","Beseitigte Unsicherheit – eine subjektive Größe","Ausschließlich digitale Daten","Nur gesprochene Sprache"],"correct":1,"explain":"Information ist laut Skript „beseitigte Unsicherheit“ und subjektiv – was für den einen neu ist, kann für den anderen bekannt sein. Das ist die Grundlage der gesamten Nachrichtentechnik: erst wird eine Nachricht (die Information) in ein Signal umgewandelt, das dann über einen Kanal übertragen wird."},
+{"topic":"Grundlagen","q":"Welches der folgenden Medien ist DRAHTLOS (nicht leitungsgebunden)?","options":["Koaxialleitung","Lichtwellenleiter","Richtfunk","Zweidrahtleitung"],"correct":2,"explain":"Richtfunk ist drahtlos. Koax, LWL und Zweidraht sind leitungsgebundene Medien. Die Grundunterscheidung „leitungsgebunden vs. drahtlos“ zieht sich durch das ganze Thema Übertragungsmedien und bestimmt z. B. auch Reichweite, Störanfälligkeit und Installationsaufwand."},
+{"topic":"Grundlagen","q":"Wie nennt man die Verbindungsstrecke zwischen Sender und Empfänger, auf der Störungen wie Rauschen wirken?","options":["Übertragungskanal","Kanalcodierer","Sinke","Multiplexer"],"correct":0,"explain":"Der Übertragungskanal ist die reale Strecke zwischen Sender und Empfänger. Das Grundmodell der Nachrichtentechnik lautet: Quelle → Sender (Codierung) → Kanal (mit Störungen) → Empfänger (Decodierung) → Senke."},
+{"topic":"Grundlagen","q":"Ist „Modulationsverfahren“ (ASK/FSK/PSK) laut Recap-Notizen für die SS26-Klausur relevant?","options":["Ja, zentraler Schwerpunkt","Nein, explizit ausgeschlossen","Nur bei Rechenaufgaben","Nur zur Hälfte"],"correct":1,"explain":"Die Recap-Notizen nennen „Modulationsverfahren (nicht im SS26)“ ausdrücklich als nicht prüfungsrelevant. Es lohnt sich, vor der Prüfung nochmal die Themenliste der Recap-Notizen durchzugehen, um die Lernzeit gezielt auf die tatsächlich relevanten Themen zu konzentrieren."},
+{"topic":"Übertragungsmedien","q":"Welche Impedanz hat Koaxialkabel, das für Videosignale genutzt wird?","options":["50 Ω","75 Ω","100 Ω","120 Ω"],"correct":1,"explain":"75 Ω = Video, 50 Ω = Daten/Kommunikation/Funkmikro-Antennen laut Skript. Merkregel: Beim Mischen unterschiedlicher Impedanzen entstehen Signalreflexionen an der Übergangsstelle – deshalb muss der Kabeltyp immer zur Anwendung passen."},
+{"topic":"Übertragungsmedien","q":"Was unterscheidet STP (Kabel) von UTP-Kabeln?","options":["STP ist immer dünner","STP hat eine Schirmung je Adernpaar, UTP nicht","UTP ist nur für Glasfaser gedacht","Es gibt keinen Unterschied"],"correct":1,"explain":"STP = Shielded Twisted Pair (Adernpaare geschirmt), UTP = Unshielded (ungeschirmt, dafür günstiger/flexibler). Grundprinzip: mehr Schirmung = bessere Störfestigkeit, aber steiferes und teureres Kabel."},
+{"topic":"Übertragungsmedien","q":"Welche Kabelkategorie wird laut Tabelle mindestens für 10 Gbit/s benötigt?","options":["Cat. 5","Cat. 5e","Cat. 6a","Cat. 6"],"correct":2,"explain":"Laut Skript-Tabelle schafft erst Cat. 6a (bis 500 MHz) zuverlässig 10 Gbit/s; Cat. 6 ist auf 100 Mbit/1 Gbit ausgelegt. Faustregel: höhere Kategorie = höhere zulässige Frequenz = höhere mögliche Datenrate, aber auch höhere Anforderungen an Verlegung und Stecker."},
+{"topic":"Übertragungsmedien","q":"Warum bleibt Licht im Kern eines Lichtwellenleiters „gefangen“?","options":["Durch eine Metallbeschichtung im Kern","Weil der Kern (nK) einen höheren Brechungsindex hat als der Mantel (nM) → Totalreflexion","Durch ein Magnetfeld um die Faser","Durch aktive elektronische Verstärkung"],"correct":1,"explain":"nK > nM ist Voraussetzung für Totalreflexion an der Kern-Mantel-Grenze. Trifft Licht flach genug (über dem kritischen Winkel) auf diese Grenze, wird es komplett zurückreflektiert statt auszutreten – so „hüpft“ es durch die ganze Faser."},
+{"topic":"Übertragungsmedien","q":"Was ist der Hauptunterschied zwischen Multimode- und Singlemode-Glasfasern?","options":["Singlemode hat den größeren Kerndurchmesser","Multimode ist nur für Kupfer geeignet","Multimode hat einen größeren Kern und mehr Modendispersion als Singlemode","Es gibt keinen Unterschied bei der Reichweite"],"correct":2,"explain":"Multimode (~50–62,5 µm Kern) hat mehr Modendispersion und kürzere Reichweite; Singlemode (~9 µm) kaum Dispersion, sehr lange Strecken. Modendispersion entsteht, weil bei größerem Kern viele Lichtwege unterschiedlicher Länge möglich sind – das Signal „verschmiert“ über die Distanz."},
+{"topic":"Übertragungsmedien","q":"Welcher WLAN-Standard erreicht laut Tabelle die höchste maximale Datenrate?","options":["802.11b","802.11g","802.11n","802.11ad"],"correct":3,"explain":"802.11ad erreicht 6912 Mbit/s bei 60 GHz – dafür nur ca. 9 m Reichweite. Allgemeine Regel bei Funk: höhere Frequenz = mehr mögliche Bandbreite, aber schlechtere Reichweite und Durchdringung von Wänden."},
+{"topic":"Verbindungstechnik","q":"Was ermöglicht PoE (Power over Ethernet)?","options":["Nur Datenübertragung ohne Strom","Stromversorgung UND Daten über 1 Kabel","Ausschließlich WLAN-Verstärkung","Automatische IP-Vergabe"],"correct":1,"explain":"PoE überträgt elektrische Leistung und Daten gemeinsam über die TP-Verkabelung. Das spart eine separate Stromleitung zum Endgerät (z. B. Kamera, AP, VoIP-Telefon) – wichtig für Installationsaufwand und Ausfallsicherheit bei Stromausfall (zentrale USV am Switch)."},
+{"topic":"Verbindungstechnik","q":"Welche PoE-Klasse liefert laut Tabelle die höchste Leistung am Endgerät?","options":["Klasse 0–3","Klasse 4","Klasse 5–8 (4PPoE)","Alle liefern gleich viel"],"correct":2,"explain":"Klasse 5–8 (4PPoE) liefert 40–71 W, deutlich mehr als Klasse 0–4 (bis 25,5 W). PoE-Klassen legen fest, wie viel Leistung ein Gerät maximal anfordern darf – Switch und Endgerät handeln das automatisch aus."},
+{"topic":"Verbindungstechnik","q":"Wofür steht SFP+ als Transceiver-Typ?","options":["Bis zu 10 Gbit/s","Bis zu 1 Gbit/s","Bis zu 40 Gbit/s","Ein WLAN-Standard"],"correct":0,"explain":"SFP ≤1G, SFP+ ≤10G, QSFP+ ≤40G laut Skript-Übersicht. Transceiver-Module machen Switch-Ports flexibel: je nach Bedarf steckt man Kupfer- oder Glasfaser-Module unterschiedlicher Geschwindigkeit/Reichweite in denselben Port."},
+{"topic":"Verbindungstechnik","q":"Wozu dient LACP im Praxisbeispiel „Pro-AV“ mit gestacktem Core?","options":["Verschlüsselung des Datenverkehrs","Mehrere Switch-Verbindungen redundant/gebündelt zum Core herstellen","Automatische Vergabe von IP-Adressen","Steuerung von PoE-Klassen"],"correct":1,"explain":"Distributed-Link-Aggregation (LACP) verbindet jeden Access-Switch mehrfach mit dem Core – fällt ein Core-Switch aus, gibt es keine Unterbrechung. Das ist ein klassisches Beispiel dafür, wie man einen SPoF (Single Point of Failure) im Netzwerkdesign vermeidet."},
+{"topic":"Netzwerktechnik (Testfrage)","q":"Welche Geräte untersuchen die IP-Adresse eines Pakets, um sein nächstes Ziel zu bestimmen?","options":["Switch","Router","Gateway","Server"],"correct":1,"explain":"Der Router prüft die Ziel-IP und entscheidet über den nächsten Hop (Layer 3). Merkhilfe: Switch = MAC-Adresse (Layer 2, innerhalb eines Netzes), Router = IP-Adresse (Layer 3, zwischen Netzen)."},
+{"topic":"Netzwerktechnik (Testfrage)","q":"Welche Geräte können Daten von einem Protokoll in ein anderes übersetzen?","options":["Switch","Router","Gateway","Server"],"correct":2,"explain":"Ein Gateway übersetzt zwischen unterschiedlichen Protokollen/Adressräumen (z. B. privat ↔ öffentlich). Man kann sich ein Gateway wie einen Dolmetscher an der Grenze zweier unterschiedlicher „Sprachwelten“ vorstellen."},
+{"topic":"Netzwerktechnik (Testfrage)","q":"Welche Geräte leiten Daten zwischen Geräten weiter, die nicht direkt physisch miteinander verbunden sind?","options":["Switch","Router","Gateway","Server"],"correct":1,"explain":"Router verbinden Netzwerke und routen Pakete auch über mehrere Zwischenstationen hinweg. Jedes Paket kann dabei mehrere Router (Hops) durchlaufen, bis es sein Ziel erreicht – die TTL im IP-Header begrenzt, wie viele Hops maximal erlaubt sind."},
+{"topic":"Netzwerktechnik (Testfrage)","q":"Welche Geräte bieten die Möglichkeit, VLANs einzurichten und Verkehrsregeln im Netzwerk zu konfigurieren?","options":["Unmanaged Switch","Managed Switch","Server","Client"],"correct":1,"explain":"Nur Managed Switches erlauben VLAN-Konfiguration, QoS und Verkehrsregeln – unmanaged Switches nicht. Unmanaged Switches sind reine „Plug-and-Play“-Geräte ohne Konfigurationsoberfläche, managed Switches bieten dagegen volle Kontrolle über Ports, VLANs und Priorisierung."},
+{"topic":"Netzwerktechnik (Testfrage)","q":"Welche Geräte leiten Ethernet-Verkehr auf Basis der Ziel-MAC-Adresse weiter?","options":["Router","Switch","Gateway","Server"],"correct":1,"explain":"Switches arbeiten auf Layer 2 und leiten Frames anhand der MAC-Adresse weiter. Dazu führt jeder Switch intern eine MAC-Adress-Tabelle, die er durch „Lauschen“ auf eingehenden Frames automatisch aufbaut."},
+{"topic":"Netzwerktechnik (Testfrage)","q":"Welche Geräte verbinden ein privates Netzwerk mit außerhalb liegenden Netzwerken wie dem Internet?","options":["Switch","Client","Router/Gateway","Server"],"correct":2,"explain":"Router/Gateway bilden die Grenze zwischen privatem LAN und dem Internet (WAN). An dieser Grenze findet in der Praxis meist auch NAT statt, um viele private Adressen hinter einer öffentlichen zu verstecken."},
+{"topic":"Netzwerktechnik (Testfrage)","q":"Welche Geräte bieten im LAN die physische/logische Verbindung zwischen mehreren Endgeräten?","options":["Router","Switch","Gateway","Server"],"correct":1,"explain":"Der Switch verbindet die Endgeräte innerhalb eines LAN-Segments. Mehrere Switches lassen sich wiederum zu größeren Topologien verbinden (z. B. Spine-Leaf), wobei Router/Gateway die Verbindung nach außen übernehmen."},
+{"topic":"Netzwerktechnik (IP-Klassifizierung)","q":"IP-Adresse 10.36.192.13 – wie ist sie einzuordnen?","options":["Öffentliche Adresse","Privates Netz für große Netzwerke (10.0.0.0/8) – AV-tauglich","Loopback-Adresse","Multicast-Adresse"],"correct":1,"explain":"10.0.0.0/8 ist laut IANA-Tabelle für große private Netzwerke reserviert und AV-Geräten problemlos zuweisbar. Schnell-Erkennung für die Prüfung: beginnt die Adresse mit 10., 172.16–31. oder 192.168., ist es privat; 127. ist Loopback; 169.254. ist APIPA; endet sie auf .255, ist es Broadcast; alles andere ist grundsätzlich öffentlich."},
+{"topic":"Netzwerktechnik (IP-Klassifizierung)","q":"IP-Adresse 127.0.0.1 – kann sie einem physischen AV-Gerät zugewiesen werden?","options":["Ja, problemlos","Nein – Loopback-Adresse, meint immer „dieses Gerät selbst“","Nur mit VLAN-Tagging","Nur bei IPv6"],"correct":1,"explain":"127.0.0.0/8 ist reserviert für Loopback/localhost – niemals einem physischen Gerät zuweisbar. Ein „ping 127.0.0.1“ testet nur, ob der eigene TCP/IP-Stack funktioniert, nicht ob überhaupt eine Netzwerkverbindung besteht."},
+{"topic":"Netzwerktechnik (IP-Klassifizierung)","q":"IP-Adresse 192.168.255.255 – was trifft zu?","options":["Normale Host-Adresse, AV-tauglich","Broadcast-Adresse des Subnetzes 192.168.255.0/24","Die Netz-ID selbst","Eine Link-Local-Adresse"],"correct":1,"explain":"Eine Adresse, die auf .255 endet, ist im jeweiligen /24-Subnetz die Broadcast-Adresse – nie einem Gerät zuweisbar. Die Broadcast-Adresse erreicht per Definition alle Geräte in der Broadcast-Domain gleichzeitig; sie markiert quasi „alle Host-Bits auf 1“."},
+{"topic":"Netzwerktechnik (IP-Klassifizierung)","q":"IP-Adresse 169.254.5.38 – was bedeutet diese Adresse typischerweise?","options":["Fest zugewiesene öffentliche Adresse","APIPA/Link-Local – der DHCP-Server hat nicht geantwortet","Eine Multicast-Adresse","Eine Broadcast-Adresse"],"correct":1,"explain":"169.254.0.0/16 ist der APIPA-Bereich – Geräte vergeben sich diese Adresse selbst, wenn DHCP nach kurzer Wartezeit nicht antwortet. Eine 169.254.x.x-Adresse im Praxisalltag ist also fast immer ein Hinweis auf ein DHCP-/Verkabelungsproblem, nicht auf eine gewollte Konfiguration."},
+{"topic":"Netzwerktechnik (IP-Klassifizierung)","q":"IP-Adresse 169.127.232.17 – ist das eine APIPA-Adresse?","options":["Ja, alle 169.x-Adressen sind APIPA","Nein – NUR 169.254.x.x ist APIPA, das hier ist eine ganz normale öffentliche Adresse","Ja, aber nur bei geradem letzten Oktett","Nein, APIPA beginnt immer mit 172"],"correct":1,"explain":"Klassische Falle: Nur exakt der Bereich 169.254.0.0/16 ist reserviertes APIPA. 169.127.x.x liegt außerhalb und ist eine normale öffentliche Adresse. Bei solchen Aufgaben lohnt es sich, die reservierten Bereiche wirklich exakt (nicht nur das erste Oktett) zu prüfen."},
+{"topic":"Netzwerktechnik","q":"Wie viele Bit hat eine MAC-Adresse?","options":["24","32","48","128"],"correct":2,"explain":"MAC-Adressen sind 48 Bit lang, notiert als 6 Gruppen zu 2 Hex-Ziffern. Man kann sich MAC vs. IP wie Personalausweis vs. Postanschrift vorstellen: die MAC-Adresse ist herstellerseitig fest im Gerät „eingebrannt“ (Layer 2), die IP-Adresse ist wie eine aktuelle Anschrift, die sich ändern kann (Layer 3)."},
+{"topic":"Netzwerktechnik","q":"Was ist ein zentraler Vorteil der Spine-Leaf-Architektur gegenüber der klassischen 3-Tier-Architektur?","options":["Es werden insgesamt weniger Kabel benötigt","Zwischen zwei beliebigen Leaf-Switches sind es IMMER genau 2 Hops","Es wird kein Switch mehr benötigt","Es gibt nur noch drahtlose Verbindungen"],"correct":1,"explain":"Durch die Vollvermaschung zwischen Spine- und Leaf-Ebene ist die Latenz zwischen zwei Leafs immer gleich (2 Hops) – im 3-Tier-Modell variiert das. Das macht Spine-Leaf besonders attraktiv für Rechenzentren und große AV-Installationen mit vorhersagbarer, gleichbleibend niedriger Latenz."},
+{"topic":"Netzwerktechnik","q":"Was verhindert das Spanning Tree Protocol (STP)?","options":["IP-Adresskonflikte","Netzwerkschleifen und damit Broadcast Storms","VLAN-Tagging-Fehler","DHCP-Fehlkonfigurationen"],"correct":1,"explain":"STP deaktiviert redundante Pfade logisch, um Schleifen (und damit Broadcast Storms) zu verhindern. Sind Switches redundant/ringförmig verkabelt (für Ausfallsicherheit), könnten Broadcasts sonst endlos im Kreis kursieren und das Netz lahmlegen – STP „schneidet“ dafür gezielt eine Verbindung logisch ab, aktiviert sie aber bei Bedarf automatisch wieder. Achtung: STP kann im Kontext auch „Shielded Twisted Pair“ (Kabeltyp) bedeuten – Kontext beachten."},
+{"topic":"Netzwerktechnik","q":"Was ist der Hauptvorteil von IPv6 gegenüber IPv4?","options":["Kürzere Adressen","Deutlich größerer Adressraum (128 statt 32 Bit)","Kein Routing mehr nötig","Nur für private Netze nutzbar"],"correct":1,"explain":"IPv6 nutzt 128 Bit statt 32 Bit – ein „unvorstellbar großer“ Adressraum, macht NAT-Workarounds größtenteils überflüssig. IPv4 hat nur ca. 4,3 Milliarden Adressen, die längst knapp sind; IPv6 erlaubt praktisch jedem Gerät weltweit eine eigene, direkt erreichbare Adresse."},
+{"topic":"Netzwerktechnik","q":"Wozu dient DHCP?","options":["Automatische Vergabe von IP-Adressen aus einem Adresspool","Verschlüsselung des Datenverkehrs","Umwandlung von MAC- in IP-Adressen","Blockieren von unerwünschtem Datenverkehr"],"correct":0,"explain":"Dynamic Host Configuration Protocol verteilt automatisch IP-Adresse, Subnetzmaske und oft auch DNS-/Gateway-Infos. Ohne DHCP müsste jedes Gerät im Netz von Hand konfiguriert werden – fehleranfällig und aufwendig, besonders bei vielen Geräten."},
+{"topic":"Netzwerktechnik","q":"Was macht ARP (Address Resolution Protocol)?","options":["Löst Namen in IP-Adressen auf","Findet zu einer bekannten IP-Adresse die passende MAC-Adresse","Verteilt automatisch IP-Adressen","Verschlüsselt den Datenverkehr"],"correct":1,"explain":"ARP verknüpft Layer-3-IP-Adressen mit Layer-2-MAC-Adressen (Befehl: arp -a). Bildlich gesprochen ruft das sendende Gerät per Broadcast ins ganze Netz: „Wer hat die IP x.x.x.x? Bitte MAC-Adresse melden!“ – und speichert die Antwort danach lokal zwischen, um nicht bei jedem Paket erneut fragen zu müssen."},
+{"topic":"Netzwerktechnik","q":"Wofür wird NAT (Network Address Translation) hauptsächlich eingesetzt?","options":["Um private IP-Adressen beim Verlassen des LAN in eine öffentliche zu übersetzen","Um VLANs zu konfigurieren","Um die Bandbreite zu erhöhen","Um MAC-Adressen zu verschlüsseln"],"correct":0,"explain":"NAT löst das Problem, dass private Adressen nicht direkt ins Internet geroutet werden können. Man kann sich NAT wie eine Telefonzentrale vorstellen: viele interne Nebenstellen (private IPs) teilen sich nach außen eine einzige Hauptnummer (öffentliche IP) – der Router merkt sich intern, welche Antwort zu welcher internen Anfrage gehört."},
+{"topic":"Netzwerktechnik","q":"Was unterscheidet einen Trunk-Port von einem Access-Port?","options":["Trunk-Ports übertragen immer ungetaggt, nur 1 VLAN","Trunk-Ports transportieren mehrere VLANs gleichzeitig, getaggt","Access-Ports sind nur für Glasfaser gedacht","Es gibt keinen technischen Unterschied"],"correct":1,"explain":"Access-Ports sind für Endgeräte gedacht (untagged, 1 VLAN/PVID), Trunk-Ports verbinden Switches und tragen mehrere VLANs gleichzeitig getaggt. Das VLAN-Tag im Frame sagt dem empfangenden Switch, zu welchem virtuellen Netz das Paket gehört, obwohl physisch alles über dasselbe Kabel läuft."},
+{"topic":"Netzwerktechnik","q":"Welche Aussage zu TCP und UDP ist korrekt?","options":["TCP ist verbindungslos und ungeprüft, UDP verbindungsorientiert und zuverlässig","TCP ist verbindungsorientiert mit Fehlerkorrektur, UDP verbindungslos und oft für AV-Streams genutzt","Beide Protokolle sind technisch identisch","UDP garantiert die richtige Reihenfolge der Pakete, TCP nicht"],"correct":1,"explain":"TCP: Handshake/Sliding Window/Resend = zuverlässig, aber langsamer. UDP: „Fire and forget“, schnell, aber ungeprüft – ideal für Echtzeit-AV. Faustregel: TCP wählt man, wenn jedes Bit ankommen muss (z. B. Dateiübertragung), UDP wenn Tempo wichtiger ist als hundertprozentige Vollständigkeit (z. B. Live-Video/Audio, wo ein verlorenes Paket kaum auffällt, eine Verzögerung aber schon)."},
+{"topic":"Netzwerktechnik","q":"Auf welcher OSI-Schicht arbeitet IPSec (als VPN-Typ) typischerweise?","options":["Schicht 2 (Sicherung)","Schicht 3 (Vermittlung)","Schicht 5 (Sitzung)","Schicht 7 (Anwendung)"],"correct":1,"explain":"IPSec arbeitet auf der Vermittlungsschicht (Layer 3) und sichert jedes IP-Transportprotokoll (TCP/UDP/ICMP). Weil die Verschlüsselung so tief im Protokollstapel ansetzt, ist sie für Anwendungen transparent – sie merken gar nicht, dass der Datenverkehr zusätzlich getunnelt/verschlüsselt wird."},
+{"topic":"Netzwerktechnik","q":"Wofür wird IGMP (Internet Group Management Protocol) benötigt?","options":["Für die Verwaltung von Multicast-Abonnements (join/leave)","Für die Verschlüsselung von VPN-Verkehr","Für die automatische IP-Vergabe","Für die MAC-Adress-Auflösung"],"correct":0,"explain":"IGMP ermöglicht Geräten, Multicast-Streams zu „abonnieren“ (join) bzw. abzubestellen (leave) – Voraussetzung für Multicasting. Ohne IGMP würde ein Switch/Router Multicast-Verkehr entweder gar nicht oder als Broadcast an alle Ports weiterleiten – IGMP sorgt dafür, dass nur die tatsächlich interessierten Geräte den Stream bekommen."},
+{"topic":"Netzwerktechnik","q":"Welche OSI-Schicht ist für das Routing von Paketen anhand der IP-Adresse zuständig?","options":["Schicht 2 (Sicherung)","Schicht 3 (Vermittlung)","Schicht 4 (Transport)","Schicht 7 (Anwendung)"],"correct":1,"explain":"Die Vermittlungsschicht (Layer 3, „Network“) adressiert und routet Pakete anhand der IP-Adresse. Das OSI-Modell hilft, Netzwerkprobleme systematisch einzugrenzen: liegt der Fehler z. B. an der Verkabelung (Schicht 1), an der MAC-Adressierung (Schicht 2) oder eben am Routing (Schicht 3)?"},
+{"topic":"AVoIP","q":"Wofür steht die Abkürzung AVoIP?","options":["Audio Video over IP","Automated Video over Internet Protocol","Analog Video on IP","Advanced VoIP"],"correct":0,"explain":"AVoIP = Audio Video over IP – Übertragung von AV-Signalen über Standard-IP-Netzwerke statt über dedizierte AV-Matrizen. Der große Vorteil: man nutzt dieselbe Netzwerktechnik (Switches, Kabel, Protokolle) wie in der normalen IT, was Skalierung und Flexibilität stark erhöht."},
+{"topic":"AVoIP","q":"Welche MoIP-Topologie stellt mehrere Quellen gleichzeitig auf einem Bildschirm dar?","options":["Videowall","Multiviewer","One to One","KVM"],"correct":1,"explain":"Ein Multiviewer zeigt mehrere Encoder-Quellen gleichzeitig auf 1 Decoder-Bildschirm. Das Gegenteil ist die Videowall, bei der EIN großes Bild auf mehrere physische Bildschirme aufgeteilt wird – beide Konzepte kombinieren mehrere Quellen/Ziele, aber auf unterschiedliche Weise."},
+{"topic":"AVoIP","q":"Was kann Dante Via im Vergleich zu Dante Virtual Soundcard zusätzlich?","options":["Mehr Kanäle aus 1 PC (bis 64)","USB/Firewire-Geräte ins Dante-Netz einbinden","Nur Dante-Controller-Routing nutzen","Audio überhaupt erst übertragen"],"correct":1,"explain":"Nur Dante Via bindet USB/Firewire-Geräte ein und routet flexibel zwischen Apps/Geräten (dafür weniger Kanäle: bis 16 statt 64). Beide Softwarelösungen machen einen normalen PC zu einem Dante-Teilnehmer, unterscheiden sich aber in Kanalzahl und Flexibilität – je nach Einsatzzweck wählt man das passende Werkzeug."},
+{"topic":"AVoIP","q":"Welche Rolle spielt PTP (Precision Time Protocol) für AVoIP?","options":["Es verschlüsselt den AV-Datenverkehr","Es synchronisiert die Uhren der Geräte extrem genau für gleichzeitige Wiedergabe","Es vergibt IP-Adressen","Es komprimiert Videodaten"],"correct":1,"explain":"PTP (IEEE 1588) sorgt für µs/ns-genaue Taktsynchronisation – wichtig, damit AV-Geräte exakt synchron abspielen (z. B. Dante, AES67, AVB). Ohne so genaue Synchronisation würden z. B. Lautsprecher in verschiedenen Räumen leicht zeitversetzt spielen – hörbar als Echo oder „Verwaschen“ des Klangs."},
+{"topic":"AVoIP","q":"Was beschreibt „One to Many“ in der MoIP-Topologie?","options":["1 Encoder sendet an mehrere Decoder","Mehrere Encoder senden an 1 Decoder","Nur Punkt-zu-Punkt-Verbindungen sind möglich","Nur für KVM-Anwendungen gültig"],"correct":0,"explain":"One to Many verteilt 1 Quelle an mehrere Ziele, z. B. bei Digital Signage. Solche Topologien (One to One, One to Many, Many to One, Many to Many) beschreiben, wie flexibel Encoder- und Decoder-Ströme im AVoIP-Netz zueinander geroutet werden können."},
+{"topic":"Rechenaufgabe","q":"Ein Kupferdraht (ρ=0,017 Ω·mm²/m) ist 100 m lang und hat 2 mm² Querschnittsfläche. Wie groß ist der Widerstand R = ρ·l/A?","options":["0,85 Ω","1,7 Ω","8,5 Ω","0,17 Ω"],"correct":0,"explain":"R = 0,017 × 100 / 2 = 1,7 / 2 = 0,85 Ω. Merke: der Widerstand steigt mit der Länge des Leiters und sinkt mit größerem Querschnitt – ein längeres, dünneres Kabel hat also mehr Widerstand und damit mehr Spannungsabfall/Verlustleistung."},
+{"topic":"Rechenaufgabe","q":"Welcher Dezimalwert entspricht dem Hex-Byte „7D“ (Teil einer MAC-Adresse aus dem Skript)?","options":["117","125","135","112"],"correct":1,"explain":"7D (hex) = 7×16 + 13 = 112 + 13 = 125 (aus dem Skript-Beispiel 94:18:65:7D:98:7C, Netgear-OUI). Hex-Umrechnung ist Basiswissen für MAC- und IP-Aufgaben: jede Hex-Ziffer steht für 4 Bit, also 2 Hex-Ziffern = 1 Byte."},
+{"topic":"Rechenaufgabe","q":"Wie lautet die IP-Adresse 10.15.115.37 in Hexadezimal-Schreibweise (je Byte)?","options":["0A.0F.73.25","A0.F0.37.52","0A.1F.73.52","10.15.73.25"],"correct":0,"explain":"10=0A, 15=0F, 115=7×16+3=73(hex), 37=2×16+5=25(hex) → 0A.0F.73.25. Solche Umrechnungen üben am besten das gleiche Grundprinzip wie bei MAC-Adressen: jedes Byte (0–255) einzeln in Hex umrechnen, Punkte/Doppelpunkte bleiben als Trenner stehen."},
+{"topic":"Rechenaufgabe","q":"192.168.56.30 mit Maske 255.255.255.0 (/24) – wie lauten Netz-ID und Broadcast-Adresse?","options":["Netz-ID 192.168.56.0, Broadcast 192.168.56.255","Netz-ID 192.168.0.0, Broadcast 192.168.255.255","Netz-ID 192.168.56.30, Broadcast 192.168.56.31","Netz-ID 192.168.56.1, Broadcast 192.168.56.254"],"correct":0,"explain":"Bei /24 ist nur das letzte Oktett variabel: Netz-ID = .0 (Host-Bits=0), Broadcast = .255 (Host-Bits=1). Allgemein gilt bei jeder Subnetzberechnung: Netz-ID = alle Host-Bits auf 0, Broadcast = alle Host-Bits auf 1, und dazwischen liegen die nutzbaren Host-Adressen."},
+{"topic":"Rechenaufgabe","q":"Subnetzmaske 255.255.255.192 (/26): Wie viele nutzbare Host-Adressen gibt es pro Subnetz?","options":["30","62","126","254"],"correct":1,"explain":"Host-Bits = 32−26 = 6 → 2⁶ − 2 = 64 − 2 = 62 nutzbare Adressen (minus Netz-ID und Broadcast). Formel allgemein: nutzbare Hosts = 2^(Host-Bits) − 2. Diese Formel ist die Grundlage für praktisch jede Subnetting-Aufgabe."},
+{"topic":"Rechenaufgabe","q":"Übergang Luft (n=1) → Quarzglas (n=1,45), senkrechter Lichteinfall: wie viel Prozent der Lichtleistung werden ungefähr reflektiert? (P_refl/P_ein = ((n1−n2)/(n1+n2))²)","options":["ca. 3 %","ca. 15 %","ca. 30 %","ca. 50 %"],"correct":0,"explain":"((1−1,45)/(1+1,45))² = (−0,45/2,45)² ≈ 0,034 → ca. 3 % Reflexion (Original-Beispiel aus dem Skript). Je größer der Brechungsindex-Unterschied zwischen zwei Medien, desto mehr Licht wird an der Grenzfläche reflektiert statt durchgelassen – das ist z. B. bei Steckverbindern in LWL-Strecken relevant."},
+{"topic":"Rechenaufgabe","q":"Kritischer Winkel der Totalreflexion beim Übergang Quarzglas (n=1,45) → Luft (n=1): sin(γT)=n2/n1. Wie groß ist γT ungefähr?","options":["ca. 20°","ca. 43,6°","ca. 60°","ca. 90°"],"correct":1,"explain":"sin(γT) = 1/1,45 ≈ 0,69 → γT = arcsin(0,69) ≈ 43,6° (Original-Übungsaufgabe aus dem Skript). Oberhalb dieses Winkels wird Licht komplett reflektiert (Totalreflexion) – genau dieses Prinzip hält das Licht im Kern des Lichtwellenleiters gefangen."},
+{"topic":"Grundlagen","q":"Was unterscheidet Intra-Frame- von Inter-Frame-Codecs bei der Videokompression?","options":["Intra-Frame komprimiert jedes Bild unabhängig für sich, Inter-Frame nutzt Unterschiede zwischen aufeinanderfolgenden Bildern für höhere Kompression","Intra-Frame funktioniert nur bei Standbildern, Inter-Frame nur bei Bewegtbildern","Beide Verfahren erzielen exakt die gleiche Kompressionsrate","Inter-Frame-Codecs benötigen grundsätzlich mehr Bandbreite als Intra-Frame"],"correct":0,"explain":"Intra-Frame-Codecs (z. B. M-JPEG) behandeln jedes Einzelbild wie ein eigenes Foto – jedes Bild ist für sich komplett, dadurch robust und leicht an jeder Stelle schneidbar, aber datenintensiv. Inter-Frame-Codecs (z. B. H.264/HEVC) speichern nur noch die Änderungen zwischen Bildern (Bewegungsvektoren) und setzen dafür in regelmäßigen Abständen volle „Schlüsselbilder“ (I-Frames) – das senkt die Datenrate deutlich, macht das Schneiden mitten im Stream aber aufwendiger und die Übertragung empfindlicher gegenüber Paketverlusten."},
+{"topic":"Übertragungsmedien","q":"Was unterscheidet UTP, STP und S/FTP grundlegend voneinander?","options":["UTP = ungeschirmt, STP = jedes Adernpaar einzeln geschirmt, S/FTP = geschirmte Paare UND zusätzlicher Gesamtschirm","Alle drei sind technisch identisch, nur andere Namen","UTP ist immer die teuerste Variante","S/FTP hat keinerlei Schirmung"],"correct":0,"explain":"UTP (Unshielded Twisted Pair) hat gar keine Schirmung – günstig und flexibel, aber anfälliger für elektromagnetische Störungen. STP (Shielded Twisted Pair) schirmt jedes Adernpaar einzeln. S/FTP kombiniert geschirmte Einzelpaare zusätzlich mit einem Gesamtschirm (meist eine Folie) – beste Störfestigkeit, dafür steifer und teurer in der Verlegung. Grundregel: mehr Schirmung = mehr Störsicherheit, aber weniger Flexibilität und höhere Kosten."},
+{"topic":"Übertragungsmedien","q":"Wie viele Adernpaare und wie viele Adern hat ein Standard-Twisted-Pair-Netzwerkkabel nach ISO 11801?","options":["4 Adernpaare / 8 Adern","2 Adernpaare / 4 Adern","8 Adernpaare / 16 Adern","3 Adernpaare / 6 Adern"],"correct":0,"explain":"Ein Standard-Netzwerkkabel (Cat.5 bis Cat.7a) hat 4 verdrillte Adernpaare, also 8 Adern insgesamt. Bei modernem Gigabit-Ethernet werden alle 4 Paare gleichzeitig für die Datenübertragung genutzt; ältere 10/100-Mbit-Standards nutzten dagegen oft nur 2 der 4 Paare – die anderen beiden waren ungenutzt (bzw. später für PoE nutzbar)."},
+{"topic":"Verbindungstechnik","q":"An einem PoE-Switch leuchtet bei einem Port die Link-LED grün, eine separate PoE-Status-LED bleibt jedoch aus. Was bedeutet das am ehesten?","options":["Der Port ist komplett inaktiv, es ist kein Gerät angeschlossen","Ein Gerät ist verbunden (Link steht), bezieht aber keinen Strom über PoE – z. B. weil es eine eigene Stromquelle hat","Der Switch liefert an diesem Port die doppelte PoE-Leistung","Es liegt zwingend ein Kabelfehler vor"],"correct":1,"explain":"Die Link-LED zeigt an, dass eine Datenverbindung besteht – unabhängig davon, ob PoE genutzt wird. Eine separate PoE-Status-LED zeigt zusätzlich an, ob der Port gerade aktiv Strom liefert. Leuchtet nur die Link-LED, ist ein Gerät angeschlossen, das entweder kein PoE unterstützt oder eine eigene Stromversorgung nutzt. Beim Ablesen von Status-LEDs an Switches lohnt es sich generell, zwischen „Verbindung besteht“ (Link) und „Strom fließt“ (PoE) zu unterscheiden, da das zwei unabhängige Zustände sind."},
+{"topic":"Netzwerktechnik","q":"Welche Aussage zu Unicast, Broadcast und Multicast ist korrekt?","options":["Unicast = einer an alle, Broadcast = einer an einen","Broadcast = einer an alle, Unicast = einer an einen, Multicast = einer an viele (gezielt interessierte Empfänger)","Multicast erreicht immer ausnahmslos alle Geräte im Netz, genau wie Broadcast","Unicast hat von den dreien die schlechteste Latenz"],"correct":1,"explain":"Unicast (1:1) ist die einfachste und schnellste Verbindungsart mit der besten Latenz. Broadcast (1:alle) erreicht jedes Gerät in der Broadcast-Domain, z. B. beim Verbindungsaufbau (ARP-Anfragen). Multicast (1:viele) sendet gezielt nur an Geräte, die sich per IGMP für eine bestimmte Gruppe „angemeldet“ haben – das nutzt die Bandbreite deutlich effizienter als Broadcast, besonders wenn mit der Empfängerzahl auch die Zahl der Kanäle steigt (z. B. viele parallele AV-Streams)."},
+{"topic":"Netzwerktechnik","q":"Wie ist der Netz-/Hostanteil bei klassischer Klasse-B-Adressierung (IPv4) aufgeteilt?","options":["8 Bit Netz / 24 Bit Host","16 Bit Netz / 16 Bit Host","24 Bit Netz / 8 Bit Host","4 Bit Netz / 28 Bit Host"],"correct":1,"explain":"Klassische IPv4-Adressklassen: Klasse A = 8 Bit Netz / 24 Bit Host (z. B. 10.0.0.0, riesige Netze), Klasse B = 16 Bit Netz / 16 Bit Host (z. B. 172.16.0.0, mittelgroße Netze), Klasse C = 24 Bit Netz / 8 Bit Host (z. B. 192.168.1.0, kleine Netze mit max. 254 Hosts). Diese klassische Einteilung ist historisch die Grundlage, auf der moderne, flexiblere CIDR-Subnetze (mit beliebigem Präfix wie /21 oder /28) aufbauen."},
+{"topic":"Netzwerktechnik","q":"Zu welcher klassischen IPv4-Adressklasse gehört die Adresse 172.16.5.10?","options":["Klasse A","Klasse B","Klasse C","Klasse D"],"correct":1,"explain":"Die klassischen Bereiche werden am ersten Oktett erkannt: Klasse A = 1–126, Klasse B = 128–191, Klasse C = 192–223 (Klasse D ab 224 ist für Multicast reserviert). 172 liegt im Klasse-B-Bereich, Standardmaske also /16 (255.255.0.0). Diese Schnell-Erkennung am ersten Oktett ist eine nützliche Faustregel für die Prüfung."},
+{"topic":"Rechenaufgabe","q":"Aus wie vielen Megapixeln bestehen zusammen die Bilder von 2 Monitoren mit 3840×2160 Pixel Auflösung (Ergebnis auf 1 Nachkommastelle in Megapixel)?","options":["16,6 Megapixel","8,3 Megapixel","33,2 Megapixel","4,1 Megapixel"],"correct":0,"explain":"3840×2160 = 8.294.400 Pixel pro Monitor (das ist die bekannte 4K/UHD-Auflösung). Für 2 Monitore: ×2 = 16.588.800 Pixel = 16,6 Megapixel. Solche Rechnungen braucht man in der AV-Praxis z. B., um grob abzuschätzen, wie viel Bandbreite unkomprimiertes Videosignal benötigt (Pixelzahl × Farbtiefe × Bildrate) – die Basis jeder Bandbreitenplanung für Video over IP."},
+{"topic":"Rechenaufgabe","q":"Wie lautet die Dezimalzahl 15 als 8-Bit-Binärcode?","options":["00001111","00010111","00001110","11110000"],"correct":0,"explain":"15 = 8+4+2+1 → die Bits an den Stellen 8, 4, 2 und 1 werden gesetzt → 0000 1111. Diese Grundumrechnung zwischen Dezimal und Binär ist die Basis für alle IP-Adressen- und Subnetzmasken-Berechnungen: jede IP-Adresse ist letztlich nichts anderes als 4 solcher 8-Bit-Blöcke."},
+{"topic":"Rechenaufgabe","q":"In einem Klasse-B-Netzwerk sollen mindestens 2000 Hosts möglich sein. Wie viele Host-Bits werden mindestens benötigt und wie lautet die passende Subnetzmaske?","options":["11 Host-Bits, Maske 255.255.248.0","10 Host-Bits, Maske 255.255.252.0","11 Host-Bits, Maske 255.255.255.0","12 Host-Bits, Maske 255.255.240.0"],"correct":0,"explain":"Formel: 2^n − 2 ≥ geforderte Hosts. Mit n=10: 2^10−2=1022, reicht nicht. Mit n=11: 2^11−2=2046, reicht. Also werden 11 Host-Bits benötigt → 32−11=21 Netz-Bits (/21). Die ersten 16 Bit gehören zum Klasse-B-Netzanteil, dazu kommen 5 weitere Subnetz-Bits im dritten Oktett: 11111000 = 248 → Maske 255.255.248.0. Diese Denkweise (Hosts gesucht → passende Bit-Anzahl über 2^n−2 finden → Maske ableiten) funktioniert für jede beliebige Host-Anforderung."},
+{"topic":"Rechenaufgabe","q":"Netzadresse 210.52.190.0, mindestens 10 Hosts nötig. Wie lautet die kleinstmögliche Subnetzmaske (inkl. CIDR-Suffix), sowie erste und letzte nutzbare IP-Adresse?","options":["/28, Maske 255.255.255.240, erste IP .1, letzte IP .14","/27, Maske 255.255.255.224, erste IP .1, letzte IP .30","/28, Maske 255.255.255.240, erste IP .0, letzte IP .15","/29, Maske 255.255.255.248, erste IP .1, letzte IP .6"],"correct":0,"explain":"2^4−2=14 ≥ 10 (2^3−2=6 reicht nicht) → mindestens 4 Host-Bits nötig → 32−4=28 Netz-Bits (/28) → Maske 255.255.255.240. Die Blockgröße beträgt 2^4=16: das Subnetz 210.52.190.0/28 reicht von .0 (Netz-ID) bis .15 (Broadcast-Adresse), nutzbar sind also nur die Adressen dazwischen: .1 bis .14. Wichtig: Netz-ID und Broadcast-Adresse selbst zählen nie als nutzbare Host-Adresse."},
+{"topic":"Netzwerktechnik","q":"Du arbeitest in einem fremden Netzwerk und kennst die Konfiguration nicht. Was ist ein sinnvoller erster Schritt, um eine passende IP-Adresse herauszufinden bzw. zu vergeben?","options":["Sofort eine zufällige statische IP setzen und hoffen, dass sie frei ist","Mit ipconfig/ifconfig die eigene aktuelle Konfiguration prüfen sowie ping/arp -a nutzen, um bestehende Netz-Infos zu sammeln, bevor man selbst etwas ändert","Direkt den DHCP-Server neu starten","Das Netzwerkkabel eines anderen Geräts abziehen, um Adresskonflikte auszuschließen"],"correct":1,"explain":"Sinnvolles Vorgehen: erst die bestehende Konfiguration feststellen (Netzadresse, Maske, Gateway, DHCP oder feste IPs, andere Geräte im Netz), dann die eigene Konfiguration passend dazu wählen und mit ping testen. Wichtige Befehle dafür: ipconfig/ifconfig (eigene Konfiguration anzeigen), ping (Erreichbarkeit testen), arp -a (bekannte MAC-Adressen im Netz), nslookup (DNS-Auflösung prüfen) und tracert/traceroute (Route zu einem Ziel verfolgen)."},
+{"topic":"Netzwerktechnik","q":"Was ist ein SPoF (Single Point of Failure) in einem Netzwerkdesign?","options":["Eine Methode zur Verschlüsselung von Datenverkehr","Eine einzelne Komponente, deren Ausfall gleich das gesamte Netz oder Netzsegment lahmlegt","Ein Backup-Server für Notfälle","Ein bestimmter Typ von Glasfaserkabel"],"correct":1,"explain":"Ein SPoF ist jede Stelle im Netzwerk, die bei Ausfall alles mit sich reißt – z. B. ein einzelner nicht redundanter Switch, über den der gesamte Verkehr läuft. Gutes Netzwerkdesign vermeidet SPoFs gezielt durch Redundanz, etwa gestackte Core-Switches mit mehreren Uplinks (siehe LACP) oder redundante Netzteile – fällt eine Komponente aus, übernimmt automatisch eine andere."},
+{"topic":"Netzwerktechnik","q":"Wofür steht TTL im IP-Header, und was passiert, wenn ihr Wert 0 erreicht?","options":["Time to Live – das Paket wird verworfen","Time to Load – das Paket wird priorisiert weitergeleitet","Total Transfer Limit – die Übertragung startet automatisch neu","Transport Type Layer – der Layer wird gewechselt"],"correct":0,"explain":"TTL (Time to Live) zählt, wie viele Router-Hops ein Paket noch durchlaufen darf. Jeder Router, den das Paket passiert, zieht 1 vom TTL-Wert ab; erreicht der Wert 0, wird das Paket verworfen. Das verhindert, dass fehlgeleitete Pakete bei einem Routing-Fehler (z. B. einer Schleife) endlos im Netz kreisen und Bandbreite verschwenden."},
+{"topic":"Netzwerktechnik","q":"Warum kann ein VPN-Tunnel bei Echtzeit-Video/Audio-Übertragung (z. B. Videokonferenzen) problematisch sein?","options":["VPN verlangsamt lediglich die Verschlüsselung, nicht die eigentliche Übertragung","Verschlüsselung und Tunneling-Header vergrößern jeden Frame, was zu Fragmentierung und spürbaren Verzögerungen führen kann","VPNs unterstützen grundsätzlich keinerlei Videoverkehr","VPNs benötigen zwingend eine zweite, separate Internetverbindung"],"correct":1,"explain":"Jedes Paket bekommt durch VPN zusätzlichen Overhead (Verschlüsselung plus Tunneling-Header). Wird ein Frame dadurch größer als die maximale zulässige Größe (MTU), muss er fragmentiert werden – bei Echtzeit-Video/Audio kann das zu spürbaren Verzögerungen oder Rucklern führen. In der Praxis reduziert man deshalb oft von vornherein die Frame-/Paketgröße der AV-Anwendung, um Fragmentierung im VPN-Tunnel zu vermeiden."},
+{"topic":"Netzwerktechnik","q":"Was unterscheidet NAC (Network Access Control) grundsätzlich von einer ACL (Access Control List)?","options":["NAC regelt Zugriffsrechte basierend auf der Identität/dem Zustand eines Geräts beim Verbindungsaufbau, ACL regelt konkret, welcher Verkehr durch einen Router/Switch weitergeleitet werden darf","Beide Konzepte sind technisch vollkommen identisch","NAC ist ausschließlich für WLAN-Netze zuständig","ACL vergibt automatisch IP-Adressen an neue Geräte"],"correct":0,"explain":"NAC (Network Access Control) prüft schon beim Verbindungsversuch, wer oder was sich verbinden will (z. B. per Zertifikat, Login oder Geräte-Status) und entscheidet, ob und mit welchen Rechten Zugriff gewährt wird. ACL (Access Control List) ist dagegen die konkrete Regelliste, nach der ein Router oder Switch im laufenden Betrieb entscheidet, welcher Verkehr (nach Quelle/Ziel/Port) passieren darf. Beide Mechanismen ergänzen sich: NAC kontrolliert den Zugang zum Netz, ACL den Verkehr innerhalb bzw. zwischen Netzen."},
+{"topic":"Netzwerktechnik","q":"Warum ist „bursty traffic“ (stoßweiser, unregelmäßiger Datenverkehr) für AV-over-IP-Übertragungen ungünstig?","options":["Er verträgt sich schlecht mit dem gleichmäßigen, kontinuierlichen Charakter, den Echtzeit-AV-Streams benötigen","Er erhöht automatisch die Signalqualität des AV-Streams","Bursty Traffic ist ausschließlich bei WLAN-Verbindungen ein Problem","Er verringert grundsätzlich die Paketgröße auf 0 Byte"],"correct":0,"explain":"AV over IP braucht einen möglichst gleichmäßigen, vorhersagbaren Datenstrom, damit Bild und Ton ohne Ruckler ankommen. Stoßweiser Hintergrundverkehr (z. B. große Datei-Downloads im selben Netz) kann kurzzeitige Bandbreitenspitzen erzeugen, die AV-Pakete verzögern oder verwerfen. Dagegen helfen in der Praxis: sauberes VLAN-Design (AV-Verkehr vom übrigen Datenverkehr trennen), Quality-of-Service-Priorisierung (QoS) und ausreichend dimensionierte Bandbreitenreserven."},
+{"topic":"Netzwerktechnik","q":"Warum sollte es in einem Netzwerksegment idealerweise nur einen aktiven IGMP Querier geben?","options":["Damit die Multicast-Gruppenabfragen konsistent ablaufen und nicht redundant oder widersprüchlich werden","Weil sonst kein Gerät mehr überhaupt Multicast-Streams empfangen kann","Weil IGMP bei mehreren Queriern automatisch komplett abgeschaltet wird","Weil zwei Querier automatisch den gesamten Broadcast-Verkehr verdoppeln"],"correct":0,"explain":"Der IGMP Querier fragt periodisch im Netzsegment ab, welche Geräte welche Multicast-Gruppen noch aktiv nutzen (join) bzw. nicht mehr benötigen (leave). Mehrere gleichzeitig aktive Querier im selben Netz würden zu uneinheitlichen oder konkurrierenden Abfragen und damit potenziell zu Inkonsistenzen führen, welche Geräte welchen Stream erhalten. Best Practice ist deshalb genau ein (aktiver) Querier pro Netzsegment – meist übernimmt das ein zentraler, dafür konfigurierter Switch oder Router."},
+{"topic":"Netzwerktechnik","q":"Was ist der besondere Vorteil von DDNS (Dynamic DNS) für Geräte mit häufig wechselnder IP-Adresse?","options":["Das Gerät bleibt unter einem festen Namen erreichbar, auch wenn sich seine IP-Adresse per DHCP immer wieder ändert","DDNS vergibt automatisch feste, unveränderliche MAC-Adressen","DDNS macht IP-Adressen für den Netzwerkbetrieb komplett überflüssig","DDNS funktioniert ausschließlich in reinen IPv6-Netzen"],"correct":0,"explain":"DDNS synchronisiert automatisch DHCP-Server und DNS-Server, sodass ein Gerät trotz wechselnder IP-Adresse immer unter demselben, gleichbleibenden Namen (z. B. meingeraet.dyndns.org) auffindbar bleibt. Das ist besonders praktisch für Geräte, die von außen erreichbar sein sollen (z. B. Remote-Zugriff auf eine Kamera oder einen AV-Encoder), deren öffentliche IP sich aber regelmäßig ändert."},
+{"topic":"Netzwerktechnik","q":"Was besagt das Least-Privilege-Prinzip in der Netzwerksicherheit?","options":["Jeder Nutzer bekommt möglichst viele Rechte, um flexibel arbeiten zu können","Jeder Nutzer bzw. jedes Gerät bekommt nur die geringstmöglichen, aber für die Aufgabe ausreichenden Rechte","Nur Administratoren dürfen sich überhaupt im Netzwerk anmelden","Rechte werden nach der Vergabe nie wieder überprüft oder angepasst"],"correct":1,"explain":"Das Least-Privilege-Prinzip („Prinzip der geringsten Rechte“) minimiert Sicherheitsrisiken, indem Nutzer und Geräte grundsätzlich nur genau die Zugriffsrechte erhalten, die sie für ihre konkrete Aufgabe wirklich benötigen. Zusätzliche Rechte gibt es nur über einen expliziten, nachvollziehbaren Genehmigungsprozess, nicht automatisch oder „auf Vorrat“ – so wird der potenzielle Schaden bei einem kompromittierten Konto oder Gerät von vornherein begrenzt."}
+];
+
+const QUESTIONS_2 = [
+  {"topic":"Netzwerktechnik (Grundlagen)","q":"Was sind die drei grundlegenden Zutaten, die für das Funktionieren eines Netzwerks benötigt werden?","options":["Switches, Router und Netzwerkkabel","Knoten (Nodes), Verbindungen und Protokolle","IP-Adressen, MAC-Adressen und DNS-Server","Client, Server und das Internet"],"correct":1,"explain":"Laut Kapitel 1 des Netzwerktechnik-Lernhefts benötigt ein Netzwerk drei elementare Komponenten:\n1. Knoten (Nodes) - die Endgeräte mit Netzwerkkarten (NICs);\n2. Verbindungen - die physikalischen (Kabel/Funk) oder logischen Leitungen;\n3. Protokolle - die gemeinsame Sprache und Spielregeln für die Kommunikation."},
+  {"topic":"Netzwerktechnik (Grundlagen)","q":"Welche zwei Bedeutungen kann der Begriff „Ethernet“ im Netzwerkbereich haben?","options":["Ein Dateitransferprotokoll und ein IP-Adressbereich","Die physische Hardware (Stecker/Kabel) und das Layer-2-Protokoll (Datenrahmen)","Ein VPN-Tunneltyp und ein WLAN-Standard","Ein Typ von Glasfaserkabel und ein Routing-Algorithmus"],"correct":1,"explain":"Laut Lernheft hat „Ethernet“ zwei Bedeutungen: Es bezeichnet einerseits die Hardware (Stecker, Kabel, Karten nach Ethernet-Spezifikation) und andererseits das Datenpaket-Format auf Layer 2 (das Ethernet-Protokoll bzw. den Datenrahmen/Frame). Der Kontext bestimmt, welche Bedeutung gemeint ist."},
+  {"topic":"Netzwerktechnik (Adressierung)","q":"Was beschreibt der Unterschied zwischen einer MAC-Adresse und einer IP-Adresse laut der Analogie im Lernheft?","options":["Die MAC-Adresse ist wie der Straßenname, die IP-Adresse ist die Hausnummer.","Die MAC-Adresse ist eine logische Adresse, während die IP-Adresse eine physikalische Schnittstelle bezeichnet.","Die MAC-Adresse bezeichnet das Gerät selbst (wie eine Person/Seriennummer), die IP-Adresse sagt, wo es sich befindet (wie die Wohnadresse/Postanschrift).","Die IP-Adresse ist fest eingebrannt, während die MAC-Adresse dynamisch per DHCP vergeben wird."],"correct":2,"explain":"Das Lernheft vergleicht die MAC-Adresse mit der Person selbst (bzw. der Seriennummer des Geräts), da sie fest auf der Netzwerkkarte eingebrannt und lokal eindeutig ist. Die IP-Adresse hingegen entspricht der Wohnadresse (Postanschrift), da sie logisch ist und sich ändern kann, wenn das Gerät an einen anderen Ort im Netzwerk umzieht."},
+  {"topic":"Netzwerktechnik (Adressierung)","q":"Welche Länge hat eine MAC-Adresse und wie wird sie üblicherweise notiert?","options":["32 Bit, notiert in vier Dezimalblöcken","128 Bit, notiert in acht Hexadezimalblöcken","48 Bit, notiert als 6 Gruppen zu je 2 Hexadezimalziffern","24 Bit, notiert als 3 Gruppen zu je 4 Binärzahlen"],"correct":2,"explain":"Eine MAC-Adresse (Media Access Control) ist genau 48 Bit lang. Sie wird üblicherweise in Hexadezimalschreibweise als 6 Paare von Hex-Ziffern angegeben, getrennt durch Doppelpunkte oder Bindestriche (z. B. 94:18:65:7D:98:7C). Sie arbeitet auf Schicht 2 (Sicherungsschicht) des OSI-Modells."},
+  {"topic":"Netzwerktechnik (Adressierung)","q":"Wofür steht die Abkürzung „OUI“ im Zusammenhang mit MAC-Adressen und welche Information liefert sie?","options":["Optional User Identifier – die individuelle Gerätenummer","Organizationally Unique Identifier – die ersten 3 Byte, die den Hersteller der Netzwerkkarte identifizieren","Optical Universal Interface – der Typ des Glasfaseranschlusses","Original Unit Indicator – das Herstellungsdatum des Geräts"],"correct":1,"explain":"OUI steht für „Organizationally Unique Identifier“. Es handelt sich um die ersten 3 Byte (24 Bit) einer MAC-Adresse. Diese Kennung wird von der IEEE an Hersteller (wie Netgear, TP-Link etc.) vergeben und ermöglicht es, den Hersteller einer Netzwerkkarte direkt anhand der MAC-Adresse zu bestimmen. Die verbleibenden 3 Byte sind die fortlaufende Gerätenummer des Herstellers."},
+  {"topic":"Netzwerktechnik (Adressierung)","q":"Auf welcher Schicht des OSI-Modells arbeitet eine IP-Adresse und welche Netzwerkkomponente trifft primär Weiterleitungsentscheidungen anhand dieser Adresse?","options":["Schicht 2 (Sicherungsschicht), Switch","Schicht 3 (Vermittlungsschicht), Router","Schicht 4 (Transportschicht), Gateway","Schicht 7 (Anwendungsschicht), Firewall"],"correct":1,"explain":"Eine IP-Adresse arbeitet auf Schicht 3 (Vermittlungsschicht / Network Layer) des OSI-Modells. Die Netzwerkkomponente, die IP-Pakete zwischen verschiedenen Netzwerken weiterleitet und Routingentscheidungen trifft, is der Router. Ein Switch arbeitet primär auf Schicht 2 mit MAC-Adressen."},
+  {"topic":"Zahlensysteme","q":"Wie lautet der Dezimalwert des hexadezimalen Bytes „7D“?","options":["117","125","135","112"],"correct":1,"explain":"Um ein Hex-Byte wie „7D“ in eine Dezimalzahl umzurechnen, multipliziert man die erste Stelle mit 16 und addiert den Wert der zweiten Stelle. Im Hexadezimalsystem gilt: A=10, B=11, C=12, D=13, E=14, F=15. Somit rechnen wir: 7 * 16 + 13 (für D) = 112 + 13 = 125."},
+  {"topic":"Zahlensysteme","q":"Welches Bit-Muster entspricht im Binärsystem der Dezimalzahl 125?","options":["01111101","01111100","01111111","01111001"],"correct":0,"explain":"Die Bit-Stellenwertigkeiten für ein Byte (8 Bit) sind von links nach rechts: 128, 64, 32, 16, 8, 4, 2, 1. Die Dezimalzahl 125 zerlegen wir in Zweierpotenzen: 125 = 64 + 32 + 16 + 8 + 4 + 1. Da die 128 nicht enthalten ist, ist das erste Bit 0. Die restlichen Bits für 64, 32, 16, 8, 4 und 1 sind gesetzt, das Bit für 2 ist 0. Dies ergibt die Bitfolge: 0111 1101."},
+  {"topic":"Netzwerkkomponenten","q":"Was unterscheidet einen „Managed Switch“ von einem „Unmanaged Switch“ laut Kapitel 4?","options":["Ein Managed Switch benötigt zwingend ein Glasfaserkabel, ein Unmanaged Switch nutzt nur Kupfer.","Ein Managed Switch ist sofort einsatzbereit (Plug & Play), während ein Unmanaged Switch komplett konfiguriert werden muss.","Ein Managed Switch ist konfigurierbar und unterstützt Funktionen wie VLANs und Quality of Service (QoS), während ein Unmanaged Switch Frames nur stur weiterleitet.","Ein Managed Switch arbeitet auf Layer 3, ein Unmanaged Switch auf Layer 4."],"correct":2,"explain":"Ein Unmanaged Switch ist ein reines „Plug & Play“-Gerät ohne Konfigurationsmöglichkeiten. Ein Managed Switch hingegen bietet eine Verwaltungsoberfläche, auf der Verkehrsregeln, VLANs (Virtual Local Area Networks) und QoS (Priorisierung kritischer Daten wie Audio/Video) eingerichtet werden können. Beide arbeiten primär auf Schicht 2."},
+  {"topic":"Netzwerkkomponenten","q":"Welche Aufgabe hat ein Gateway im Vergleich zu einem Router?","options":["Ein Gateway leitet Frames nur innerhalb derselben Broadcast-Domain weiter, während ein Router Netze trennt.","Ein Gateway dient ausschließlich zur Stromversorgung von Geräten über das Netzwerkkabel.","Ein Gateway ist meist ein Router, der zusätzlich zwischen unterschiedlichen Protokollwelten oder Adressräumen übersetzt.","Ein Gateway sperrt unerwünschten Datenverkehr anhand von Portnummern."],"correct":2,"explain":"Während ein Router Pakete auf Layer 3 zwischen verschiedenen Netzwerken mit demselben Protokoll weiterleitet, geht ein Gateway einen Schritt weiter. Es verbindet unterschiedliche „Welten“ und übersetzt Daten aktiv von einem Protokoll in ein anderes (z. B. Übersetzung zwischen privaten und öffentlichen Adressräumen oder unterschiedlichen Anwendungs-Protokollen)."},
+  {"topic":"Netzwerkkomponenten","q":"Was versteht man unter „Quality of Service (QoS)“ im Netzwerkbereich?","options":["Eine Garantie für die absolute Abhörsicherheit aller Datenübertragungen.","Die automatische Erkennung und Behebung von physischen Kabelschäden.","Die bevorzugte Behandlung wichtiger Datenpakete (z. B. zeitkritische Audio- und Videodaten) vor weniger wichtigen Paketen (z. B. E-Mails).","Die Verschlüsselung des gesamten Datenverkehrs auf Layer 3."],"correct":2,"explain":"QoS (Quality of Service) bezeichnet Verfahren zur Priorisierung von Netzwerkverkehr. Zeitkritische Datenpakete (wie VoIP, Dante-Audio oder Video-Streams) werden an Switches und Routern bevorzugt behandelt und an Warteschlangen vorbeigeleitet, damit es nicht zu Rucklern, Paketverlusten oder Latenzen kommt, während unkritischer Datenverkehr (wie E-Mail-Downloads) kurz warten kann."},
+  {"topic":"Netzwerkkomponenten","q":"Was gibt die Anzahl der „Hops“ bei der Datenübermittlung an?","options":["Die Anzahl der Sekunden, die ein Paket für den Weg benötigt.","Wie viele Geräte (typischerweise Router) ein Paket passieren muss, bis es sein Ziel erreicht.","Die Anzahl der zeitgleichen Multicast-Empfänger im Subnetz.","Die Frequenz des Funksignals bei drahtloser Übertragung."],"correct":1,"explain":"Ein „Hop“ bezeichnet im Netzwerkbereich den Sprung eines Datenpakets von einem Teilstück zum nächsten, typischerweise über einen Router hinweg. Die Anzahl der Hops gibt an, wie viele dieser Zwischenstationen ein Paket durchlaufen muss. Allgemein gilt: Weniger Hops bedeuten eine geringere Durchlaufzeit (Latenz)."},
+  {"topic":"Broadcast-Domain & Subnetz","q":"Wie verhalten sich Router bezüglich einer „Broadcast-Domain“?","options":["Router leiten Broadcasts in alle angeschlossenen Schnittstellen weiter, um die Kommunikation zu vergrößern.","Router wandeln Broadcasts automatisch in sicherere Unicast-Pakete um.","Router begrenzen Broadcast-Domains, da sie Broadcast-Aufrufe standardmäßig nicht in andere Subnetze weiterleiten.","Router benötigen zwingend das Spanning Tree Protocol (STP), um Broadcast-Domains aufzuteilen."],"correct":2,"explain":"Eine Broadcast-Domain ist der Bereich, in dem alle Geräte einen Broadcast-Ruf empfangen können. Während Switches Broadcasts an alle Ports fluten, blockieren Router diese an ihren Netzgrenzen. Ein Broadcast wird also nicht über einen Router hinaus in ein anderes Netzwerk weitergeleitet, wodurch Router Broadcast-Domains effektiv begrenzen."},
+  {"topic":"ARP","q":"Wie lautet der Ablauf des Address Resolution Protocol (ARP), wenn ein Gerät die MAC-Adresse zu einer IP-Adresse ermitteln möchte?","options":["Es fragt den DNS-Server direkt nach der MAC-Adresse.","Es sendet einen Broadcast-Ruf ins Netz („Wer hat IP x.x.x.x? Bitte MAC melden!“), und das gesuchte Gerät antwortet direkt mit seiner MAC-Adresse.","Es weist dem Zielgerät per DHCP eine neue IP-Adresse zu, die die MAC-Adresse enthält.","Es liest die MAC-Adresse direkt aus dem IP-Header des Pakets aus."],"correct":1,"explain":"Das Address Resolution Protocol (ARP) arbeitet auf Layer 2, um eine MAC-Adresse zu einer bekannten IP-Adresse zu finden. Das Quellgerät sendet einen ARP-Request als Broadcast an alle Geräte im LAN. Das Gerät mit der gesuchten IP-Adresse erkennt sich selbst und antwortet mit einem ARP-Reply (Unicast), das seine physische MAC-Adresse enthält. Das Quellgerät speichert dieses Ergebnis in seiner lokalen ARP-Tabelle."},
+  {"topic":"ARP","q":"Mit welchem Befehl auf der Kommandozeile (Windows/macOS/Linux) lässt sich die lokale ARP-Tabelle ausgeben?","options":["ipconfig /all bzw. ifconfig","arp -a","ping localhost","nslookup"],"correct":1,"explain":"Mit dem Kommandozeilenbefehl „arp -a“ wird die aktuelle ARP-Tabelle des Betriebssystems ausgegeben. Diese Tabelle enthält die Zuordnungen von IP-Adressen zu MAC-Adressen im lokalen Netzwerksegment, die das Gerät durch ARP-Requests gelernt hat."},
+  {"topic":"Netzwerk-Topologien","q":"Was beschreibt ein „Single Point of Failure (SPoF)“ in einem Netzwerkdesign und wie wird er vermieden?","options":["Eine falsche IP-Adresse, die zu Adresskonflikten führt; Vermeidung durch DHCP.","Eine fehlerhafte Zeiteinstellung über NTP; Vermeidung durch PTP.","Eine einzelne Komponente, deren Ausfall das gesamte Netzwerk lahmlegt; Vermeidung durch den Einbau von Redundanz.","Ein defektes Glasfaserkabel; Vermeidung durch Wechsel auf Kupferkabel."],"correct":2,"explain":"Ein SPoF (Single Point of Failure) ist eine Schwachstelle im Systemdesign: Fällt diese eine Komponente aus (z. B. ein einzelner Core-Switch, über den der gesamte Datenverkehr läuft), bricht das gesamte System oder Netzwerksegment zusammen. SPoFs werden durch redundante Pfade und Geräte (z. B. gestackte Switches, mehrfache Uplinks via LACP) eliminiert."},
+  {"topic":"Netzwerk-Topologien","q":"Welcher Datenverkehr dominiert in modernen, datenintensiven AV- und Rechenzentrumsnetzwerken und durch welche Architektur wird dieser begünstigt?","options":["North-South-Traffic (Verkehr ins Internet); begünstigt durch die traditionelle 3-Tier-Architektur","East-West-Traffic (Verkehr innerhalb des Netzes zwischen Geräten auf gleicher Ebene); begünstigt durch die Spine-Leaf-Architektur","Loopback-Traffic; begünstigt durch VPN-Tunnel","Broadcast-Traffic; begünstigt durch unmanaged Switches"],"correct":1,"explain":"In modernen Netzwerken fließt viel Datenverkehr horizontal zwischen Servern oder AV-Geräten auf gleicher Ebene (East-West-Traffic), während früher der vertikale Weg nach draußen/Internet (North-South-Traffic) überwog. Die Spine-Leaf-Architektur ist speziell für East-West-Traffic optimiert, da jeder Leaf-Switch direkt mit jedem Spine-Switch verbunden ist, was eine extrem geringe und gleichbleibende Latenz (immer genau 2 Hops) garantiert."},
+  {"topic":"Netzwerk-Topologien","q":"Was ist der Unterschied bei den Verbindungen zwischen Switches in einer traditionellen 3-Tier-Architektur im Vergleich zur Spine-Leaf-Architektur?","options":["In Spine-Leaf gibt es eine baumartige Struktur, bei der Leafs untereinander verbunden sind, Spines jedoch nicht.","Bei Spine-Leaf sind Leaf-Switches vollvermascht mit allen Spine-Switches verbunden, während in der 3-Tier-Architektur der Verkehr hierarchisch über Core und Aggregation laufen muss.","Die 3-Tier-Architektur nutzt nur drahtlose Verbindungen, Spine-Leaf nur Glasfaser.","Spine-Leaf erlaubt kein LACP, die 3-Tier-Architektur hingegen schon."],"correct":1,"explain":"Die traditionelle 3-Tier-Architektur besteht aus Core, Aggregation und Access Layer in einer baumartigen Struktur, bei der Pakete oft über viele Hops nach oben und wieder nach unten müssen. Die Spine-Leaf-Architektur besteht aus nur zwei Ebenen: Die Spine-Switches dienen als Verteiler (Layer 3) und die Leaf-Switches als Zugang (Layer 2). Jeder Leaf-Switch ist mit jedem Spine-Switch verbunden. Es gibt keine direkten Verbindungen zwischen Leafs oder zwischen Spines. Das sorgt für homogene Pfadlängen (genau 2 Hops)."},
+  {"topic":"Broadcast Storm & STP","q":"Welches Problem kann entstehen, wenn Switches redundant (in einer Schleife) verkabelt sind, und welches Protokoll verhindert dies?","options":["IP-Adresskonflikte; verhindert durch DHCP","Broadcast Storms (endlos kreisende und sich vervielfachende Broadcast-Frames); verhindert durch das Spanning Tree Protocol (STP)","Fragmentierung von Paketen; verhindert durch Erhöhung der MTU","Latenzprobleme bei Multicast; verhindert durch IGMP Snooping"],"correct":1,"explain":"Wenn redundante physische Pfade zwischen Switches existieren, können Broadcast-Frames im Kreis gesendet werden. Da ein Ethernet-Frame keinen Hop-Zähler (wie die IP-TTL) besitzt, kreist und vervielfacht sich der Frame endlos, bis das Netz komplett überlastet ist (Broadcast Storm). Das Spanning Tree Protocol (STP, erfunden von Radia Perlman) erkennt solche Schleifen und blockiert überflüssige Pfade logisch. Fällt die Hauptleitung aus, wird der blockierte Pfad automatisch aktiviert."},
+  {"topic":"Ethernet-Frame","q":"Wie groß ist ein Standard-Ethernet-Frame maximal auf Layer 2 und in welchem Bereich liegen typischerweise die reinen Nutzdaten (Payload)?","options":["Maximal 576 Byte, Nutzdaten zwischen 46 und 512 Byte","Maximal 1518 Byte, Nutzdaten zwischen 46 und 1500 Byte","Maximal 1280 Byte, Nutzdaten zwischen 500 und 1200 Byte","Unbegrenzt groß, Nutzdaten immer exakt 1500 Byte"],"correct":1,"explain":"Ein standardmäßiger Ethernet-Frame auf Layer 2 hat eine maximale Größe von 1518 Byte. Die eigentlichen Nutzdaten (Payload), die sich im Frame befinden, müssen laut Spezifikation mindestens 46 Byte groß sein (kleinere Daten werden mit Füllbits aufgefüllt) und dürfen maximal 1500 Byte betragen (MTU)."},
+  {"topic":"VLAN","q":"Welches Protokoll regelt das logische Aufteilen eines physischen Netzwerks in VLANs und wie viele VLAN-IDs sind damit theoretisch möglich?","options":["IEEE 802.1Q mit den VLAN-IDs 1 bis 4094","IEEE 1588 mit den VLAN-IDs 0 bis 255","RFC 1631 mit den VLAN-IDs 1 bis 1024","IEEE 802.11ad mit unbegrenzten IDs"],"correct":0,"explain":"Das VLAN-Tagging wird durch den Standard IEEE 802.1Q spezifiziert. Dabei wird ein 4-Byte-VLAN-Tag in den Ethernet-Frame eingefügt. Der Bereich für die VLAN-IDs beträgt 12 Bit, was theoretisch 4096 IDs ermöglicht. Davon sind die VLAN-IDs 1 bis 4094 im regulären Betrieb nutzbar (0 und 4095 sind für Systemzwecke reserviert)."},
+  {"topic":"VLAN","q":"Was unterscheidet einen Access-Port von einem Trunk-Port an einem Switch bezüglich der VLAN-Tags?","options":["Access-Ports senden Daten immer getaggt, Trunk-Ports immer ungetaggt.","Access-Ports sind für Endgeräte gedacht, übertragen Daten ungetaggt und gehören zu genau einem VLAN (PVID); Trunk-Ports verbinden Switches, übertragen Daten getaggt und transportieren mehrere VLANs gleichzeitig.","Access-Ports übertragen nur IPv4, Trunk-Ports können auch IPv6 übertragen.","Trunk-Ports schalten PoE frei, Access-Ports sperren die Stromversorgung."],"correct":1,"explain":"Ein Access-Port gehört zu genau einem VLAN. Eingehender ungetaggter Verkehr wird der PVID des Ports zugewiesen; ausgehender Verkehr verlässt den Port ungetaggt, da Endgeräte (wie PCs oder Telefone) VLAN-Tags meist nicht verstehen. Ein Trunk-Port hingegen verbindet Switches oder Router. Er transportiert Daten mehrerer VLANs gleichzeitig und fügt den Frames die entsprechenden VLAN-Tags (gemäß IEEE 802.1Q) hinzu, damit der Empfänger-Switch weiß, zu welchem VLAN die Frames gehören."},
+  {"topic":"VLAN","q":"Was wird benötigt, damit Geräte in unterschiedlichen VLANs miteinander kommunizieren können?","options":["Ein unmanaged Switch, der alle VLAN-Tags automatisch entfernt.","Ein Router oder Layer-3-Switch, der das sogenannte Inter-VLAN-Routing durchführt.","Ein einfaches Netzwerkkabel zwischen den Endgeräten.","Das Spanning Tree Protocol (STP), um die Netze zusammenzuführen."],"correct":1,"explain":"VLANs trennen Netzwerke auf Layer 2 komplett voneinander ab, als handele es sich um physisch getrennte Switches. Geräte in unterschiedlichen VLANs befinden sich in unterschiedlichen Subnetzen. Zur Kommunikation zwischen ihnen ist ein Gerät auf Layer 3 nötig – also ein Router oder ein Layer-3-fähiger Switch, der über Routing-Tabellen den Verkehr zwischen den Subnetzen vermittelt (Inter-VLAN-Routing)."},
+  {"topic":"IPv4 vs. IPv6","q":"Welche Bit-Länge nutzen IPv4- und IPv6-Adressen jeweils und wie viele Adressen sind bei IPv4 theoretisch möglich?","options":["IPv4 nutzt 16 Bit, IPv6 nutzt 32 Bit; ca. 65 Tausend Adressen bei IPv4","IPv4 nutzt 32 Bit (4 Byte), IPv6 nutzt 128 Bit (16 Byte); ca. 4,3 Milliarden Adressen bei IPv4","IPv4 nutzt 48 Bit, IPv6 nutzt 64 Bit; ca. 1 Million Adressen bei IPv4","Beide nutzen 128 Bit; der Adressraum ist bei beiden unbegrenzt"],"correct":1,"explain":"IPv4-Adressen bestehen aus 32 Bit, aufgeteilt in vier 8-Bit-Oktette, was theoretisch 2^32 = ca. 4,3 Milliarden Adressen ermöglicht (wovon ca. 3,7 Mrd. öffentlich nutzbar sind). Da dies heute zu wenig ist, wurde IPv6 mit 128 Bit Adresslänge eingeführt, welches einen praktisch unbegrenzten Adressraum (2^128 Adressen) bietet. In IPv6-Netzen liegt das CIDR-Suffix fast immer zwischen /48 und /64."},
+  {"topic":"Subnetzmaske, CIDR & VLSM","q":"Wie ist eine IP-Adresse logisch aufgeteilt und welche Komponente legt die Grenze dieser Aufteilung fest?","options":["Aufgeteilt in MAC-Anteil und Port-Anteil; Grenze festgelegt durch die IANA","Aufgeteilt in Netzanteil (Network ID) und Hostanteil (Host ID); Grenze festgelegt durch die Subnetzmaske","Aufgeteilt in IPv4- und IPv6-Bereich; Grenze festgelegt durch den DNS-Server","Aufgeteilt in Quell- und Ziel-Adresse; Grenze festgelegt durch den Switch"],"correct":1,"explain":"Jede IP-Adresse besteht aus zwei logischen Abschnitten: Dem Netzanteil (welcher das konkrete Netzwerk identifiziert) und dem Hostanteil (welcher das spezifische Gerät in diesem Netzwerk identifiziert). Die Subnetzmaske definiert, an welcher Stelle die IP-Adresse geteilt wird. In der Maske markieren die gesetzten Bits (1en) den Netzanteil, während die nicht gesetzten Bits (0en) den Hostanteil darstellen."},
+  {"topic":"Subnetzmaske, CIDR & VLSM","q":"Was beschreibt die CIDR-Notation bei der Angabe von Subnetzen (z. B. `/24`)?","options":["Das Protokoll zur Namensauflösung im WAN.","Ein Suffix, das angibt, wie viele Bits der IP-Adresse zum Netzanteil gehören.","Die Anzahl der maximal erlaubten Router-Hops.","Die IP-Adresse des Standardgateways in Hexadezimalschreibweise."],"correct":1,"explain":"CIDR steht für „Classless Inter-Domain Routing“. In dieser Notation wird die Subnetzmaske als Suffix hinter einem Schrägstrich angegeben (z. B. /24). Die Zahl gibt an, wie viele Bits der IP-Adresse (von links beginnend) als Netzanteil definiert sind. Ein /24 bedeutet somit, dass die ersten 24 Bit der 32-Bit-Adresse zum Netz gehören (entspricht der Maske 255.255.255.0), während die restlichen 8 Bit für Hosts zur Verfügung stehen."},
+  {"topic":"Subnetzmaske, CIDR & VLSM","q":"Wozu dient „Variable-Length Subnet Masking (VLSM)“?","options":["Um die MAC-Adresse eines Geräts je nach angeschlossenem Switch-Port zu variieren.","Um innerhalb desselben Netzwerks unterschiedlich große Subnetze einzurichten, um IP-Adressen effizienter auszunutzen.","Um die Übertragungsgeschwindigkeit auf Leitungen dynamisch anzupassen.","Um den Datenverkehr im VPN-Tunnel vor Überlastung zu schützen."],"correct":1,"explain":"Mit VLSM (Variable-Length Subnet Masking) können Netzwerke in Subnetze mit unterschiedlichen Maskenlängen (z. B. ein /26, ein /28 und ein /30 Subnetz) unterteilt werden. Das verhindert Adressverschwendung, da jedem Teilnetz genau die Größe zugewiesen werden kann, die für die tatsächliche Anzahl an Hosts benötigt wird, anstatt überall dieselbe starre Maskengröße zu nutzen. Das spart wertvolle Adressen."},
+  {"topic":"IANA-Adressbereiche","q":"Welche IPv4-Adressbereiche sind laut IANA ausschließlich für die private Nutzung reserviert und werden nicht im öffentlichen Internet geroutet?","options":["10.0.0.0/8, 172.16.0.0/12 und 192.168.0.0/16","127.0.0.0/8 und 169.254.0.0/16","224.0.0.0/4 und 240.0.0.0/4","192.0.0.0/24 und 172.168.0.0/16"],"correct":0,"explain":"Die IANA hat drei feste IPv4-Bereiche für private lokale Netzwerke (LANs) reserviert: 10.0.0.0 bis 10.255.255.254 (Klasse A /8), 172.16.0.0 bis 172.31.255.254 (Klasse B /12) und 192.168.0.0 bis 192.168.255.254 (Klasse C /16). Diese Adressen dürfen weltweit in privaten Netzen frei verwendet werden, werden jedoch von Routern niemals ins öffentliche Internet weitergeleitet (sind nicht global geroutet)."},
+  {"topic":"IANA-Adressbereiche","q":"Für welchen speziellen Zweck ist der Adressbereich `127.0.0.0/8` reserviert und wie lautet die bekannteste Adresse daraus?","options":["Für automatische IP-Konfiguration bei DHCP-Ausfall; bekannteste Adresse: 169.254.1.1","Für Multicast-Übertragungen im LAN; bekannteste Adresse: 224.0.0.1","Für den Loopback- bzw. Localhost-Zugriff (Diagnose/Test des eigenen IP-Stacks); bekannteste Adresse: 127.0.0.1","Für öffentliche DNS-Server; bekannteste Adresse: 8.8.8.8"],"correct":2,"explain":"Der Bereich 127.0.0.0/8 ist für Loopback-Funktionen reserviert. Jedes Paket, das an eine Adresse aus diesem Bereich gesendet wird, verlässt das eigene Gerät nicht, sondern wird intern direkt wieder an den eigenen Netzwerkstack zurückgeschleift. Dies dient Diagnose- und Testzwecken (z. B. ob TCP/IP korrekt läuft). Die bekannteste Adresse ist 127.0.0.1 (localhost/Loopback)."},
+  {"topic":"IANA-Adressbereiche","q":"Unter welchen Bedingungen vergibt sich ein Gerät eine APIPA-Adresse (Link-Local) und aus welchem Adressbereich stammt diese?","options":["Wenn es manuell als statische Adresse konfiguriert wird; Bereich 172.16.0.0/12","Wenn der DHCP-Server nach ca. 5 Sekunden nicht antwortet; Bereich 169.254.0.0/16","Wenn der VPN-Tunnel erfolgreich aufgebaut wurde; Bereich 10.0.0.0/8","Wenn das Gerät ein unverschlüsseltes WLAN-Signal empfängt; Bereich 192.168.0.0/16"],"correct":1,"explain":"APIPA (Automatic Private IP Addressing) bzw. Link-Local kommt zum Einsatz, wenn ein Gerät auf automatische Adresskonfiguration per DHCP eingestellt ist, aber nach ca. 5 Sekunden keine Antwort vom DHCP-Server erhält. Das Gerät vergibt sich dann selbst eine IP-Adresse aus dem reservierten Bereich 169.254.0.0/16 (169.254.0.1 bis 169.254.255.254). Zuvor wird per ARP-Request geprüft, ob die gewählte Adresse bereits im lokalen Netzsegment belegt ist."},
+  {"topic":"Statische vs. dynamische IP","q":"Was ist der Unterschied bei der Vergabe statischer und dynamischer IP-Adressen in der Praxis?","options":["Statische IP-Adressen werden automatisch per DHCP vergeben, dynamische Adressen müssen manuell eingetippt werden.","Dynamische IP-Adressen werden bei Bedarf automatisch von einem DHCP-Server aus einem Pool zugewiesen; statische IP-Adressen werden von Hand fest am Gerät konfiguriert (wichtig für dauerhaft erreichbare Geräte wie Server, Mediensteuerungen oder Drucker).","Statische IP-Adressen erlauben den Zugriff aufs Internet, dynamische IP-Adressen sind nur im lokalen Subnetz gültig.","Dynamische IP-Adressen ändern die MAC-Adresse des Geräts bei jedem Neustart."],"correct":1,"explain":"Dynamische Adressierung via DHCP vereinfacht die Verwaltung in großen Netzwerken spürbar und verhindert Konfigurationsfehler. Statische (feste) Adressierung wird manuell vorgenommen und ist für Netzwerkressourcen wie Server, Drucker oder Mediensteuerungen in der AV-Technik unerlässlich, damit diese Geräte immer unter derselben IP-Adresse zuverlässig auffindbar sind."},
+  {"topic":"DNS & DDNS","q":"Wozu dienen die Protokolle DNS und DDNS (Dynamic DNS) im Netzwerkbetrieb?","options":["DNS dient zur automatischen Vergabe von IP-Adressen; DDNS verschlüsselt die Datenrahmen.","DNS übersetzt Domainnamen (wie www.beispiel.de) in IP-Adressen; DDNS verknüpft und synchronisiert DHCP- und DNS-Server, damit ein Gerät trotz wechselnder DHCP-IP unter einem festen Namen erreichbar bleibt.","DNS filtert Viren aus E-Mails heraus; DDNS regelt die Priorisierung an Switches.","DNS verwaltet Multicast-Gruppen; DDNS steuert VPN-Tunnel auf Layer 7."],"correct":1,"explain":"Das Domain Name System (DNS) fungiert als Telefonbuch des Internets und löst lesbare Namen in numerische IP-Adressen auf. Da in Heim- oder Firmennetzen IP-Adressen per DHCP häufig wechseln können, verknüpft Dynamic DNS (DDNS) diese Systeme: Ändert sich die IP-Adresse eines Geräts, meldet es dies dem DDNS-Dienst, der den DNS-Eintrag sofort aktualisiert. So bleibt das Gerät stets unter demselben Namen erreichbar. Viele AV-Geräte unterstützen DNS-Adressvergabe nur unzureichend – hier sind oft statische IPs besser."},
+  {"topic":"NAT / PAT","q":"Wie unterscheiden sich die Verfahren NAT (Network Address Translation) und PAT (Port Address Translation) voneinander?","options":["NAT arbeitet auf Schicht 2, PAT auf Schicht 3.","NAT übersetzt IP-Adressen im Paket-Header an der Netzwerkgrenze; PAT ist eine One-to-Many-Variante von NAT, bei der sich viele Geräte mit privaten IP-Adressen eine einzige öffentliche IP-Adresse teilen, indem die Verbindungen über eindeutige Portnummern unterschieden werden.","PAT wird nur bei Glasfaserkabeln eingesetzt, NAT nur bei Kupfer.","Es gibt keinen technischen Unterschied; beides sind andere Namen für das Spanning Tree Protocol (STP)."],"correct":1,"explain":"NAT übersetzt die IP-Informationen im Paket-Header beim Übergang zwischen privaten und öffentlichen Netzen (RFC 1631) zur Erhöhung der Sicherheit und Einsparung von IPs. Die in der Praxis am häufigsten genutzte Form von NAT ist PAT (Port Address Translation, auch NAPT oder IP-Masquerading): Hierbei teilt sich ein ganzes LAN mit vielen privaten Adressen eine einzige öffentliche IP-Adresse des Internetrouters. Der Router ordnet den ausgehenden Paketen eindeutige Quellports zu und leitet eintreffende Antworten anhand der Portnummern wieder an die korrekten internen Geräte weiter."},
+  {"topic":"VPN","q":"Auf welchen OSI-Schichten arbeiten die VPN-Protokolle L2TP, IPSec und SSL jeweils?","options":["L2TP: Schicht 1 (Physical); IPSec: Schicht 2 (Sicherung); SSL: Schicht 3 (Vermittlung)","L2TP: Schicht 7 (Anwendung); IPSec: Schicht 4 (Transport); SSL: Schicht 2 (Sicherung)","L2TP: Schicht 2 (Sicherung); IPSec: Schicht 3 (Vermittlung); SSL: Schicht 7 (Anwendung)","Alle arbeiten ausschließlich auf Schicht 3 (Vermittlungsschicht)"],"correct":2,"explain":"Laut Lernheft arbeiten die VPN-Protokolle auf unterschiedlichen Ebenen:\n1. L2TP (Layer 2 Tunneling Protocol): Schicht 2 (Sicherungsschicht), erfordert Client-Software, transportiert IP- und Nicht-IP-Daten, kann spürbare Latenz verursachen.\n2. IPSec (Internet Protocol Security): Schicht 3 (Vermittlungsschicht), erfordert Client-Software, sichert jedes IP-Transportprotokoll, gängig für Standort-zu-Standort.\n3. SSL-VPN (Secure Sockets Layer): Schicht 7 (Anwendungsschicht), keine Client-Software nötig (Zugriff über Webbrowser), agiert als Proxy mit granularer Rechtevergabe, gängig für mobile Nutzer."},
+  {"topic":"VPN","q":"Welches Problem kann bei VPN-Tunneln durch den zusätzlichen Paket-Overhead entstehen und wie wird es gelöst?","options":["Es kommt zu IP-Adresskonflikten; Lösung durch DHCP-Ausschluss.","Die Leitungsdämpfung steigt spürbar an; Lösung durch Verwendung von Cat. 6a-Kabeln.","Die Pakete vergrößern sich so stark, dass sie die MTU überschreiten und fragmentiert werden müssen, was Latenzen verursacht; Lösung: Die Frame-/Paketgröße der Anwendung von vornherein niedriger ansetzen.","Multicast-Streams werden blockiert; Lösung: Abschalten des IGMP Queriers."],"correct":2,"explain":"Da ein VPN-Tunnel jedes Paket zusätzlich verschlüsselt und mit einem Tunnel-Header (Wrapper) versieht, wächst die Paketgröße. Überschreitet das Paket dadurch die maximale Übertragungsgröße (MTU) des Transportwegs (meist 1500 Byte), muss es in kleinere Fragmente zerlegt (fragmentiert) und am Ziel wieder zusammengesetzt werden. Dies führt zu Verzögerungen und Paketverlusten – fatal für Echtzeit-AV-Streams. Die Lösung besteht darin, die Framegröße der AV-Anwendung niedriger anzusetzen, damit das Paket inklusive VPN-Overhead in die Standard-MTU passt."},
+  {"topic":"TCP vs. UDP","q":"Wie unterscheiden sich die Transportprotokolle TCP und UDP auf Layer 4 bezüglich ihrer Zuverlässigkeit und ihres typischen Einsatzes?","options":["TCP ist verbindungslos und schnell (ideal für Steuerungssignale); UDP ist verbindungsorientiert und zuverlässig (ideal für Downloads).","TCP is verbindungsorientiert und garantiert eine fehlerfreie Übertragung in korrekter Reihenfolge (ideal für Steuerungssignale, Dateien); UDP ist verbindunglos, arbeitet nach dem „Fire and forget“-Prinzip ohne Rückmeldung und bietet minimale Latenz (ideal für Echtzeit-AV-Streams).","TCP arbeitet auf Schicht 4, UDP auf Schicht 3.","UDP korrigiert Fehler durch erneutes Senden (Resend), TCP verwirft fehlerhafte Pakete sofort."],"correct":1,"explain":"TCP (Transmission Control Protocol) baut eine feste Verbindung auf (Handshake), kontrolliert den Datenfluss (Sliding Window) und fordert verloren gegangene Pakete erneut an (Resend). Dies garantiert Vollständigkeit und die richtige Reihenfolge (Einschreiben-Analogie), erzeugt aber Overhead und Latenz. UDP (User Datagram Protocol) verzichtet auf Verbindungsaufbau und Empfangsbestätigung. Es schickt Pakete direkt los („Fire and forget“ / Postkarten-Analogie). Geht ein Paket verloren, wird es nicht neu gesendet. Das macht UDP unschlagbar schnell und perfekt für Echtzeit-AV-Streaming, wo Latenzfreiheit wichtiger ist als absolute Bit-Genauigkeit."},
+  {"topic":"Ports","q":"Was beschreibt ein „Port“ im TCP/IP-Modell und in welche drei Bereiche sind Portnummern aufgeteilt?","options":["Ein physischer Steckplatz am Switch; Bereiche: Kupfer, Glasfaser und SFP","Eine 16-Bit-Nummer (0–65535), die Datenpakete der richtigen Anwendung auf dem Gerät zuordnet; Bereiche: System-/Well-known-Ports (0–1023), User-/Registered-Ports (1024–49151) und dynamische/High-Ports (49152–65535)","Ein IP-Adresspräfix zur Kennzeichnung des Subnetzes; Bereiche: Klasse A, B und C","Eine Verschlüsselungsmethode für VPNs; Bereiche: L2TP, IPSec und SSL"],"correct":1,"explain":"Während die IP-Adresse den Weg zum richtigen Gerät findet, leitet der Port (eine 16-Bit-Zahl von 0 bis 65535) das Datenpaket an die richtige Softwareanwendung auf diesem Gerät weiter. Die Ports sind in drei IANA-Bereiche aufgeteilt:\n1. System- bzw. Well-known-Ports (0–1023) für Standarddienste (wie HTTP/HTTPS).\n2. User- bzw. Registered-Ports (1024–49151) für registrierte Anwendungen.\n3. Dynamische / High Ports (49152–65535) für kurzlebige, temporäre Verbindungen."},
+  {"topic":"Ports","q":"Welchem Protokoll und Port ist der unverschlüsselte Web-Zugriff (HTTP) und der verschlüsselte Web-Zugriff (HTTPS) standardmäßig zugeordnet?","options":["HTTP: TCP 80; HTTPS: TCP 443","HTTP: UDP 53; HTTPS: TCP 53","HTTP: TCP 21; HTTPS: UDP 21","HTTP: TCP 23; HTTPS: TCP 22"],"correct":0,"explain":"Für den Zugriff auf Webseiten im Browser sind standardmäßig feste Ports reserviert. Unverschlüsselter HTTP-Verkehr läuft über den Port TCP 80. Sicherer, verschlüsselter HTTPS-Verkehr (unter Verwendung von TLS) nutzt standardmäßig den Port TCP 443. Weitere wichtige Ports aus dem Lernheft: FTP (TCP 20/21), SSH (TCP/UDP 22), Telnet (TCP 23), DNS (TCP/UDP 53) und SNMP (TCP/UDP 161)."},
+  {"topic":"Netzwerksicherheit","q":"Was besagt das „Least-Privilege-Prinzip“ (Prinzip der geringsten Rechte) in der Netzwerksicherheit?","options":["Jeder Benutzer im Netzwerk erhält administrative Vollrechte, um Supportanfragen zu minimieren.","Benutzer und Geräte erhalten nur die geringstmöglichen Berechtigungen, die zwingend für die Erfüllung ihrer aktuellen Aufgabe erforderlich sind.","Das Netzwerk wird so konfiguriert, dass alle Geräte unverschlüsselt kommunizieren dürfen.","Berechtigungen werden ausschließlich auf Basis der MAC-Adresse und ohne Passwörter vergeben."],"correct":1,"explain":"Das Least-Privilege-Prinzip ist ein Grundpfeiler der Informationssicherheit. Es besagt, dass Konten, Prozesse und Geräte nur genau diejenigen Rechte erhalten sollen, die zur Ausführung ihrer Aufgaben notwendig sind. Zusätzliche Rechte werden verwehrt oder müssen über Genehmigungsprozesse explizit freigegeben werden. Dadurch wird verhindert, dass sich Schadsoftware bei einer Kompromittierung ungehindert im Netzwerk ausbreiten kann (Schadensbegrenzung)."},
+  {"topic":"NTP","q":"Welche Aufgabe hat das Network Time Protocol (NTP) im Netzwerk und welche Genauigkeit wird damit typischerweise erreicht?","options":["Es steuert die Taktung von Audio- und Videogeräten im Nanosekundenbereich.","Es aktualisiert und synchronisiert Datum und Uhrzeit von Geräten über einen externen Zeitserver mit einer Genauigkeit von ca. 200 µs bis 10 ms.","Es misst die Leitungsdämpfung von Kupferkabeln bei der strukturierten Verkabelung.","Es verwaltet die IP-Adresspools im DHCP-Server."],"correct":1,"explain":"Das Network Time Protocol (NTP) dient dazu, die internen Uhren von Computern und Netzwerkgeräten über das Internet oder lokale Zeitserver (z. B. pool.ntp.org) zu synchronisieren. Die erreichte Genauigkeit liegt typischerweise im Bereich von 200 Mikrosekunden bis 10 Millisekunden. Dies ist wichtig, damit Log-Dateien verschiedener Geräte zeitlich konsistent ausgewertet werden können. Für hochpräzise AV-Synchronisation (z. B. Dante) reicht dies jedoch nicht aus – dort wird das Precision Time Protocol (PTP) mit ns/µs-Genauigkeit verwendet."}
+];
+
+let QUESTIONS = [];
+let activeQuizId = 1;
+let isReviewMode = false;
+let wrongQuestionsByQuiz = { 1: [], 2: [] };
+
+let current = 0;
+let answers = [];
+let confirmed = [];
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function startReview(quizId, evt) {
+  if (evt) evt.stopPropagation();
+  if (!wrongQuestionsByQuiz[quizId] || wrongQuestionsByQuiz[quizId].length === 0) return;
+  startQuiz(quizId, true);
+}
+
+function startQuiz(quizId, review) {
+  activeQuizId = quizId || 1;
+  isReviewMode = !!review;
+  let baseQuestions;
+  if (isReviewMode) {
+    baseQuestions = wrongQuestionsByQuiz[activeQuizId];
+  } else {
+    baseQuestions = (activeQuizId === 1) ? QUESTIONS_1 : QUESTIONS_2;
+  }
+
+  // Shallow copy so we don't shuffle the original static arrays
+  QUESTIONS = [...baseQuestions];
+
+  const shouldShuffle = document.getElementById('shuffle-toggle').checked;
+  if (shouldShuffle) {
+    shuffleArray(QUESTIONS);
+  }
+
+  const quizName = (activeQuizId === 1) ? "Übertragungsmedien" : "Netzwerktechnik";
+  if (isReviewMode) {
+    document.getElementById('quiz-title-display').textContent = quizName + " – Wiederholung der falschen Fragen";
+    document.getElementById('quiz-desc-display').textContent = QUESTIONS.length + " Frage(n) zum gezielten Nachlernen · direktes Feedback";
+  } else if (activeQuizId === 1) {
+    document.getElementById('quiz-title-display').textContent = "Übertragungsmedien – Probeklausur";
+    document.getElementById('quiz-desc-display').textContent = "70 Multiple-Choice-Fragen · direktes Feedback nach jeder Frage";
+  } else {
+    document.getElementById('quiz-title-display').textContent = "Netzwerktechnik – Probeklausur";
+    document.getElementById('quiz-desc-display').textContent = "40 Multiple-Choice-Fragen · detaillierte Erklärungen nach jeder Frage";
+  }
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('quiz-screen').classList.remove('hidden');
+  current = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  confirmed = new Array(QUESTIONS.length).fill(false);
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  const isConfirmed = confirmed[current];
+  const userAns = answers[current];
+
+  document.getElementById('topic-tag').textContent = q.topic;
+  document.getElementById('question-text').textContent = (current+1) + ". " + q.q;
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    let cls = 'option';
+    if (!isConfirmed && userAns === i) cls += ' selected';
+    if (isConfirmed) {
+      cls += ' locked';
+      if (i === q.correct) cls += ' correct-answer';
+      else if (i === userAns) cls += ' wrong-answer';
+    }
+    div.className = cls;
+    if (!isConfirmed) div.onclick = () => selectOption(i);
+    const letter = String.fromCharCode(65+i);
+    let markHtml = '';
+    if (isConfirmed && i === q.correct) markHtml = '<span class="mark ok">✓</span>';
+    else if (isConfirmed && i === userAns) markHtml = '<span class="mark bad">✗</span>';
+    div.innerHTML = '<input type="radio" ' + (userAns === i ? 'checked' : '') + ' disabled>' +
+                     '<span><strong>' + letter + ')</strong> ' + opt + '</span>' + markHtml;
+    list.appendChild(div);
+  });
+
+  const feedbackSlot = document.getElementById('feedback-slot');
+  feedbackSlot.innerHTML = '';
+  if (isConfirmed) {
+    const wasCorrect = userAns === q.correct;
+    const box = document.createElement('div');
+    box.className = 'feedback-box ' + (wasCorrect ? 'ok' : 'bad');
+    box.innerHTML = '<span class="title">' + (wasCorrect ? '✓ Richtig!' : '✗ Leider falsch.') + '</span>' + q.explain;
+    feedbackSlot.appendChild(box);
+  }
+
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = 'Frage ' + (current+1) + ' von ' + QUESTIONS.length;
+  document.getElementById('arrow-prev-btn').disabled = current === 0;
+  document.getElementById('arrow-next-btn').disabled = current === QUESTIONS.length - 1;
+
+  const actionBtn = document.getElementById('action-btn');
+  if (!isConfirmed) {
+    actionBtn.textContent = 'Antwort bestätigen';
+    actionBtn.disabled = userAns === null;
+  } else {
+    actionBtn.textContent = (current === QUESTIONS.length - 1) ? 'Ergebnis anzeigen' : 'Nächste Frage';
+    actionBtn.disabled = false;
+  }
+}
+
+function selectOption(i) {
+  if (confirmed[current]) return;
+  answers[current] = i;
+  renderQuestion();
+}
+
+function onActionClick() {
+  if (!confirmed[current]) {
+    if (answers[current] === null) return;
+    confirmed[current] = true;
+    renderQuestion();
+    return;
+  }
+  if (current < QUESTIONS.length - 1) {
+    current++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function prevQuestion() {
+  if (current > 0) {
+    current--;
+    renderQuestion();
+  }
+}
+
+function skipQuestion() {
+  if (current < QUESTIONS.length - 1) {
+    current++;
+    renderQuestion();
+  }
+}
+
+function updateMenuState() {
+  [1, 2].forEach(qid => {
+    const count = (wrongQuestionsByQuiz[qid] || []).length;
+    const btn = document.getElementById('review-btn-' + qid);
+    const countSpan = document.getElementById('review-count-' + qid);
+    if (countSpan) countSpan.textContent = count;
+    if (btn) {
+      if (count > 0) btn.classList.remove('hidden');
+      else btn.classList.add('hidden');
+    }
+  });
+}
+
+function backToMenu() {
+  document.getElementById('quiz-screen').classList.add('hidden');
+  document.getElementById('results-screen').classList.add('hidden');
+  document.getElementById('start-screen').classList.remove('hidden');
+  document.getElementById('quiz-title-display').textContent = "Übertragungsmedien & Netzwerktechnik";
+  document.getElementById('quiz-desc-display').textContent = "Wähle eine Probeklausur zum Lernen · direktes Feedback nach jeder Frage";
+  updateMenuState();
+  window.scrollTo(0,0);
+}
+
+function showResults() {
+  document.getElementById('quiz-screen').classList.add('hidden');
+  const screen = document.getElementById('results-screen');
+  screen.classList.remove('hidden');
+
+  let correctCount = 0;
+  const byTopic = {};
+  const wrongList = [];
+  QUESTIONS.forEach((q, i) => {
+    if (!byTopic[q.topic]) byTopic[q.topic] = { correct: 0, total: 0 };
+    byTopic[q.topic].total++;
+    if (answers[i] === q.correct) { correctCount++; byTopic[q.topic].correct++; }
+    else wrongList.push({ q, i, userAns: answers[i] });
+  });
+  const pct = Math.round((correctCount / QUESTIONS.length) * 100);
+
+  // Remember only the currently-wrong questions of this quiz for the "Falsche Fragen wiederholen" option.
+  // Works the same whether this was a full run or already a review round, so repeated review passes narrow down further.
+  wrongQuestionsByQuiz[activeQuizId] = wrongList.map(item => item.q);
+
+  let html = '<div class="card">';
+  html += '<div style="text-align:center;">';
+  html += '<div class="score-circle"><span class="num">' + correctCount + '/' + QUESTIONS.length + '</span><span class="lbl">' + pct + ' %</span></div>';
+  html += '<p style="color:var(--gray);">' + (pct >= 80 ? 'Stark! Das sitzt schon gut.' : pct >= 60 ? 'Solide Basis – die Lücken unten gezielt nachlernen.' : 'Noch Luft nach oben – schau dir die Fehler unten in Ruhe an.') + '</p>';
+  html += '</div>';
+  html += '<div class="topic-breakdown">';
+  Object.keys(byTopic).forEach(t => {
+    const b = byTopic[t];
+    html += '<div class="topic-row"><span>' + t + '</span><span>' + b.correct + ' / ' + b.total + '</span></div>';
+  });
+  html += '</div>';
+  html += '<button class="btn-primary big-btn" onclick="restartQuiz()">Nochmal versuchen</button>';
+  html += '</div>';
+
+  if (wrongList.length > 0) {
+    html += '<div class="card" style="margin-top:16px;"><h3 style="color:var(--blue); margin-top:0;">Zum Nachlernen: deine ' + wrongList.length + ' Fehler</h3>';
+    html += '<p style="color:var(--gray); font-size:0.88rem; margin-top:-8px;">Tipp: Im Hauptmenü kannst du unter diesem Quiz gezielt nur diese ' + wrongList.length + ' Frage(n) wiederholen.</p>';
+    wrongList.forEach(item => {
+      const q = item.q;
+      html += '<div class="review-item">';
+      html += '<div class="q">' + (item.i+1) + '. ' + q.q + '</div>';
+      html += '<div class="ans">Deine Antwort: <span class="bad-text">' +
+              (item.userAns !== null ? String.fromCharCode(65+item.userAns) + ') ' + q.options[item.userAns] : '(keine Antwort)') + '</span></div>';
+      html += '<div class="ans">Richtig: <span class="ok-text">' + String.fromCharCode(65+q.correct) + ') ' + q.options[q.correct] + '</span></div>';
+      html += '<div class="explain">' + q.explain + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div class="card" style="margin-top:16px; text-align:center;"><p>Alle ' + QUESTIONS.length + ' Fragen richtig beantwortet. Nichts zum Nachlernen übrig!</p></div>';
+  }
+
+  screen.innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+function restartQuiz() {
+  document.getElementById('results-screen').classList.add('hidden');
+  document.getElementById('start-screen').classList.remove('hidden');
+  document.getElementById('quiz-title-display').textContent = "Übertragungsmedien & Netzwerktechnik";
+  document.getElementById('quiz-desc-display').textContent = "Wähle eine Probeklausur zum Lernen · direktes Feedback nach jeder Frage";
+  updateMenuState();
+  window.scrollTo(0,0);
+}
+
+updateMenuState();
+</script>
+</body>
+</html>
