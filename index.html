@@ -173,6 +173,28 @@
     transform: translateX(22px);
   }
 
+
+  /* Karteikarten styling */
+  .cards-select-card { border-color: #b45309; }
+  .cards-select-card h3 { color: #b45309; }
+  .cards-select-card .btn-primary { background: #b45309; }
+
+  /* Lernmodus styling */
+  .learn-select-card { border-color: var(--green); grid-column: 1 / -1; }
+  .learn-select-card h3 { color: var(--green); }
+  .learn-select-card .btn-primary { background: var(--green); }
+  .learn-content { font-size: 0.94rem; line-height: 1.55; color: #1f2937; }
+  .learn-content h4 { color: var(--blue); font-size: 0.98rem; margin: 18px 0 6px; }
+  .learn-content p { margin: 8px 0; }
+  .learn-content ul { margin: 8px 0; padding-left: 20px; }
+  .learn-content li { margin-bottom: 5px; }
+  .learn-content table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 10px 0; }
+  .learn-content th, .learn-content td { border: 1px solid #e2e5ea; padding: 6px 8px; text-align: left; vertical-align: top; }
+  .learn-content th { background: var(--blue-light); color: var(--blue); }
+  .learn-content code { background: #f3f4f6; padding: 1px 6px; border-radius: 4px; font-size: 0.85em; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .learn-content .merkbox { background: var(--green-light); border-left: 4px solid var(--green); padding: 10px 12px; border-radius: 8px; margin: 12px 0; font-size: 0.88rem; }
+  .learn-content .warnbox { background: var(--red-light); border-left: 4px solid var(--red); padding: 10px 12px; border-radius: 8px; margin: 12px 0; font-size: 0.88rem; }
+
   .hidden { display: none !important; }
   footer { text-align: center; color: var(--gray); font-size: 0.78rem; margin-top: 24px; }
 
@@ -203,6 +225,13 @@
         <span class="slider"></span>
       </label>
     </div>
+    <div class="toggle-container">
+      <span class="toggle-label">Antworten zufällig mischen</span>
+      <label class="switch">
+        <input type="checkbox" id="answer-shuffle-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
     <div class="quiz-selector-grid">
       <div class="quiz-select-card" onclick="startQuiz(1)">
         <h3>Quiz 1: Übertragungsmedien</h3>
@@ -225,6 +254,25 @@
         <button class="btn-primary select-btn">Dieses Quiz starten</button>
         <button class="btn-review select-btn hidden" id="review-btn-3" onclick="startReview(3, event)">↻ Nur falsche Fragen wiederholen (<span id="review-count-3">0</span>)</button>
       </div>
+      <div class="quiz-select-card" onclick="startQuiz(4)">
+        <h3>Quiz 4: Komplett-Wiederholung</h3>
+        <p class="quiz-card-meta">103 Fragen · Alle Themen · Lern-Erklärungen</p>
+        <p class="quiz-card-desc">Deckt ALLE Themengebiete ab – Grundlagen, Kabel, Lichtwellenleiter, PoE/Transceiver, Netzwerktechnik, IP &amp; Subnetting, VLAN, Protokolle, Sicherheit, OSI, AVoIP und Rechenaufgaben. Jede Frage kommt mit einer besonders ausführlichen Erklärung zum Lernen – wie ein Mini-Tutorial pro Frage.</p>
+        <button class="btn-primary select-btn">Dieses Quiz starten</button>
+        <button class="btn-review select-btn hidden" id="review-btn-4" onclick="startReview(4, event)">↻ Nur falsche Fragen wiederholen (<span id="review-count-4">0</span>)</button>
+      </div>
+      <div class="quiz-select-card cards-select-card" onclick="startCards()">
+        <h3>🗂️ Karteikarten: Freitext-Training</h3>
+        <p class="quiz-card-meta">66 Karten · Selbst erklären → aufdecken → bewerten</p>
+        <p class="quiz-card-desc">Training für den Freitext-Anteil der Klausur: Abkürzungen erklären, Konzepte in eigenen Worten beschreiben, Listen aufzählen, Rechenwege erläutern. Erst selbst antworten, dann aufdecken und ehrlich mit „Gewusst / Nicht gewusst" bewerten – nicht gewusste Karten kannst du gezielt wiederholen.</p>
+        <button class="btn-primary select-btn">Karteikarten starten</button>
+      </div>
+      <div class="quiz-select-card learn-select-card" onclick="startLearn()">
+        <h3>📖 Lernmodus: Themen-Debrief</h3>
+        <p class="quiz-card-meta">25 Themenkarten · Kein Quiz – nur Wissen</p>
+        <p class="quiz-card-desc">Alle Themengebiete als kompakte Erklärungskarten zum Durchblättern: Definitionen, Tabellen, Merksätze, Abkürzungen, Rechenwege und typische Prüfungsfallen. Gleiche Bedienung wie im Quiz (◀ ▶), aber ohne Fragen – ideal als Vorbereitung, bevor du die Quizze machst.</p>
+        <button class="btn-primary select-btn">Lernmodus starten</button>
+      </div>
     </div>
   </div>
 
@@ -243,6 +291,47 @@
         <button class="btn-arrow" id="arrow-prev-btn" onclick="prevQuestion()" title="Vorherige Frage">◀</button>
         <button class="btn-primary" id="action-btn" onclick="onActionClick()" disabled>Antwort bestätigen</button>
         <button class="btn-arrow" id="arrow-next-btn" onclick="skipQuestion()" title="Nächste Frage (überspringen)">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cards-screen" class="hidden">
+    <div class="quiz-topbar">
+      <button class="btn-menu" onclick="cardsBackToMenu()">☰ Hauptmenü</button>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="card-progress-bar"></div></div>
+    <div class="progress-label" id="card-progress-label"></div>
+    <div class="card">
+      <span class="topic-tag" id="card-topic-tag"></span>
+      <div class="question-text" id="card-front"></div>
+      <p id="card-hint" style="color:var(--gray); font-size:0.88rem;">Beantworte die Frage zuerst laut oder im Kopf – wie in der Freitext-Prüfung. Dann aufdecken.</p>
+      <div class="learn-content hidden" id="card-back"></div>
+      <div class="nav-row hidden" id="card-know-row">
+        <button style="flex:1; background:var(--green-light); color:var(--green); border:1.5px solid var(--green);" onclick="cardKnow(true)">✓ Gewusst</button>
+        <button style="flex:1; background:var(--red-light); color:var(--red); border:1.5px solid var(--red);" onclick="cardKnow(false)">✗ Nicht gewusst</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-arrow" id="card-prev-btn" onclick="cardPrev()" title="Vorherige Karte">◀</button>
+        <button class="btn-primary" id="card-action-btn" onclick="cardAction()">Antwort aufdecken</button>
+        <button class="btn-arrow" id="card-next-btn" onclick="cardNext()" title="Nächste Karte (überspringen)">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="learn-screen" class="hidden">
+    <div class="quiz-topbar">
+      <button class="btn-menu" onclick="learnBackToMenu()">☰ Hauptmenü</button>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="learn-progress-bar"></div></div>
+    <div class="progress-label" id="learn-progress-label"></div>
+    <div class="card">
+      <span class="topic-tag" id="learn-topic-tag"></span>
+      <div class="question-text" id="learn-title"></div>
+      <div class="learn-content" id="learn-content"></div>
+      <div class="nav-row">
+        <button class="btn-arrow" id="learn-prev-btn" onclick="learnPrev()" title="Vorheriges Thema">◀</button>
+        <button class="btn-primary" id="learn-action-btn" onclick="learnAction()">Weiter ▶</button>
+        <button class="btn-arrow" id="learn-next-btn" onclick="learnNext()" title="Nächstes Thema">▶</button>
       </div>
     </div>
   </div>
@@ -406,10 +495,116 @@ const QUESTIONS_3 = [
 {"topic":"IP-Adressierung","q":"Welche IP-Adresse kann man NICHT einem einzelnen AV-Gerät fest zuweisen?","options":["10.36.192.13","172.16.4.7","192.168.255.255","192.168.10.50"],"correct":2,"explain":"192.168.255.255 ist die Broadcast-Adresse des Netzes 192.168.0.0/16 (endet auf .255) – Broadcast-Adressen werden nie an ein einzelnes Gerät vergeben. Die anderen sind normale private Host-Adressen (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) und dürfen AV-Geräten zugewiesen werden. Faustregel: Adresse endet im Subnetz auf .255 → Broadcast; 127.x → Loopback; 169.254.x → APIPA."}
 ];
 
+const QUESTIONS_4 = [
+{"topic":"Grundlagen","q":"Ordne die Grundbegriffe der Nachrichtentechnik richtig zu: Nachricht, Information, Signal.","options":["Nachricht = das Kabel, Information = das Gerät, Signal = die Software","Nachricht = Mitteilung zwischen Lebewesen/Maschinen, Information = „beseitigte Unsicherheit“, Signal = ans Übertragungsmedium angepasste Codierung der Information","Nachricht = immer digital, Information = immer analog, Signal = immer elektrisch","Alle drei Begriffe bedeuten dasselbe"],"correct":1,"explain":"Merke die Kette: Eine <b>Nachricht</b> ist die Mitteilung selbst (zwischen Menschen und/oder Maschinen). Sie enthält <b>Information</b> – definiert als „beseitigte Unsicherheit“, also eine subjektive Größe: Was für dich neu ist, kann für jemand anderen bekannt sein. Das <b>Signal</b> (lat. „signum“ = Zeichen) ist schließlich die Codierung dieser Information, angepasst an das jeweilige Übertragungsmedium – z. B. Spannungspegel auf Kupfer oder Lichtimpulse in der Glasfaser. Diese Definitionen sind beliebte Freitext-Fragen!"},
+{"topic":"Grundlagen","q":"Was ist das Ziel der Informationstechnik im Gegensatz zur Energietechnik?","options":["Maximale Leistungsübertragung","Minimale Sendeleistung","Minimale Informationsverluste bei der Signalübertragung","Minimale Kabellängen"],"correct":2,"explain":"Gegenüberstellung, die du kennen musst: Die <b>Energietechnik</b> will Leistung übertragen und strebt <i>minimale Leistungsverluste</i> an (z. B. Hochspannungsübertragung). Die <b>Informationstechnik</b> will Signale übertragen und strebt <i>minimale Informationsverluste</i> an – erreicht durch hohe Sendeenergie, störungsresistente Codierung und Fehlererkennung/-korrektur. Es geht also nicht darum, dass möglichst viel Energie ankommt, sondern dass die Information unverfälscht ankommt."},
+{"topic":"Grundlagen","q":"Wie lautet die korrekte Reihenfolge im Schema einer Nachrichtenübertragung?","options":["Quelle → Quellencodierer → Kanalcodierer → Kanal → Kanaldecodierer → Quellendecodierer → Sinke","Quelle → Kanal → Codierer → Sinke → Decodierer","Sinke → Kanalcodierer → Quelle → Kanal","Quelle → Kanalcodierer → Quellencodierer → Kanal → Sinke"],"correct":0,"explain":"Die Übertragungskette ist symmetrisch aufgebaut: Die <b>Quelle</b> erzeugt die Nachricht, der <b>Quellencodierer</b> entfernt Redundanz (Kompression), der <b>Kanalcodierer</b> fügt gezielt Schutz-Redundanz gegen Übertragungsfehler hinzu. Dann folgt der <b>Kanal</b> (hier wirken Störungen wie Rauschen, Nebensprechen, Verzerrungen). Auf der Empfängerseite läuft alles rückwärts: Kanaldecodierer → Quellendecodierer → <b>Sinke</b> (Empfänger). Eselsbrücke: erst Quelle-bezogen, dann Kanal-bezogen – und beim Empfang spiegelverkehrt."},
+{"topic":"Grundlagen","q":"Welcher Zusammenhang zwischen Frequenz und Wellenlänge gilt bei drahtloser Übertragung?","options":["Je höher die Frequenz, desto länger die Wellenlänge","Je höher die Frequenz, desto kürzer die Wellenlänge – und desto eher ist eine Sichtverbindung (Richtfunk) nötig","Frequenz und Wellenlänge sind unabhängig voneinander","Höhere Frequenz bedeutet automatisch größere Reichweite"],"correct":1,"explain":"Frequenz und Wellenlänge verhalten sich <b>invers</b> zueinander (λ = c/f). Praktische Folge: Je höher die Frequenz (z. B. 60 GHz bei 802.11ad), desto kürzer die Welle, desto schlechter durchdringt sie Hindernisse – man braucht zunehmend eine optische Sichtverbindung wie beim Richtfunk. Darum hat 802.11ad mit 60 GHz nur ca. 9 m Reichweite, während 2,4-GHz-WLAN durch Wände deutlich weiter kommt. Hohe Frequenz = viel Bandbreite, aber wenig Reichweite."},
+{"topic":"Übertragungsmedien","q":"Welche Impedanz-Zuordnung bei Koaxialkabeln ist korrekt?","options":["50 Ω für Video, 75 Ω für Daten","75 Ω für Videosignale, 50 Ω für Daten/Kommunikation/Funk-Antennen","Beide Typen haben 100 Ω","Die Impedanz spielt bei Koax keine Rolle"],"correct":1,"explain":"Die zwei Koax-Welten: <b>75 Ω = Video</b> (z. B. SDI, Antennenkabel), <b>50 Ω = Daten/Kommunikation/Funkmikro-Antennen</b>. Wichtig ist die <b>Impedanzanpassung</b>: Sender, Kabel und Empfänger müssen dieselbe Impedanz haben, sonst entstehen Reflexionen und Signalverluste. Die Impedanz ist der Wechselstromwiderstand der Leitung – sie hängt von der Geometrie des Kabels ab, nicht von seiner Länge."},
+{"topic":"Übertragungsmedien","q":"Warum werden die Adernpaare in Twisted-Pair-Kabeln verdrillt?","options":["Damit das Kabel flexibler wird","Um die Übertragungsgeschwindigkeit zu erhöhen","Die Verdrillung reduziert das Übersprechen (Crosstalk) zwischen den Adernpaaren","Aus rein optischen Gründen"],"correct":2,"explain":"Die Verdrillung ist ein cleverer physikalischer Trick: Durch das regelmäßige Verdrehen heben sich eingekoppelte Störungen weitgehend gegenseitig auf, weil beide Adern eines Paares abwechselnd gleich nah an der Störquelle liegen. Das reduziert das <b>Übersprechen (Crosstalk)</b> zwischen benachbarten Adernpaaren deutlich. Zusätzlichen Schutz bieten Schirmungen: UTP (ungeschirmt) → STP (jedes Paar geschirmt) → S/FTP (Paare geschirmt + Gesamtschirm)."},
+{"topic":"Übertragungsmedien","q":"Was bedeutet die Kabelbezeichnung S/FTP (bzw. S-STP)?","options":["Ungeschirmte Adernpaare ohne Gesamtschirm","Nur ein Gesamtschirm, Adernpaare ungeschirmt","Nur die Adernpaare geschirmt, kein Gesamtschirm","Adernpaare einzeln geschirmt UND zusätzlicher Gesamtschirm"],"correct":3,"explain":"Die Schirmungs-Hierarchie zum Merken: <b>UTP</b> = Unshielded Twisted Pair, gar keine Schirmung (günstig, flexibel, aber anfällig). <b>STP</b> = jedes Adernpaar einzeln geschirmt (kein Übersprechen, weniger flexibel). <b>S-UTP</b> = Paare ungeschirmt, aber gemeinsamer Gesamtschirm (Folie). <b>S/FTP bzw. S-STP</b> = das Maximum: Paare einzeln geschirmt UND Gesamtschirm. Das „S“ davor steht für „Screened“ (Gesamtschirm). Je mehr Schirm, desto besser gegen EMI/RFI – aber steifer und teurer."},
+{"topic":"Übertragungsmedien","q":"Welche Bandbreite und Geschwindigkeit bietet ein Cat.-6a-Kabel laut Tabelle?","options":["100 MHz / 1 Gbit/s","250 MHz / 1 Gbit/s","500 MHz / 10 Gbit/s","1000 MHz / 40 Gbit/s"],"correct":2,"explain":"Die Cat.-Tabelle solltest du grob im Kopf haben: <b>Cat. 5/5e</b> = 100 MHz (100 Mbit bzw. 1 Gbit), <b>Cat. 6</b> = 250 MHz (1 Gbit), <b>Cat. 6a</b> = 500 MHz (10 Gbit!), <b>Cat. 7</b> = 600 MHz (10 Gbit), <b>Cat. 7a</b> = 1000 MHz (bis 40 Gbit). Merkhilfe: Für 10 Gbit/s brauchst du mindestens Cat. 6a. Die Bandbreite (MHz) beschreibt den nutzbaren Frequenzbereich des Kabels, die Geschwindigkeit (Gbit/s) die erreichbare Datenrate."},
+{"topic":"Übertragungsmedien","q":"Was ist „Alien Crosstalk“ (AXT)?","options":["Störungen durch Funksignale aus dem Weltall","Übersprechen zwischen benachbarten Kabeln (nicht innerhalb desselben Kabels) – relevant bei >1 Gbit/s","Ein Messverfahren für Glasfasern","Ein Verschlüsselungsprotokoll"],"correct":1,"explain":"Beim normalen Crosstalk stören sich die Adernpaare <i>innerhalb</i> eines Kabels. <b>Alien Crosstalk (AXT)</b> kommt dagegen von <i>benachbarten Kabeln</i> – z. B. wenn viele Patchkabel eng gebündelt liegen. Das wird besonders bei hochfrequenten Übertragungen über 1 Gbit/s zum Problem. Abhilfe: geschirmte Cat.-6a-Kabel, die auch besser gegen EMI/RFI (elektromagnetische/hochfrequente Störungen) schützen."},
+{"topic":"Übertragungsmedien","q":"Was beschreibt der Kennwert ACR bei Kabeln?","options":["Das Verhältnis von Nebensprechdämpfung zu Leitungsdämpfung (Attenuation to Crosstalk Ratio)","Die maximale Kabellänge","Die Anzahl der Adernpaare","Den Kabeldurchmesser"],"correct":0,"explain":"<b>ACR = Attenuation to Crosstalk Ratio</b> – das Verhältnis von Nebensprechdämpfung zu Leitungsdämpfung. Es sagt aus, wie viel „Abstand“ das Nutzsignal am Kabelende noch zum eingestreuten Störsignal hat. Die Begriffe dazu: <b>Leitungsdämpfung aL</b> = Signalverlust über die Strecke (in dB, steigt mit Frequenz und Länge), <b>Nebensprechdämpfung aN</b> = wie gut das Kabel gegen Übersprechen geschützt ist. Praxis-Richtwerte: TV ≥ 50 dB, Telefon ≥ 58 dB, hochwertige Audioübertragung ≥ 80 dB Nebensprechdämpfung."},
+{"topic":"Übertragungsmedien","q":"Wie interpretiert man ein Augendiagramm?","options":["Je kleiner das „Auge“, desto besser das Signal","Das Augendiagramm zeigt nur die Kabelfarbe an","Je „offener“ das Auge, desto besser die Signalqualität","Es zeigt die IP-Konfiguration eines Geräts"],"correct":2,"explain":"Das <b>Augendiagramm</b> entsteht, wenn man alle möglichen Bitübergänge eines Digitalsignals übereinanderlegt – die Form in der Mitte erinnert an ein Auge. <b>Je offener das Auge, desto besser</b>: Der Empfänger kann 0 und 1 sicher unterscheiden. Ein „zugekniffenes“ Auge bedeutet starke Dämpfungsverzerrung und Rauschen – die Signalpegel verschwimmen und es kommt zu Bitfehlern. Ein anschauliches Qualitätsmaß für digitale Übertragungsstrecken."},
+{"topic":"Lichtwellenleiter","q":"Warum bleibt das Licht im Kern eines Lichtwellenleiters „gefangen“?","options":["Durch eine verspiegelte Metallschicht","Der Kern hat einen höheren Brechungsindex als der Mantel (nK > nM) – an der Grenze tritt Totalreflexion auf","Durch elektrische Anziehung","Weil der Mantel das Licht absorbiert"],"correct":1,"explain":"Das Grundprinzip der Glasfaser: Der <b>Kern</b> hat einen höheren Brechungsindex als der <b>Mantel</b> (nK &gt; nM). Trifft Licht in einem ausreichend flachen Winkel (größer als der kritische Winkel γT) auf die Kern-Mantel-Grenze, wird es zu 100 % zurück in den Kern reflektiert – <b>Totalreflexion</b> nach dem Snellius'schen Brechungsgesetz. So „hüpft“ das Licht durch die Faser, ohne auszutreten. Bildlich: wie ein Lichtstrahl in einem innen verspiegelten Schlauch. Der kritische Winkel berechnet sich mit sin(γT) = n2/n1."},
+{"topic":"Lichtwellenleiter","q":"Was ist der Hauptunterschied zwischen Multimode- und Singlemode-Fasern?","options":["Multimode ist immer aus Kunststoff, Singlemode aus Glas","Singlemode hat den größeren Kerndurchmesser","Multimode ist nur für Audio geeignet","Multimode: großer Kern (50–62,5 µm), viele Lichtmoden, mehr Dispersion, kurze Strecken · Singlemode: kleiner Kern (9–10 µm), ein Mode, sehr lange Strecken"],"correct":3,"explain":"<b>Multimode (OM-Serie)</b>: Kerndurchmesser ca. 50–62,5 µm – das Licht kann viele verschiedene Wege (Moden) nehmen, die unterschiedlich lang sind → <b>Modendispersion</b> (Impuls „verschmiert“) → nur kürzere Strecken, dafür günstiger. <b>Singlemode (OS-Serie)</b>: Kern nur 9–10 µm – es passt praktisch nur ein Lichtweg hindurch, kaum Dispersion, sehr lange Strecken möglich, aber teurer und aufwändiger in der Verbindungstechnik. Merkhilfe: OM = Multimode, OS = Singlemode."},
+{"topic":"Lichtwellenleiter","q":"Welche Faser hat mit 0,4 dB/km die geringste Dämpfung in der Tabelle?","options":["OS2 (Singlemode)","OM2 (Multimode)","OM4 (Multimode)","OM3 (Multimode)"],"correct":0,"explain":"Die Faser-Tabelle: <b>OM2/OM3/OM4</b> (Multimode) haben alle ca. 3,5 dB/km Dämpfung, unterscheiden sich aber in der Bandbreite (1 / 10 / 100 Gbit/s). <b>OS1</b> (Singlemode) liegt bei 1 dB/km und 1 Gbit/s, <b>OS2</b> (Singlemode) bei nur <b>0,4 dB/km</b> und 10 Gbit/s. Singlemode-Fasern dämpfen also fast 10× weniger als Multimode – deshalb nutzt man sie für Weitverkehrsstrecken. Zur Erinnerung: 3 dB Dämpfung bedeutet bereits Halbierung der Leistung!"},
+{"topic":"Lichtwellenleiter","q":"Bei welcher Wellenlänge haben Glasfasern die geringste Dämpfung (Weitverkehrsfenster)?","options":["850 nm","1300 nm","1550 nm","400 nm"],"correct":2,"explain":"Die drei <b>optischen Fenster</b>: <b>850 nm</b> = Kurzstrecke/LAN (günstige Sender), <b>1300 nm</b> = niedrige Dispersion, <b>1550 nm</b> = geringste Dämpfung → Weitverkehr. Merkhilfe: je länger die Wellenlänge, desto länger die mögliche Strecke. Deshalb arbeiten Weitverkehrs-Standards wie 10GBase-ER (40 km) bei 1550 nm, während LAN-Standards wie 1000Base-SX bei 850 nm bleiben."},
+{"topic":"Lichtwellenleiter","q":"Was versteht man unter Dispersion bei Lichtwellenleitern?","options":["Die Verstärkung des Lichtsignals","Die Impulsverbreiterung während der Übertragung – sie begrenzt maximale Streckenlänge und Bandbreite","Die Farbe des Laserlichts","Den Biegeradius der Faser"],"correct":1,"explain":"<b>Dispersion = Impulsverbreiterung</b>: Ein scharfer Lichtimpuls „zerläuft“ auf dem Weg durch die Faser. Werden die Impulse zu breit, überlappen sie sich und der Empfänger kann die Bits nicht mehr trennen – Dispersion begrenzt also Streckenlänge und Bandbreite. Die Arten: <b>Modendispersion</b> (verschiedene Lichtwege bei Multimode – wird durch Gradientenfasern reduziert, bei denen die Brechzahl nach außen abnimmt), <b>chromatische Dispersion</b> (Material- + Wellenleiterdispersion) und <b>Polarisationsmodendispersion</b>."},
+{"topic":"Lichtwellenleiter","q":"Was beschreibt die Numerische Apertur (AN) einer Glasfaser?","options":["Den Akzeptanzwinkel, unter dem Licht noch erfolgreich in die Faser eingekoppelt wird","Die maximale Datenrate der Faser","Den Durchmesser des Mantels","Die Dämpfung pro Kilometer"],"correct":0,"explain":"Die <b>Numerische Apertur (AN)</b> beschreibt den <b>Akzeptanzwinkel</b>: Nur Licht, das innerhalb dieses Winkelkegels auf die Faser-Stirnfläche trifft, wird eingekoppelt und per Totalreflexion weitergeleitet. Licht außerhalb des Kegels geht in den Mantel verloren. Deshalb erfordert die LWL-Verbindungstechnik so hohe mechanische Präzision (µm-Bereich): Stecker und Spleiße müssen die Faserkerne exakt fluchtend ausrichten, damit das Licht im Akzeptanzwinkel bleibt."},
+{"topic":"Lichtwellenleiter","q":"Welcher LWL-Steckertyp wird per Bajonett-Verschluss („stecken und drehen“) verbunden?","options":["SC","LC","ST","RJ45"],"correct":2,"explain":"Die LWL-Steckertypen: <b>ST</b> = Bajonett („stecken und drehen“, wie BNC), <b>SC</b> = „stecken und klicken“, <b>LC</b> = kompakter Duplex-Stecker („push-pull“), außerdem <b>E2000</b>. Zusätzlich unterscheidet man die Schliffe der Steckerendfläche: <b>UPC</b> vs. <b>APC</b> (angeschrägter Schliff) – sie unterscheiden sich in der Rückreflexionsdämpfung. RJ45 ist kein LWL-Stecker, sondern der Standard für Twisted-Pair-Kupferkabel!"},
+{"topic":"Verbindungstechnik","q":"Welche Leistung liefert PoE der Klasse 4 (PoE+) maximal am Endgerät?","options":["6,49 W","12,95 – 25,50 W","40 – 71 W","100 W"],"correct":1,"explain":"Die PoE-Klassen-Tabelle: <b>Klasse 0–3</b> (350 mA) = 6,49–12,95 W („Very Low/Low/Mid Power“), <b>Klasse 4</b> (600 mA) = 12,95–25,5 W (<b>High Power / PoE+</b>), <b>Klasse 5–8</b> (2× 960 mA) = 40–71 W (<b>4PPoE</b> – nutzt alle 4 Adernpaare zur Stromversorgung). PoE überträgt Strom UND Daten über dasselbe Twisted-Pair-Kabel – typische Abnehmer: Access Points, IP-/PTZ-Kameras, VoIP-Telefone, Displays, AV-Signalconverter."},
+{"topic":"Verbindungstechnik","q":"Was ist der Unterschied zwischen PoE-Injector und PoE-Extender?","options":["Injector fügt einer Nicht-PoE-Strecke nachträglich PoE hinzu; Extender verlängert die Reichweite (z. B. 2× 90 m)","Beide Geräte machen exakt dasselbe","Injector entfernt PoE aus der Leitung, Extender fügt es hinzu","Injector ist nur für Glasfaser"],"correct":0,"explain":"Zwei Helfer mit unterschiedlichen Aufgaben: Der <b>PoE-Injector</b> wird eingesetzt, wenn der Switch selbst kein PoE liefert – er „injiziert“ die Versorgungsspannung nachträglich in die Datenleitung. Der <b>PoE-Extender</b> löst das Längenproblem: CAT-Strecken sind auf ca. 90–100 m begrenzt; ein Extender in der Mitte macht z. B. 2× 90 m daraus, inklusive Weitergabe der PoE-Leistung. Merkhilfe: Injector = Strom rein, Extender = Strecke länger."},
+{"topic":"Verbindungstechnik","q":"Welche Zuordnung Transceiver → maximale Geschwindigkeit ist korrekt?","options":["SFP = 10 Gbit/s, SFP+ = 1 Gbit/s","SFP28 = 40 Gbit/s, QSFP+ = 25 Gbit/s","QSFP = 1 Gbit/s, SFP = 25 Gbit/s","SFP = 1 Gbit/s · SFP+ = 10 Gbit/s · SFP28 = 25 Gbit/s · QSFP+ = 40 Gbit/s"],"correct":3,"explain":"Die SFP-Familie (Small Form-factor Pluggable): <b>SFP</b> = bis 1 Gbit/s, <b>SFP+</b> = bis 10 Gbit/s, <b>SFP28</b> = bis 25 Gbit/s, <b>QSFP</b> (= 4× SFP) = bis 4 Gbit/s, <b>QSFP+</b> (= 4× SFP+) = bis 40 Gbit/s. Das „Q“ steht für Quad – vier Kanäle gebündelt. Der große Vorteil von Transceivern: Der Switch-Port bleibt gleich, nur das Modul wird passend zum Medium (CAT-Kabel, Multimode- oder Singlemode-Glasfaser) getauscht."},
+{"topic":"Verbindungstechnik","q":"Welcher Ethernet-Standard erreicht über Singlemode-Faser bei 1550 nm bis zu 40 km?","options":["100Base-SX","1000Base-SX","10GBase-ER","1000Base-T"],"correct":2,"explain":"Die wichtigsten Glasfaser-Ethernet-Standards: <b>1000Base-SX</b> = Multimode, 850 nm, 275–550 m · <b>1000Base-LX</b> = Multi- oder Singlemode, 1300 nm, bis 5 km · <b>10GBase-LR</b> = Singlemode, 1310 nm, 10 km · <b>10GBase-ER</b> = Singlemode, 1550 nm, <b>40 km</b>. Merkhilfe im Namen: S = Short (Multimode, 850 nm), L = Long (10 km), E = Extended (40 km). Und wie immer: die längsten Strecken laufen im 1550-nm-Fenster mit der geringsten Dämpfung."},
+{"topic":"Verbindungstechnik","q":"Wozu dient LACP im Praxisbeispiel „Pro-AV“ mit gestacktem Core?","options":["Zur Verschlüsselung des AV-Datenverkehrs","Mehrere physische Links werden zu einem logischen gebündelt – Redundanz und mehr Bandbreite, kein SPoF","Zum Umwandeln von Multicast in Unicast","Zur automatischen IP-Vergabe"],"correct":1,"explain":"<b>LACP (Link Aggregation Control Protocol)</b> bündelt mehrere physische Verbindungen zu einer logischen. Im Praxisbeispiel: Zwei Core-Switches werden gestackt (verhalten sich wie ein Gerät), und jedes Gebäude ist per Distributed-Link-Aggregation mit BEIDEN Core-Switches verbunden. Fällt ein Core-Switch aus, läuft der Verkehr ohne Unterbrechung über den anderen – kein <b>SPoF</b> (Single Point of Failure). Wichtige Prüfungs-Randnotiz: Stacking, AVB und PTP TC schließen sich gegenseitig aus – ein Stack kann kein AVB und keine PTP-Clock-Rolle ausführen."},
+{"topic":"Netzwerk-Grundlagen","q":"Wie ist eine MAC-Adresse aufgebaut?","options":["32 Bit, dezimal notiert, vom Router vergeben","48 Bit, 6 Gruppen à 2 Hexadezimalziffern; die ersten 3 Byte (OUI) identifizieren den Hersteller","128 Bit, 8 Blöcke, hexadezimal","64 Bit, binär notiert"],"correct":1,"explain":"Die <b>MAC-Adresse</b> ist die weltweit einzigartige Hardware-Adresse der Netzwerkkarte (<b>NIC</b>): <b>48 Bit</b>, notiert als 6 Gruppen zu je 2 Hex-Ziffern, z. B. 94:18:65:7D:98:7C. Die ersten 3 Byte sind der <b>OUI</b> (Organizationally Unique Identifier) und verraten den Hersteller – 94:18:65 gehört z. B. Netgear. Abgrenzung zur IP-Adresse: Die MAC ist fest „eingebrannt“ (wie eine Personalausweisnummer), die IP wird logisch zugewiesen und kann sich ändern (wie eine Wohnadresse). MAC = Layer 2, IP = Layer 3."},
+{"topic":"Netzwerk-Grundlagen","q":"Was unterscheidet ein Gateway von einem einfachen Router?","options":["Ein Gateway arbeitet nur im WLAN","Gateway und Router sind völlig verschiedene Geräteklassen ohne Überschneidung","Ein Gateway ist ein Router, der zusätzlich zwischen unterschiedlichen Adressräumen/Protokollen übersetzt","Ein Gateway kann keine Pakete weiterleiten"],"correct":2,"explain":"Die Geräte-Merksätze: <b>Switch</b> = leitet im LAN anhand der <b>MAC-Adresse</b> weiter (Layer 2). <b>Router</b> = verbindet Netzwerke anhand der <b>IP-Adresse</b> (Layer 3), Grenze zwischen LAN und WAN. <b>Gateway</b> = ein Router, der zusätzlich zwischen unterschiedlichen Adressräumen oder Protokollen <b>übersetzt</b> (z. B. privat → öffentlich). Typische Testfragen: „Welches Gerät untersucht die IP-Adresse?“ → Router. „Welches Gerät übersetzt Protokolle?“ → Gateway. „Welches Gerät leitet anhand der MAC weiter?“ → Switch."},
+{"topic":"Netzwerk-Grundlagen","q":"Was kann ein Managed Switch, was ein Unmanaged Switch nicht kann?","options":["VLANs einrichten, QoS konfigurieren und Verkehrsregeln festlegen","Überhaupt Daten weiterleiten","Strom über PoE liefern","Mit Glasfaser arbeiten"],"correct":0,"explain":"Ein <b>Unmanaged Switch</b> leitet einfach nur Frames anhand der MAC-Adresse weiter – anstecken, läuft, keine Konfiguration möglich. Ein <b>Managed Switch</b> ist konfigurierbar: <b>VLANs</b>, <b>QoS</b> (Quality of Service – Priorisierung wichtiger Pakete, essenziell für AV-Streams!), Verkehrsregeln, Monitoring. Für AVoIP-Installationen sind Managed Switches praktisch Pflicht, weil man Multicast (IGMP Snooping), VLAN-Trennung und QoS braucht. „Welche Geräte ermöglichen VLANs?“ → Managed Switch."},
+{"topic":"Netzwerk-Grundlagen","q":"Was gibt die Anzahl der „Hops“ an?","options":["Die Übertragungsgeschwindigkeit in Mbit/s","Wie viele Geräte ein Datenstrom auf dem Weg zum Ziel passieren muss","Die Anzahl der Adernpaare im Kabel","Die Größe eines Ethernet-Frames"],"correct":1,"explain":"Ein <b>Hop</b> ist eine Zwischenstation auf dem Weg eines Pakets – jedes durchlaufene Gerät (v. a. Router) zählt. Die Netzwerk-Topologie bestimmt die Hop-Zahl, und weniger Hops bedeuten meist weniger Latenz. Genau hier punktet die Spine-Leaf-Architektur: zwischen zwei beliebigen Leaf-Switches sind es <b>immer genau 2 Hops</b>. Verwandt: Das TTL-Feld im IP-Header wird bei jedem Router-Hop um 1 verringert – erreicht es 0, wird das Paket verworfen (Schutz vor endlos kreisenden Paketen)."},
+{"topic":"VLAN & Architektur","q":"Was ist der zentrale Vorteil der Spine-Leaf-Architektur gegenüber der klassischen 3-Tier-Architektur?","options":["Zwischen zwei beliebigen Leaf-Switches sind es immer genau 2 Hops – vorhersagbare, gleichbleibende Latenz","Sie benötigt keine Switches mehr","Sie funktioniert nur mit WLAN","Sie ist immer verkabelungsärmer"],"correct":0,"explain":"<b>3-Tier</b> (Core → Aggregation → Access) ist baumartig: Verkehr zwischen zwei Access-Switches muss oft mehrere Ebenen hoch und wieder runter – unterschiedlich viele Hops, schwankende Latenz. <b>Spine-Leaf</b> hat nur 2 Ebenen, und <b>jeder Leaf ist mit jedem Spine verbunden</b> (Vollvermaschung zwischen den Ebenen): Leaf → Spine → Leaf = immer exakt 2 Hops. Das ist ideal für <b>East-West-Traffic</b> (horizontal, Gerät ↔ Gerät), der in modernen AV-/Rechenzentrums-Netzen dominiert. Vorteile laut Skript: bessere Redundanz, Bandbreite, Skalierbarkeit, geringere Latenz, weniger Bottlenecks."},
+{"topic":"VLAN & Architektur","q":"Was ist East-West-Traffic?","options":["Verkehr zwischen Client und Internet","Verkehr über Satellit","Horizontaler Verkehr zwischen Geräten auf gleicher Ebene (z. B. Server ↔ Server)","Verkehr, der Europa verlässt"],"correct":2,"explain":"Die Himmelsrichtungen im Netzwerkdiagramm: <b>North-South</b> = vertikaler Verkehr „nach oben/unten“, also Client ↔ Server/Internet (rein und raus aus dem Netz). <b>East-West</b> = horizontaler Verkehr zwischen Geräten derselben Ebene, z. B. Server ↔ Server oder Encoder ↔ Decoder. Moderne datenintensive AV- und Rechenzentrums-Anwendungen erzeugen überwiegend East-West-Traffic – und genau dafür ist Spine-Leaf mit seinen konstant 2 Hops optimiert."},
+{"topic":"VLAN & Architektur","q":"Was verhindert das Spanning Tree Protocol (STP)?","options":["IP-Adresskonflikte","Netzwerkschleifen und damit Broadcast Storms – redundante Verbindungen werden logisch deaktiviert","Unbefugten Zugriff aufs WLAN","Kabelbrüche"],"correct":1,"explain":"Verkabelt man Switches redundant (in einer Schleife), kreisen Broadcasts endlos und vervielfachen sich – ein <b>Broadcast Storm</b> legt das Netz lahm. <b>STP (Spanning Tree Protocol)</b>, erfunden von Radia Perlman, verhindert das: Es erkennt Schleifen und deaktiviert redundante Verbindungen logisch, bis sie (bei Ausfall des Hauptwegs) gebraucht werden. So bekommt man Redundanz OHNE Schleifen-Chaos. Achtung Verwechslungsgefahr in der Prüfung: STP = Spanning Tree Protocol ODER Shielded Twisted Pair – immer auf den Kontext achten!"},
+{"topic":"VLAN & Architektur","q":"Wie groß ist ein Standard-Ethernet-Frame maximal und welchen Nutzdatenbereich hat er?","options":["Max. 1518 Byte, Nutzdaten 46–1500 Byte","Max. 64 Byte, Nutzdaten 1–63 Byte","Max. 9000 Byte, Nutzdaten beliebig","Max. 1280 Byte, Nutzdaten 576 Byte"],"correct":0,"explain":"Der <b>Ethernet-Frame</b> (Layer 2) ist maximal <b>1518 Byte</b> groß, die reinen Nutzdaten (Payload) liegen zwischen <b>46 und 1500 Byte</b>. Aufbau: Preamble → Start Frame Delimiter (SFD) → Ziel-MAC → Quell-MAC → EtherType/Size → Payload → CRC/FCS (Prüfsumme). Zwischen Quell-MAC und EtherType kann optional ein <b>4-Byte-VLAN-Tag</b> (IEEE 802.1Q) eingefügt werden. Diese Zahlen (1518 / 46–1500) stehen auf der Auswendig-Lern-Seite – sichere Punkte!"},
+{"topic":"VLAN & Architektur","q":"Welche Angaben zum VLAN-Tagging nach IEEE 802.1Q sind korrekt?","options":["Das Tag ist 64 Byte groß und steht am Frame-Ende","VLAN-IDs gehen von 0 bis 99999","4-Byte-Tag zwischen Quell-MAC und EtherType, TPID 0x8100, mögliche VLAN-IDs 1–4094","VLAN-Tags gibt es nur bei WLAN"],"correct":2,"explain":"<b>IEEE 802.1Q</b> regelt VLANs: Ein optionales <b>4-Byte-Tag</b> wird zwischen Quell-MAC und EtherType eingefügt. Es beginnt mit der TPID 0x8100 und enthält Priorität + VLAN-ID. Möglich sind die IDs <b>1–4094</b>. Warum VLANs? ① Sicherheit/Zugriff einschränken, ② Broadcast-Verkehr begrenzen (gerade bei zeitkritischen AV-Anwendungen wichtig – zu viel Broadcast verursacht Qualitätsprobleme), ③ effizientere Hardware-Nutzung und Administration. Ein VLAN = eine eigene Broadcast-Domain."},
+{"topic":"VLAN & Architektur","q":"Was unterscheidet Access-Port und Trunk-Port?","options":["Access-Ports sind immer schneller","Access-Port: für Endgeräte, ausgehend untagged, feste PVID · Trunk-Port: verbindet Switches, trägt mehrere VLANs getaggt","Trunk-Ports können nur ein einziges VLAN transportieren","Access-Ports funktionieren nur mit Glasfaser"],"correct":1,"explain":"<b>Access-Port</b>: Hier hängen Endgeräte, die VLANs nicht verstehen (PC, Telefon). Eingehender Verkehr bekommt die feste <b>PVID</b> (Port VLAN ID) zugewiesen; ausgehend wird das Tag entfernt (<b>untagged</b>) – das Endgerät merkt nichts vom VLAN. <b>Trunk-Port</b>: verbindet Switches untereinander und transportiert <b>mehrere VLANs gleichzeitig getaggt</b>, damit der Empfänger-Switch weiß, zu welchem VLAN jeder Frame gehört. Bild: VLANs = abgeschlossene Wohnungen, der Trunk = der Aufzug, der alle Bewohner mit Etikett transportiert."},
+{"topic":"VLAN & Architektur","q":"Was ist nötig, damit Geräte aus verschiedenen VLANs miteinander kommunizieren können?","options":["Nichts, VLANs kommunizieren immer frei untereinander","Ein längeres Kabel","Ein zweiter DHCP-Server","Ein Router oder Layer-3-Switch, der zwischen den Subnetzen routet (Inter-VLAN-Routing)"],"correct":3,"explain":"VLANs trennen das Netz logisch – jedes VLAN ist ein eigenes Subnetz und eine eigene Broadcast-Domain. Ein Switch (Layer 2) leitet zwischen VLANs grundsätzlich NICHT weiter. Für <b>Inter-VLAN-Routing</b> braucht es ein Layer-3-Gerät: einen <b>Router</b> oder <b>Layer-3-Switch</b>. Dieser führt eine Routing-Tabelle mit Zielnetz, Subnetzmaske und Next-Hop/Gateway. Praxis: Data-VLAN, VoIP-VLAN und AV-VLAN bleiben sauber getrennt, und nur definierter Verkehr darf über den Router hinüber."},
+{"topic":"IP-Adressierung","q":"Welche dieser Adressen ist KEINE private IPv4-Adresse?","options":["10.200.1.1","192.168.10.10","172.32.0.1","172.31.255.1"],"correct":2,"explain":"Die drei privaten IANA-Bereiche musst du sicher können: <b>10.0.0.0/8</b> (große Netze), <b>172.16.0.0/12</b> = 172.<b>16</b>.x.x bis 172.<b>31</b>.x.x (mittelgroße Netze), <b>192.168.0.0/16</b> (kleine Netze). Die Falle: <b>172.32.x.x liegt außerhalb</b> des /12-Bereichs (der endet bei 172.31.255.254) und ist damit eine öffentliche Adresse! 172.31.255.1 dagegen ist gerade noch privat. Private Adressen werden im öffentlichen Internet nicht geroutet – dafür braucht es NAT."},
+{"topic":"IP-Adressierung","q":"Was gilt für die Adresse 127.0.0.1?","options":["Sie ist eine normale private Adresse für AV-Geräte","Loopback/localhost – meint immer „das Gerät selbst“, für Diagnose/Tests, keinem physischen Gerät zuweisbar","Sie ist die Standard-Broadcast-Adresse","Sie ist eine APIPA-Adresse"],"correct":1,"explain":"Der gesamte Bereich <b>127.0.0.0/8</b> ist für <b>Loopback</b> reserviert – die bekannteste Adresse ist 127.0.0.1 (localhost). Pakete an diese Adresse verlassen das Gerät nie, sie laufen intern zurück – perfekt für Diagnose und Tests („funktioniert mein eigener IP-Stack?“). Einem physischen AV-Gerät kann man sie daher NICHT zuweisen: Sie zeigt immer auf „mich selbst“. Schnell-Erkennung: beginnt mit 127. → Loopback, niemals ein normaler Host."},
+{"topic":"IP-Adressierung","q":"Ein Gerät hat die Adresse 169.254.5.38. Was ist höchstwahrscheinlich passiert?","options":["Der DHCP-Server hat nicht geantwortet – das Gerät hat sich selbst eine APIPA/Link-Local-Adresse vergeben","Der Admin hat diese öffentliche Adresse fest vergeben","Das Gerät ist ein DNS-Server","Das Gerät ist im Multicast-Modus"],"correct":0,"explain":"<b>169.254.0.0/16 = APIPA</b> (Automatic Private IP Addressing) bzw. Link-Local: Antwortet der DHCP-Server nach ca. 5 Sekunden nicht, vergibt sich das Gerät selbst eine Adresse aus diesem Bereich. Vorher prüft es per ARP-Broadcast („Is anyone using 169.254.x.x?“), ob die gewählte Adresse frei ist. In der Praxis ist eine 169.254er-Adresse fast immer ein <b>Symptom für ein DHCP-/Netzwerkproblem</b> – das Gerät kommt so meist nicht ins richtige Netz. Verwandte Auto-Config-Verfahren: Apple Bonjour, NetBIOS Discovery, UPnP."},
+{"topic":"IP-Adressierung","q":"Ist 169.127.232.17 eine APIPA-Adresse?","options":["Ja, alles was mit 169 beginnt ist APIPA","Ja, aber nur bei WLAN","Nein! Nur 169.254.x.x ist APIPA – 169.127.x.x ist eine ganz normale öffentliche Adresse","Nein, es ist eine Loopback-Adresse"],"correct":2,"explain":"Die klassische Prüfungsfalle! APIPA ist exakt <b>169.254.0.0/16</b> – entscheidend ist das <b>zweite Oktett = 254</b>. Bei 169.<b>127</b>.232.17 ist das zweite Oktett 127, also KEIN reservierter Bereich – das ist eine ganz normale, öffentliche (geroutete) Adresse. Immer genau hinschauen: 169.254.x.x = APIPA/reserviert, 169.irgendwas-anderes.x.x = öffentlich. Diese Unterscheidung kam im Skript ausdrücklich als Übungsaufgabe vor."},
+{"topic":"IP-Adressierung","q":"Warum kann 192.168.255.255 keinem einzelnen AV-Gerät zugewiesen werden?","options":["Weil sie eine öffentliche Adresse ist","Weil sie im Netz 192.168.0.0/16 die Broadcast-Adresse ist – Adressen, die (im jeweiligen Subnetz) auf .255 enden, sind reserviert","Weil AV-Geräte nur Adressen unter 100 akzeptieren","Weil sie eine IPv6-Adresse ist"],"correct":1,"explain":"192.168.255.255 liegt zwar im privaten Bereich 192.168.0.0/16, ist dort aber die <b>Broadcast-Adresse</b> – „an alle Geräte in diesem Netz gleichzeitig“. Broadcast-Adressen werden nie an einzelne Geräte vergeben, genau wie die Netz-ID (erste Adresse) selbst. Merksatz aus dem Skript: Eine Adresse, die im jeweiligen Subnetz auf .255 endet, ist praktisch immer Broadcast. Deshalb gilt bei jeder Subnetz-Rechnung: nutzbare Hosts = alle Adressen zwischen Netz-ID+1 und Broadcast−1."},
+{"topic":"IP-Adressierung","q":"Welche Aussage zu IPv4 vs. IPv6 ist korrekt?","options":["IPv4 = 128 Bit, IPv6 = 32 Bit","IPv6-Adressen werden dezimal mit Punkten notiert","IPv4 = 32 Bit (4× 8-Bit-Oktette, dezimal) · IPv6 = 128 Bit (8× 16-Bit-Blöcke, hexadezimal), native Unterstützung für IPSec/QoS/Multicast","IPv6 hat weniger Adressen als IPv4"],"correct":2,"explain":"<b>IPv4</b>: 32 Bit, 4 Oktette dezimal (192.168.1.25), knapper Adressraum (~4 Mrd.) – der Workaround dafür heißt NAT. <b>IPv6</b>: 128 Bit, 8 Blöcke à 16 Bit hexadezimal (FEDC:BA98:…), „unvorstellbar großer“ Adressraum. Weitere IPv6-Vorteile aus der Tabelle: native Unterstützung für IPSec, QoS und Multicast; automatische Konfiguration ohne DHCP möglich; kann die MAC-Adresse enthalten (eindeutige Identifikation); Mindest-Paketgröße 1280 Byte unfragmentiert. CIDR-Suffix bei IPv6 liegt fast immer zwischen /48 und /64."},
+{"topic":"Subnetting","q":"Warum rechnet man bei nutzbaren Host-Adressen immer 2^(Host-Bits) − 2?","options":["Die erste Adresse ist die Netz-ID, die letzte die Broadcast-Adresse – beide sind reserviert und nicht an Hosts vergebbar","Zwei Adressen sind für den Admin reserviert","Wegen Rundungsfehlern im Binärsystem","Das ist eine reine Konvention ohne Grund"],"correct":0,"explain":"In jedem Subnetz sind genau zwei Adressen reserviert: Die <b>erste</b> (alle Host-Bits = 0) ist die <b>Netz-ID</b> – sie bezeichnet das Subnetz selbst. Die <b>letzte</b> (alle Host-Bits = 1) ist die <b>Broadcast-Adresse</b> – „an alle in diesem Netz“. Beispiel /24: 192.168.56.0 = Netz-ID, 192.168.56.255 = Broadcast, nutzbar sind 192.168.56.1–254 = 2⁸−2 = <b>254 Hosts</b>. Analogie: Die Netz-ID ist der Straßenname ohne Hausnummer, der Broadcast ist „an alle Hausnummern dieser Straße“."},
+{"topic":"Subnetting","q":"192.168.10.77 mit Maske 255.255.255.192 (/26): Wie lauten Netz-ID und Broadcast?","options":["Netz-ID 192.168.10.0, Broadcast 192.168.10.255","Netz-ID 192.168.10.77, Broadcast 192.168.10.128","Netz-ID 192.168.10.64, Broadcast 192.168.10.127","Netz-ID 192.168.10.96, Broadcast 192.168.10.159"],"correct":2,"explain":"Der Rechenweg Schritt für Schritt: ① Host-Bits = 32 − 26 = <b>6</b>. ② Blockgröße = 2⁶ = <b>64</b> (oder schneller: 256 − 192 = 64). ③ Blöcke im letzten Oktett: 0–63, 64–127, 128–191, 192–255. Die 77 fällt in den Block <b>64–127</b>. ④ Also: Netz-ID = 192.168.10.<b>64</b>, Broadcast = 192.168.10.<b>127</b>, nutzbar = .65 bis .126 = 2⁶−2 = <b>62 Hosts</b>. Diese Blockgrößen-Methode funktioniert bei jeder Maske – unbedingt an 2–3 Beispielen selbst durchrechnen!"},
+{"topic":"Subnetting","q":"Ein Klasse-B-Netz soll Subnetze mit mindestens 2000 Hosts bekommen. Wie viele Host-Bits braucht man und wie lautet die Maske?","options":["10 Host-Bits, Maske 255.255.252.0","11 Host-Bits, Maske 255.255.248.0 (/21)","12 Host-Bits, Maske 255.255.240.0","8 Host-Bits, Maske 255.255.255.0"],"correct":1,"explain":"Vorgehen bei „mindestens X Hosts“: Suche das kleinste h mit 2^h − 2 ≥ X. Hier: 2¹⁰−2 = 1022 (zu wenig), 2¹¹−2 = <b>2046 ≥ 2000</b> ✓ → <b>11 Host-Bits</b>. Netz-Bits = 32 − 11 = 21 → <b>/21</b>. Maske: 21 Einsen = 255.255.<b>11111000</b>.0 → drittes Oktett = 128+64+32+16+8 = 248 → <b>255.255.248.0</b>. Die −2 nie vergessen (Netz-ID + Broadcast)! Solche Aufgaben kamen als Beispielfragen des Professors vor."},
+{"topic":"Subnetting","q":"Netzadresse 210.52.190.0, benötigt werden mindestens 10 Hosts. Kleinste Maske sowie erste/letzte nutzbare IP?","options":["/28 (255.255.255.240) · erste: 210.52.190.1 · letzte: 210.52.190.14","/29 (255.255.255.248) · erste: 210.52.190.1 · letzte: 210.52.190.6","/26 (255.255.255.192) · erste: 210.52.190.10 · letzte: 210.52.190.60","/24 (255.255.255.0) · erste: 210.52.190.0 · letzte: 210.52.190.255"],"correct":0,"explain":"① Kleinstes h mit 2^h − 2 ≥ 10: h=3 gibt 6 (zu wenig), h=4 gibt <b>14 ≥ 10</b> ✓. ② Also 4 Host-Bits → /28 → letztes Oktett der Maske: 256 − 2⁴ = <b>240</b> → 255.255.255.240. ③ Erstes Subnetz: Netz-ID 210.52.190.0, Broadcast 210.52.190.15 → nutzbar <b>.1 bis .14</b> (14 Hosts). „Kleinstmögliche Maske“ heißt hier: so wenig Host-Bits wie möglich, damit möglichst viele Subnetze übrig bleiben. Merke: /29 hätte nur 6 Hosts – zu klein für 10."},
+{"topic":"Subnetting","q":"Was bedeutet die CIDR-Notation „/24“ und was ist VLSM?","options":["/24 = 24 Hosts erlaubt; VLSM = ein Verschlüsselungsverfahren","/24 = die ersten 24 Bit sind Netz-Bits (Maske 255.255.255.0); VLSM = Subnetze dürfen unterschiedlich groß sein","/24 = 24 Subnetze; VLSM = ein VLAN-Protokoll","/24 = Version 24 des IP-Protokolls; VLSM = ein Kabeltyp"],"correct":1,"explain":"<b>CIDR</b> (Classless Inter-Domain Routing) schreibt die Netzgröße als Suffix: <b>/24</b> heißt „die ersten 24 Bit sind Netz-Bits“ = Maske 255.255.255.0 = 254 nutzbare Hosts. <b>VLSM</b> (Variable-Length Subnet Masking) erlaubt, ein Netz in <b>unterschiedlich große</b> Subnetze zu teilen – z. B. ein /26 für 60 AV-Geräte und daneben ein /29 für 6 Server, statt alles gleich groß machen zu müssen. Beides sind „classless“-Konzepte: Die starren alten Klassen A/B/C werden durch flexible Masken ersetzt."},
+{"topic":"Protokolle & Dienste","q":"Was leistet DHCP über die reine IP-Vergabe hinaus?","options":["Es verschlüsselt den gesamten Datenverkehr","Neben IP-Adresse und Subnetzmaske können auch DNS-Server-Informationen übertragen werden","Es ersetzt den Router","Es vergibt MAC-Adressen"],"correct":1,"explain":"<b>DHCP</b> (Dynamic Host Configuration Protocol) verteilt auf Anfrage automatisch Adressen aus einem Pool – der Server liefert dabei nicht nur <b>IP-Adresse + Subnetzmaske</b>, sondern z. B. auch <b>DNS-Server</b> und Gateway. Vorteil: keine manuellen Fehlkonfigurationen, keine doppelten Adressen (Analogie: der Kellner, der Gästen freie Tische zuweist). Kontrast AV-Praxis: AV-Geräte bekommen oft <b>statische IPs</b>, weil Mediensteuerungen ihre Geräte unter fester Adresse finden müssen und viele AV-Geräte DNS nur unzureichend unterstützen."},
+{"topic":"Protokolle & Dienste","q":"Wozu dient DDNS (Dynamic DNS)?","options":["Es verknüpft/synchronisiert DHCP- und DNS-Server – Geräte bleiben unter ihrem Namen erreichbar, auch wenn sich die IP ändert","Es beschleunigt das WLAN","Es vergibt MAC-Adressen dynamisch","Es ersetzt Router durch Switches"],"correct":0,"explain":"<b>DNS</b> löst Namen in IP-Adressen auf (wie ein Telefonbuch). Problem: Vergibt DHCP die Adressen dynamisch, ändert sich die IP eines Geräts immer wieder – das Telefonbuch wäre ständig veraltet. <b>DDNS</b> löst das, indem es DHCP- und DNS-Server <b>verknüpft und synchronisiert</b>: Bekommt ein Gerät eine neue IP, wird der DNS-Eintrag automatisch aktualisiert. Der Name bleibt konstant, die IP darf wechseln. Aufbau eines Domainnamens: Host + Domain + TLD (Top-Level-Domain, z. B. .de)."},
+{"topic":"Protokolle & Dienste","q":"Wie läuft ARP ab, wenn ein Gerät die MAC-Adresse zu einer bekannten IP sucht?","options":["Es fragt den DNS-Server nach der MAC","Es sendet ein Unicast-Paket an den Router","Broadcast-Anfrage „Wer hat IP X?“ → das passende Gerät antwortet mit seiner MAC → Ergebnis wird in der ARP-Tabelle gespeichert (Befehl: arp -a)","Die MAC wird aus der IP-Adresse mathematisch berechnet"],"correct":2,"explain":"<b>ARP</b> (Address Resolution Protocol) verbindet Layer 3 mit Layer 2: Das Gerät ruft per <b>Broadcast</b> ins Netz „Who has IP X?“ – der Teilnehmer mit dieser IP antwortet mit seiner <b>MAC-Adresse</b>. Das Ergebnis landet in der <b>ARP-Tabelle</b> (Cache), damit nicht jedes Mal neu gefragt werden muss. Anzeigen mit <b>arp -a</b> (Windows, macOS und Linux gleich!). Analogie aus dem Skript: der Zuruf ins Treppenhaus „Wer ist Frau Müller?“ – die Antwort (Wohnungsnummer) merkst du dir in deinem Adressbuch."},
+{"topic":"Protokolle & Dienste","q":"Was unterscheidet PAT (NAPT / IP-Masquerading) von einfachem NAT?","options":["PAT funktioniert nur mit IPv6","Bei PAT teilen sich MEHRERE Geräte mit privaten Adressen EINE öffentliche IP – unterschieden über Portnummern („One to Many“)","PAT verschlüsselt zusätzlich alle Pakete","Es gibt keinen Unterschied"],"correct":1,"explain":"<b>NAT</b> (Network Address Translation, RFC 1631) übersetzt private ↔ öffentliche Adressen im Paket-Header, weil private Adressen im Internet nicht geroutet werden. <b>PAT / NAPT / IP-Masquerading</b> ist die verbreitetste Form: <b>viele</b> interne Geräte teilen sich <b>eine</b> öffentliche Adresse, unterschieden per Portnummer („One to Many NAT“) – so funktioniert praktisch jeder Heimrouter. Analogie: Firma mit EINER Telefonnummer und internen Durchwahlen. Bonus: NAT wirkt als Sicherheits-Baustein, weil interne Geräte von außen nicht direkt erreichbar sind. <b>Port Forwarding</b> = PAT + Paketfilterung kombiniert."},
+{"topic":"Protokolle & Dienste","q":"Auf welchen OSI-Schichten arbeiten L2TP, IPSec und SSL-VPN?","options":["Alle drei auf Schicht 3","L2TP: 7 · IPSec: 2 · SSL: 3","L2TP: Schicht 2 (Sicherung) · IPSec: Schicht 3 (Vermittlung) · SSL-VPN: Schicht 7 (Anwendung)","L2TP: 1 · IPSec: 4 · SSL: 5"],"correct":2,"explain":"Die VPN-Typen mit Eselsbrücke im Namen: <b>L2TP</b> = <u>L</u>ayer-<u>2</u>-Tunneling-Protocol → Schicht 2 (Client nötig, auch Nicht-IP-Daten, heute selten). <b>IPSec</b> = <u>IP</u>-Security → Schicht 3, wie IP selbst (Client nötig, sichert jedes IP-Transportprotokoll, üblich zwischen Standorten). <b>SSL-VPN</b> → Schicht 7 (<b>keine Client-Software nötig</b> – Zugriff einfach per Browser, nur TCP, granulare Zugriffskontrolle, ideal für mobile Nutzer). Zusatzwissen: VPN-Tunnel erzeugen Overhead durch Verschlüsselung + Tunnel-Wrapper."},
+{"topic":"Protokolle & Dienste","q":"Warum kann ein VPN-Tunnel bei Echtzeit-Video problematisch sein und was hilft?","options":["VPN blockiert grundsätzlich alle Videodaten","Der zusätzliche Overhead (Verschlüsselung + Tunnel-Header) kann zu Paket-Fragmentierung führen – Abhilfe: Framegröße reduzieren","VPN halbiert immer die Bildrate","VPN funktioniert nur mit Audio"],"correct":1,"explain":"Ein VPN packt jedes Paket zusätzlich ein (Tunnel-Header) und verschlüsselt es – das Paket wird <b>größer</b>. Überschreitet es dadurch die maximale Framegröße, muss es <b>fragmentiert</b> (zerteilt) werden: mehr Pakete, mehr Latenz, mehr Fehleranfälligkeit – Gift für Echtzeit-AV wie Videokonferenzen. Lösung laut Skript: die <b>Framegröße reduzieren</b>, damit Paket + VPN-Overhead zusammen unter dem Limit bleiben. Generell gilt: VPN erhöht den Bandbreiten-Overhead – bei zeitkritischen Streams einplanen."},
+{"topic":"Protokolle & Dienste","q":"Warum nutzen AV-Streams meist UDP statt TCP?","options":["Bei Echtzeit-AV ist Timing wichtiger als einzelne verlorene Pakete – TCPs Bestätigungen/Neusendungen würden Latenz erzeugen","UDP ist verschlüsselt, TCP nicht","TCP kann keine Videodaten transportieren","UDP hat eine eingebaute Fehlerkorrektur"],"correct":0,"explain":"<b>TCP</b> = verbindungsorientiert und zuverlässig: Handshake, Paketverfolgung, korrekte Reihenfolge, Neusendung bei Verlust („Einschreiben mit Unterschrift“) – aber dadurch Overhead und Latenz. <b>UDP</b> = verbindungslos, „Fire and forget“ („Postkarte“) – keine Prüfung, keine Neusendung, dafür schnell. Bei Echtzeit-AV zählt das <b>Timing</b> mehr als Perfektion: Ein winziger Bildfehler ist besser als ein stockender Stream, und ein nachgesendetes Paket käme ohnehin zu spät. Darum: Steuerung/Downloads → TCP, Live-AV-Streams → UDP."},
+{"topic":"Protokolle & Dienste","q":"Welche Port-Zuordnung ist komplett korrekt?","options":["HTTP 443 · HTTPS 80 · SSH 23 · DNS 21","HTTP 21 · HTTPS 22 · SSH 53 · DNS 80","HTTP 8080 · HTTPS 4433 · SSH 220 · DNS 530","HTTP 80 · HTTPS 443 · SSH 22 · Telnet 23 · DNS 53 · SNMP 161 · FTP 20/21"],"correct":3,"explain":"Die Standard-Ports von der Auswendig-Lern-Seite: <b>HTTP 80</b>, <b>HTTPS 443</b>, <b>FTP 20 (Daten) / 21 (Steuerung)</b>, <b>SSH 22</b>, <b>Telnet 23</b>, <b>DNS 53</b>, <b>SNMP 161</b>. Dazu die drei Portbereiche der IANA: <b>0–1023</b> = Systemports („well known“), <b>1024–49151</b> = registrierte User-Ports, <b>49152–65535</b> = dynamische „high ports“ (temporär). Ein Port ist dabei kein physischer Anschluss, sondern eine logische Endpunkt-Nummer im TCP/IP-Modell, über die mehrere Dienste auf einem Gerät parallel laufen können."},
+{"topic":"Multicast & Zeit","q":"Wie beschreibt man Unicast, Broadcast und Multicast korrekt?","options":["Unicast = einer an alle · Broadcast = einer an einen · Multicast = alle an alle","Unicast = einer an einen · Broadcast = einer an alle (in der Broadcast-Domain) · Multicast = einer an viele (Abonnenten)","Alle drei bezeichnen dasselbe","Multicast = nur für E-Mails"],"correct":1,"explain":"<b>Unicast</b> = 1:1 – beste Latenz, für Switches am einfachsten. <b>Broadcast</b> = 1:alle innerhalb der Broadcast-Domain – wird u. a. zum Verbindungsaufbau genutzt (z. B. ARP, DHCP-Discover). <b>Multicast</b> = 1:viele – aber nur an <b>Abonnenten</b>, die den Stream aktiv bestellt haben. Für AVoIP ist Multicast zentral: Ein Encoder sendet EINEN Stream, den beliebig viele Decoder empfangen – besseres Bandbreitenmanagement, je mehr Empfänger/Kanäle, desto wichtiger. Multicast-Adressbereich: 224.0.0.0/4 (224–239.x.x.x)."},
+{"topic":"Multicast & Zeit","q":"Welche Aufgaben haben IGMP, IGMP Snooping und der IGMP Querier?","options":["IGMP: Geräte abonnieren/kündigen Multicast-Streams (join/leave) · Snooping: Stream geht nur an interessierte Ports · Querier: fragt aktiv Interessen ab, nur 1× pro Netz","IGMP verschlüsselt Multicast, Snooping hört Passwörter mit, Querier ist ein Kabeltester","Alle drei sind VLAN-Funktionen","IGMP ist nur für IPv6 relevant"],"correct":0,"explain":"<b>IGMP</b> (Internet Group Management Protocol) ist die Voraussetzung für funktionierendes Multicasting: Geräte treten Multicast-Gruppen bei (<b>join</b>) oder verlassen sie (<b>leave</b>). <b>IGMP Snooping</b> (Switch-Funktion) sorgt dafür, dass Streams nur an Ports mit interessierten Empfängern gehen – ohne Snooping würde Multicast wie Broadcast an alle geflutet und das Netz belasten. Der <b>IGMP Querier</b> fragt aktiv ab, wer noch Interesse hat – und davon sollte es <b>pro Netzsegment nur einen</b> geben, sonst gibt es Konflikte. Typisch bei IGMP: TTL = 1."},
+{"topic":"Multicast & Zeit","q":"Was bewirkt TTL = 1 bei einem IP-Paket?","options":["Das Paket wird unendlich oft weitergeleitet","Das Paket überlebt genau eine Sekunde","Das Paket kommt nicht über den ersten Router hinaus – TTL wird pro Router-Hop dekrementiert, bei 0 wird das Paket verworfen","TTL hat keine Funktion mehr"],"correct":2,"explain":"<b>TTL (Time to Live)</b> ist ein Zähler im IP-Header: Jeder Router, den das Paket passiert, verringert ihn um 1. Erreicht er 0, wird das Paket <b>verworfen</b> – so können fehlgeleitete Pakete nicht ewig im Netz kreisen. <b>TTL = 1</b> heißt also: Das Paket bleibt im lokalen Netzsegment und kommt über keinen Router hinaus – typisch und gewollt bei IGMP/Multicast im LAN. Nebenbei: Tools wie tracert/traceroute nutzen genau diesen Mechanismus, um die Route eines Pakets sichtbar zu machen."},
+{"topic":"Multicast & Zeit","q":"Wie unterscheiden sich NTP und PTP?","options":["NTP ist genauer als PTP","NTP: Datum/Uhrzeit vom Zeitserver, Genauigkeit ca. 200 µs–10 ms · PTP (IEEE 1588): µs- bis ns-genau – nötig für AVoIP-Taktsynchronisation (Dante, AES67, AVB)","Beide sind Verschlüsselungsprotokolle","PTP funktioniert nur über WLAN"],"correct":1,"explain":"<b>NTP</b> (Network Time Protocol) holt Datum/Uhrzeit von externen Zeitservern (z. B. pool.ntp.org) – Genauigkeit ca. <b>200 µs bis 10 ms</b>: völlig ausreichend für Logs und Uhren, aber zu ungenau für synchrone Medienströme. <b>PTP</b> (Precision Time Protocol, IEEE 1588) synchronisiert Uhren im <b>Mikro- bis Nanosekundenbereich</b> – AV-Geräte brauchen exakt denselben Takt, damit Audio/Video-Streams synchron abgespielt werden (Dante, AES67 und AVB nutzen PTP). Merkhilfe: NTP = „normale“ Zeit, PTP = Präzisions-Zeit für Medien."},
+{"topic":"Multicast & Zeit","q":"Welche Rollen gibt es im PTP (Precision Time Protocol)?","options":["Grandmaster Clock (liefert Referenzzeit) · Boundary Clock (reicht Zeit zwischen Segmenten weiter) · Transparent Clock (korrigiert nur Laufzeitverzögerungen)","Master, Slave und Backup-Server","Sender, Empfänger und Verstärker","Encoder, Decoder und Matrix"],"correct":0,"explain":"Die drei PTP-Rollen: <b>GM – Grandmaster Clock</b> = die Referenz-Zeitquelle des Netzes, alle richten sich nach ihr. <b>BC – Boundary Clock</b> = reicht die Zeit zwischen Netzsegmenten weiter (empfängt auf einer Seite, dient auf der anderen als Master). <b>TC – Transparent Clock</b> = ist selbst KEINE Zeitquelle, sondern misst und korrigiert nur die Verweildauer der PTP-Pakete beim Durchleiten (z. B. durch einen Switch). Prüfungs-Randnotiz: Switch-Stacking, AVB und PTP TC/BC/GM schließen sich gegenseitig aus."},
+{"topic":"Netzwerksicherheit","q":"Was bedeutet das Firewall-Konzept „Default Deny“?","options":["Alles ist erlaubt, außer es steht auf einer Verbotsliste","Alles ist verboten, außer es ist ausdrücklich erlaubt – sicherer, aber aufwändiger","Die Firewall lehnt nur E-Mails ab","Die Firewall ist standardmäßig ausgeschaltet"],"correct":1,"explain":"Die zwei Grundkonzepte als Türsteher-Bild: <b>Default Allow</b> = jeder darf rein, außer er steht auf der Verbotsliste – benutzerfreundlich, aber riskanter (Unbekanntes kommt durch). <b>Default Deny</b> = niemand darf rein, außer er steht auf der Gästeliste – <b>sicherer</b>, aber jeder erlaubte Dienst muss explizit eingetragen werden (mehr Aufwand). Die Firewall entscheidet per <b>Paketfilterung</b> anhand von Quell-/Ziel-Adresse, Ports, Protokoll und Paketinhalt. AV-Praxis: alle benötigten System-Ports dokumentieren und mit dem Netzwerk-Admin abstimmen!"},
+{"topic":"Netzwerksicherheit","q":"Was unterscheidet NAC von einer ACL?","options":["NAC ist ein Kabeltyp, ACL ein Steckertyp","ACL regelt Benutzerkonten, NAC filtert E-Mails","NAC (Network Access Control): Rechte hängen von der Identität ab (wer du bist) · ACL (Access Control List): Regelliste, was durch den Router geleitet werden darf","Beide sind identisch"],"correct":2,"explain":"<b>NAC</b> (Network Access Control) ist identitätsbezogen: <i>Was du im Netzwerk tun darfst, hängt davon ab, wer du bist</i> (Login-abhängig – Benutzerprofil, Gruppenmitgliedschaft, 2FA). <b>ACL</b> (Access Control List) ist regel-/verkehrsbezogen: eine Liste, die steuert, <i>welche Pakete durch den Router geleitet werden dürfen</i> (nach Adressen, Ports usw.). Kurz: NAC fragt „Wer bist du?“, die ACL fragt „Darf dieses Paket hier durch?“. Dazu gehört das <b>Least-Privilege-Prinzip</b>: jeder bekommt nur so viele Rechte wie nötig."},
+{"topic":"Netzwerksicherheit","q":"Was besagt das Least-Privilege-Prinzip?","options":["Jeder Nutzer erhält nur so viele Rechte wie für seine Aufgabe nötig – erweiterte Rechte nur über einen Genehmigungsprozess","Alle Nutzer bekommen Admin-Rechte, um flexibel zu sein","Nur der Chef darf ins Netzwerk","Passwörter sind optional"],"correct":0,"explain":"<b>Least Privilege</b> = Prinzip der geringsten Rechte: Jeder Benutzer (und jedes Gerät!) bekommt genau die Zugriffsrechte, die für die jeweilige Aufgabe nötig sind – nicht mehr. Braucht jemand mehr, gibt es einen <b>Genehmigungsprozess</b>. Das begrenzt den Schaden, wenn ein Konto kompromittiert wird oder jemand einen Fehler macht. Flankiert wird das von Authentifizierung und Autorisierung: Benutzerprofile, Gruppenmitgliedschaften, Passwort/2FA/biometrische Zugangskontrolle. Ein Dauerbrenner in Sicherheits-Fragen!"},
+{"topic":"OSI-Modell","q":"Welche OSI-Schicht routet Pakete anhand der IP-Adresse?","options":["Schicht 2 (Sicherung / Data Link)","Schicht 3 (Vermittlung / Network)","Schicht 4 (Transport)","Schicht 7 (Anwendung)"],"correct":1,"explain":"<b>Schicht 3 – Vermittlung (Network)</b> adressiert und routet Pakete anhand der <b>IP-Adresse</b> und übersetzt zwischen MAC und IP – hier arbeiten Router. Zur Einordnung der Nachbarn: Schicht 2 (Sicherung/Data Link) = fehlerfreier Transfer Gerät-zu-Gerät per <b>MAC-Adresse</b>, Dateneinheit „Frame“, hier arbeiten Switches. Schicht 4 (Transport) = Ende-zu-Ende mit TCP/UDP. Merksatz von 7 nach 1: „<b>A</b>lle <b>D</b>eutschen <b>S</b>tudenten <b>t</b>rinken <b>v</b>erschiedene <b>S</b>orten <b>B</b>ier“ – Anwendung, Darstellung, Sitzung, Transport, Vermittlung, Sicherung, Bitübertragung."},
+{"topic":"OSI-Modell","q":"Wie werden die 7 OSI-Schichten grob in zwei Systeme eingeteilt?","options":["Schichten 1–4 = Transportsystem, Schichten 5–7 = Anwendungssystem","Schichten 1–2 = Software, 3–7 = Hardware","Schichten 1–6 = Internet, Schicht 7 = LAN","Es gibt keine solche Einteilung"],"correct":0,"explain":"Die Grobteilung: <b>Schichten 1–4 = Transportsystem</b> (Bits physisch übertragen, Frames sichern, Pakete routen, Ende-zu-Ende transportieren) und <b>Schichten 5–7 = Anwendungssystem</b> (Sitzungen verwalten, Daten darstellen/verschlüsseln, Nutzerzugriff). Beispiele pro Schicht: 1 = Cat-Kabel/WLAN-Normen · 2 = Switch/Frame/MAC · 3 = Routing/IP · 4 = TCP/UDP · 5 = SDP (Sitzungsaufbau bei Webkonferenzen) · 6 = TLS (Verschlüsselung/Kompression) · 7 = HTTP im Browser. Englischer Merksatz 1→7: „Please Do Not Throw Sausage Pizza Away“."},
+{"topic":"OSI-Modell","q":"Auf welcher Schicht arbeitet TLS (Verschlüsselung) laut OSI-Tabelle des Skripts?","options":["Schicht 3 (Vermittlung)","Schicht 4 (Transport)","Schicht 6 (Darstellung / Presentation)","Schicht 1 (Bitübertragung)"],"correct":2,"explain":"Laut der OSI-Tabelle im Skript gehört <b>TLS zur Schicht 6 (Darstellung/Presentation)</b>: Diese Schicht übersetzt Daten in eine Zwischenform – dazu zählen <b>Verschlüsselung</b> und <b>Kompression</b>. Die weiteren Anwendungssystem-Schichten: Schicht 5 (Sitzung/Session) baut Sitzungen auf und regelt, wer wann sendet – Beispiel <b>SDP</b> (Session Description Protocol) bei Webkonferenzen. Schicht 7 (Anwendung) definiert den Nutzerzugriff – Beispiel <b>HTTP</b> im Webbrowser. Diese Beispiel-Zuordnungen (TLS→6, SDP→5, HTTP→7) sind beliebte Prüfungsdetails."},
+{"topic":"AVoIP","q":"Wofür stehen AVoIP und MoIP?","options":["Automated Video / Master over IP","AVoIP = Audio Video over IP (AV-Signale über Standard-IP-Netze) · MoIP = Media over IP (Oberbegriff für Medienübertragung im Netzwerk)","Analog Video over IP / Monitor over IP","Advanced Voice over IP / Music over IP"],"correct":1,"explain":"<b>AVoIP</b> = Audio Video over IP: AV-Signale werden über Standard-IP-Netzwerke übertragen statt über dedizierte AV-Kabel(matrizen). <b>MoIP</b> = Media over IP ist der Oberbegriff für Netzwerkübertragung von Medieninhalten. Verwandte Begriffe aus der Tabelle: <b>IPTV</b> (Fernsehen über IP), <b>OTT/SVoD</b> („Over the Top“ – Inhalte direkt übers offene Internet, z. B. Streaming-Abos), <b>IToAV</b> (IT-Technologien ziehen in die AV-Welt ein), <b>Professional MoIP</b> (Lösungen für Broadcast/Live-Produktion). Grundbausteine jeder MoIP-Lösung: <b>Encoder</b> (AV → IP-Stream) und <b>Decoder</b> (IP-Stream → AV)."},
+{"topic":"AVoIP","q":"Was unterscheidet die MoIP-Topologien „Videowall“ und „Multiviewer“?","options":["Beide sind identisch","Videowall = mehrere Encoder auf einen Bildschirm, Multiviewer = ein Bild auf mehrere Bildschirme","Videowall gibt es nur analog","Videowall: 1 Encoder → mehrere Decoder teilen sich EIN großes Bild · Multiviewer: mehrere Encoder → 1 Decoder zeigt mehrere Quellen gleichzeitig auf einem Bildschirm"],"correct":3,"explain":"Die beiden werden gern verwechselt – merke die Richtung: <b>Videowall</b> = EIN Quellbild wird zerlegt und auf <b>mehrere Displays</b> verteilt, die zusammen ein großes Bild ergeben (1 Encoder → n Decoder). <b>Multiviewer</b> = <b>mehrere Quellen</b> landen gleichzeitig auf <b>einem Bildschirm</b> in Kacheln (n Encoder → 1 Decoder). Die übrigen Topologien: One to One (Punkt-zu-Punkt), One to Many (Verteilung, z. B. Digital Signage), Many to Many (volle Matrix, ggf. mit Transcoder), KVM-Varianten (Tastatur/Video/Maus-Verlängerung mit einem oder mehreren Servern/Bedienplätzen)."},
+{"topic":"AVoIP","q":"Was kann Dante Via im Vergleich zur Dante Virtual Soundcard?","options":["Via kann USB/Firewire-Geräte einbinden, Audio zwischen Geräten/Apps routen/mischen und ein Standalone-Dante-Netz nur mit Computern bilden (aber nur 16 statt 64 Kanäle)","Via hat mehr Kanäle (64 statt 16)","Via funktioniert ohne Netzwerk","Es gibt keinen Unterschied"],"correct":0,"explain":"<b>Dante</b> (Audinate) ist das etablierte AVoIP-Protokoll v. a. für Audio. <b>Dante Virtual Soundcard (DVS)</b>: viele Kanäle in/aus einem Computer – <b>bis 64 Kanäle</b>, aber keine USB/Firewire-Einbindung, kein eigenständiges Routing. <b>Dante Via</b>: flexibles Routing – <b>USB/Firewire-Geräte einbinden</b>, Audio zwischen Geräten und Apps routen und mischen, Standalone-Dante-Netz nur mit Computern – dafür nur <b>bis 16 Kanäle</b>. Merkhilfe: DVS = „viele Kanäle, ein Zweck“, Via = „viele Wege, weniger Kanäle“. Beide lassen sich per Dante Controller routen."},
+{"topic":"AVoIP","q":"Warum verbessert höhere Netzwerkgeschwindigkeit die AV-Übertragung über den reinen Durchsatz hinaus?","options":["Sie macht Verschlüsselung überflüssig","Fertige Pakete müssen bei schnellerer Leitung weniger lang auf die nächste Sendegelegenheit warten – geringere Latenz, besseres Clocking, mehr Kanäle","Sie erhöht die Kabelreichweite","Sie reduziert den Strombedarf der Geräte"],"correct":1,"explain":"Aus dem Skript (Latency & Netzwerkgeschwindigkeit): Höhere Bandbreite verbessert nicht nur den Durchsatz, sondern auch das <b>Taktverhalten (Clocking)</b> zwischen Geräten. Bei niedriger Leitungsgeschwindigkeit (z. B. 100 Mbit statt 1/10 Gbit) muss ein fertiges Paket länger auf die nächste Sendegelegenheit warten – das erhöht die <b>Latenz</b>. Schnellere Netze = kürzere Wartezeiten = mehr Kanäle bei geringerer Verzögerung. Für AVoIP-Planung heißt das: lieber großzügig dimensionieren, gerade bei vielen parallelen Streams."},
+{"topic":"Rechenaufgabe","q":"Kupferdraht (ρ = 0,017 Ω·mm²/m), 100 m lang, 2 mm² Querschnitt. Wie groß ist R = ρ·l/A?","options":["0,34 Ω","0,85 Ω","1,7 Ω","8,5 Ω"],"correct":1,"explain":"Einsetzen: R = ρ·l/A = 0,017 · 100 / 2 = 1,7 / 2 = <b>0,85 Ω</b>. Der Ablauf ist immer gleich: Werte einsetzen, ausrechnen – die Formel wird in der Klausur gegeben. Achtung bei der Variante mit Durchmesser: Erst die Querschnittsfläche berechnen mit A = (d²·π)/4, DANN in die R-Formel einsetzen (Beispiel aus dem Skript: d = 3 mm → A ≈ 7,07 mm²). Nützliche ρ-Werte: Kupfer 0,017, Eisen 0,1 (≈ 6× schlechter), Silber 0,016 (bester bezahlbarer Leiter), Aluminium 0,027 – alle in Ω·mm²/m."},
+{"topic":"Rechenaufgabe","q":"Welcher Dezimalwert entspricht dem Hex-Byte „AA“?","options":["100","160","170","210"],"correct":2,"explain":"Hex → Dezimal für ein Byte: Wert = 16 × (erste Ziffer) + (zweite Ziffer), mit A=10, B=11, C=12, D=13, E=14, F=15. Hier: AA = 16·10 + 10 = 160 + 10 = <b>170</b>. Weitere Beispiele zum Üben: 7D = 16·7+13 = 125 · 98 = 16·9+8 = 152 · FF = 16·15+15 = 255 (das Maximum eines Bytes). Diese Umrechnung brauchst du für MAC-Adressen (6 Hex-Bytes) und für IP-Adressen in Hex-Schreibweise – jede Gruppe wird einzeln umgerechnet."},
+{"topic":"Rechenaufgabe","q":"Welchem Dezimalwert entspricht das Binärbyte 1110 1111?","options":["223","239","247","251"],"correct":1,"explain":"Die Wertetabelle der Bit-Positionen: 128·64·32·16·8·4·2·1. Bei 1110 1111 sind gesetzt: 128 + 64 + 32 + 8 + 4 + 2 + 1 = <b>239</b> (nur die 16 fehlt). Schneller Trick: 1111 1111 wäre 255; es fehlt genau das Bit mit Wert 16 → 255 − 16 = 239. Für die Gegenrichtung (Dezimal → Binär): immer die größte passende Zweierpotenz abziehen, z. B. 115 = 64+32+16+2+1 → 0111 0011. Diese Tabelle solltest du im Schlaf hinschreiben können – sie ist die Basis für ALLE Subnetz- und Adressrechnungen."},
+{"topic":"Rechenaufgabe","q":"Übergang Luft (n=1) → Quarzglas (n=1,45), senkrechter Einfall: Wie viel Lichtleistung wird ca. reflektiert? P_refl/P_ein = ((n1−n2)/(n1+n2))²","options":["ca. 3 %","ca. 18 %","ca. 34 %","ca. 50 %"],"correct":0,"explain":"Schritt für Schritt: ① Zähler: n1 − n2 = 1 − 1,45 = −0,45. ② Nenner: n1 + n2 = 2,45. ③ Bruch: −0,45 / 2,45 ≈ −0,184. ④ Quadrieren (Minus verschwindet!): (−0,184)² ≈ 0,034 → <b>ca. 3 % reflektiert</b>, ~97 % werden transmittiert. Häufiger Fehler: das Quadrieren vergessen und „18 %“ antworten – der Zwischenwert 0,184 ist NICHT das Ergebnis. Physikalischer Hintergrund: An jeder Grenzfläche zwischen Medien mit unterschiedlichem Brechungsindex wird ein Teil des Lichts reflektiert (deshalb sind saubere Steckerflächen bei LWL so wichtig)."},
+{"topic":"Rechenaufgabe","q":"Kritischer Winkel der Totalreflexion bei Quarzglas (n1=1,45) → Luft (n2=1), mit sin(γT) = n2/n1?","options":["ca. 21°","ca. 33°","ca. 43,6°","ca. 66°"],"correct":2,"explain":"Rechnung: sin(γT) = n2/n1 = 1/1,45 ≈ 0,690 → γT = arcsin(0,690) ≈ <b>43,6°</b>. Bedeutung: Trifft Licht in einem Winkel <i>größer</i> als 43,6° (flacher) auf die Kern-Mantel-Grenze, wird es zu 100 % reflektiert statt auszutreten – genau deshalb bleibt Licht im Faserkern „gefangen“. Wichtig für die Formel: n1 ist immer das optisch <b>dichtere</b> Medium (Glas), n2 das dünnere (Luft) – Totalreflexion gibt es nur beim Übergang vom dichteren ins dünnere Medium."},
+{"topic":"Rechenaufgabe","q":"Eine Faser hat ein Bandbreite-Längen-Produkt (BLP) von 20 MHz·km. Welche maximale Bandbreite ist auf 2 km möglich?","options":["40 MHz","10 MHz","20 MHz","5 MHz"],"correct":1,"explain":"Formel: BLP = B · L → B = BLP / L = 20 MHz·km / 2 km = <b>10 MHz</b>. Das BLP drückt aus, dass sich Bandbreite und Streckenlänge <b>invers</b> zueinander verhalten: doppelte Strecke = halbe Bandbreite (bei 4 km wären es nur noch 5 MHz). Ursache ist die Dispersion: Je länger die Faser, desto stärker verbreitern sich die Impulse, desto weniger Impulse pro Sekunde lassen sich noch sauber trennen. Typische Klausuraufgabe: BLP und Länge gegeben, B ausrechnen – oder umgekehrt die maximale Länge für eine geforderte Bandbreite."},
+{"topic":"Rechenaufgabe","q":"Ein Signal wird von P1 = 100 mW auf P2 = 1 mW abgeschwächt. Wie groß ist die Dämpfung a = 10·log(P1/P2)?","options":["10 dB","2 dB","20 dB","100 dB"],"correct":2,"explain":"Rechnung: P1/P2 = 100/1 = 100 → a = 10 · log(100) = 10 · 2 = <b>20 dB</b>. Die dB-Logik lohnt sich zu verinnerlichen: Faktor 10 = 10 dB, Faktor 100 = 20 dB, Faktor 1000 = 30 dB – pro Zehnerpotenz kommen 10 dB dazu. Und: Faktor 2 ≈ 3 dB (deshalb bedeutet „3 dB Dämpfung“ Halbierung der Leistung). Verwandt ist der absolute Pegel L = 10·log(P/1mW) in <b>dBm</b> – dort wird immer auf 1 mW bezogen: 100 mW = 20 dBm, 1 mW = 0 dBm."},
+{"topic":"Praxis & Befehle","q":"Du arbeitest in einem fremden Netzwerk ohne Unterlagen. Was ist der sinnvolle erste Schritt?","options":["Eigene Konfiguration prüfen (ipconfig bzw. ifconfig), Netzadresse/Maske/Gateway feststellen, DHCP vs. statisch klären – dann mit ping testen","Sofort allen Geräten neue IP-Adressen geben","Alle Kabel ziehen und neu stecken","Das WLAN-Passwort ändern"],"correct":0,"explain":"Das empfohlene Vorgehen aus dem Skript: <b>Erst die Konfiguration feststellen</b> – Netzadresse & Subnetzmaske, Standardgateway, DHCP oder feste IPs, weitere Geräte, Proxy – dann den eigenen PC passend einstellen und die Erreichbarkeit mit <b>ping</b> testen. Die Werkzeuge: <b>ipconfig /all</b> (Windows) bzw. <b>ifconfig</b> (macOS/Linux) zeigen die eigene IP-Konfiguration, <b>arp -a</b> listet bekannte Geräte (MAC-Tabelle), <b>nslookup</b> prüft DNS, <b>tracert/traceroute</b> verfolgt die Route. Niemals blind Adressen vergeben – Konfliktgefahr!"},
+{"topic":"Praxis & Befehle","q":"Mit welchem Befehl verfolgst du unter Windows die Route eines Pakets zum Ziel?","options":["ping -route","tracert <ziel>","arp -a","ipconfig /trace"],"correct":1,"explain":"<b>tracert</b> (Windows) bzw. <b>traceroute</b> (macOS/Linux) zeigt alle Router-Hops auf dem Weg zum Ziel – technisch clever gelöst über das TTL-Feld: Es sendet Pakete mit TTL 1, 2, 3, … und sammelt die „Zeit abgelaufen“-Antworten der Router ein. Die weiteren Befehle im Überblick: <b>ping</b> = Erreichbarkeit testen · <b>ipconfig (/all)</b> / <b>ifconfig</b> = eigene IP-Konfiguration · <b>nslookup</b> = DNS-Auflösung (Name ↔ IP) · <b>arp -a</b> = ARP/MAC-Tabelle. Windows-Netzwerkeinstellungen: Win+R → ncpa.cpl."},
+{"topic":"Abkürzungen","q":"Wofür steht PVID?","options":["Private Video Identifier","Public VLAN Internet Domain","Port VLAN Identifier – das VLAN, das ungetaggtem eingehendem Verkehr an einem Access-Port zugewiesen wird","Precision Video Delay"],"correct":2,"explain":"<b>PVID = Port VLAN Identifier</b>: Kommt an einem Access-Port ein Frame OHNE VLAN-Tag an (Endgeräte wie PCs taggen nicht), weist der Switch ihm die PVID des Ports zu – so landet der Verkehr im richtigen VLAN. Ausgehend zum Endgerät wird das Tag wieder entfernt. Verwandte Abkürzungen, die du erklären können solltest: <b>OUI</b> (Herstellerkennung der MAC), <b>VLSM</b> (unterschiedlich große Subnetze), <b>SPoF</b> (Single Point of Failure), <b>LACP</b> (Link-Bündelung), <b>NIC</b> (Netzwerkkarte). Laut Recap-Notizen sind Abkürzungs-Erklärungen explizit prüfungsrelevant!"},
+{"topic":"Abkürzungen","q":"Die Abkürzung „STP“ hat in dieser Prüfung zwei Bedeutungen. Welche?","options":["① Spanning Tree Protocol (verhindert Netzwerkschleifen) und ② Shielded Twisted Pair (geschirmtes Kabel) – der Kontext entscheidet","① Standard Transfer Protocol und ② Super Twisted Pair","① Secure Transport Protocol und ② Single Twisted Pair","STP hat nur eine Bedeutung"],"correct":0,"explain":"Die wichtigste Doppeldeutigkeit der Klausur: <b>STP = Spanning Tree Protocol</b> (Netzwerktechnik: deaktiviert redundante Verbindungen logisch und verhindert so Schleifen/Broadcast Storms) ODER <b>STP = Shielded Twisted Pair</b> (Kabeltechnik: jedes Adernpaar einzeln geschirmt). Woran erkennst du den Kontext? Geht es um Switches, Redundanz, Loops oder Broadcast Storms → Protokoll. Geht es um Kabel, Schirmung oder Übersprechen → Kabeltyp. Diese Falle steht ausdrücklich auf der „Nicht verwechseln“-Liste des Skripts."},
+{"topic":"Grundlagen","q":"Was unterscheidet Intra-Frame- von Inter-Frame-Codecs bei der Videokompression?","options":["Intra-Frame komprimiert jedes Bild unabhängig; Inter-Frame speichert nur Unterschiede zwischen Bildern (Referenzframes)","Intra-Frame ist nur für Audio","Inter-Frame komprimiert gar nicht","Beide arbeiten identisch"],"correct":0,"explain":"<b>Intra-Frame</b>-Codecs komprimieren <b>jedes Einzelbild für sich</b> (wie eine Serie von JPEGs) – geringere Latenz und schnittfreundlich, aber höhere Datenrate. <b>Inter-Frame</b>-Codecs speichern volle Referenzbilder (Keyframes) nur gelegentlich und dazwischen <b>nur die Unterschiede</b> zwischen den Bildern – deutlich effizienter bei der Datenrate, aber mehr Latenz und aufwändigere Decodierung. Für AVoIP relevant: Niedrige Latenz (z. B. KVM, Live) spricht für Intra-Frame; knappe Bandbreite (z. B. Streaming ins Internet) für Inter-Frame."},
+{"topic":"Netzwerk-Grundlagen","q":"Was ist eine Broadcast-Domain?","options":["Der Bereich, in dem WLAN empfangbar ist","Alle Teilnehmer, die mit einem einzigen Broadcast-Aufruf erreichbar sind – Router begrenzen sie, VLANs teilen sie auf","Eine Internet-Domain wie broadcast.de","Die maximale Kabellänge"],"correct":1,"explain":"Die <b>Broadcast-Domain</b> umfasst alle Geräte, die ein Broadcast (an alle) erreicht. Switches leiten Broadcasts an alle Ports weiter – sie vergrößern die Domain. <b>Router leiten Broadcasts NICHT weiter</b> – sie sind die natürliche Grenze der Broadcast-Domain. Auch jedes <b>VLAN</b> bildet eine eigene Broadcast-Domain (deshalb trennt man AV-Verkehr per VLAN ab: zu viel Broadcast stört zeitkritische Streams). Das Subnetz definiert die logische Größe des „erreichbaren Netzes“ innerhalb einer Domain. Zu große Broadcast-Domains = viel Störverkehr für alle."},
+{"topic":"Subnetting","q":"Wie ist der Netz-/Hostanteil bei den klassischen IPv4-Klassen A, B und C aufgeteilt?","options":["A: 8 Bit Netz / 24 Bit Host · B: 16/16 · C: 24/8","A: 24/8 · B: 16/16 · C: 8/24","A: 16/16 · B: 8/24 · C: 24/8","Alle Klassen: 16/16"],"correct":0,"explain":"Die klassische Aufteilung: <b>Klasse A</b> = 8 Bit Netz / 24 Bit Host (riesige Netze, führendes Oktett 1–126, z. B. 10.x.x.x) · <b>Klasse B</b> = 16/16 (mittlere Netze, 128–191, z. B. 172.16.x.x) · <b>Klasse C</b> = 24/8 (kleine Netze mit max. 254 Hosts, 192–223, z. B. 192.168.1.x) · Klasse D = Multicast (224–239). Heute rechnet man classless mit CIDR/VLSM, aber die Klassen tauchen in Aufgaben auf („In einem Klasse-B-Netz sollen …“) – dann startest du von der 16/16-Aufteilung und leihst dir Host-Bits fürs Subnetting."},
+{"topic":"Verbindungstechnik","q":"Link-LED eines PoE-Switch-Ports leuchtet, die PoE-Status-LED bleibt aus. Was heißt das?","options":["Das Kabel ist defekt","Datenverbindung besteht, aber es wird keine PoE-Leistung geliefert/abgenommen – das Endgerät bezieht keinen Strom über das Kabel","Das Gerät ist gestohlen worden","Der Switch ist komplett ausgefallen"],"correct":1,"explain":"LED-Diagnostik: Die <b>Link-LED</b> zeigt eine funktionierende <b>Datenverbindung</b> auf dem Port an (Layer 1/2 okay). Die separate <b>PoE-LED</b> zeigt an, ob <b>Leistung</b> über das Kabel geliefert wird. Leuchtet nur Link, aber nicht PoE: Daten fließen, aber das Endgerät bezieht keinen Strom über das Kabel – möglicherweise verhandelt es keine PoE-Klasse, hat eine eigene Stromversorgung, oder das PoE-Budget des Switches ist erschöpft. Solche Praxis-/Diagnose-Fragen (Was sagen mir die LEDs?) sind typisch für die Klausur."},
+{"topic":"IP-Adressierung","q":"In welchem Adressbereich liegt IPv4-Multicast?","options":["10.0.0.0/8","192.168.0.0/16","224.0.0.0/4 (224.0.0.1 – 239.255.255.254) – und dieser Bereich wird geroutet","127.0.0.0/8"],"correct":2,"explain":"<b>Multicast</b> nutzt den Bereich <b>224.0.0.0/4</b>, also alle Adressen von 224.x.x.x bis 239.x.x.x. Besonderheit in der IANA-Tabelle: Dieser Bereich wird – anders als die privaten Bereiche – <b>geroutet</b> („ja“ in der Spalte Geroutet). Eine Multicast-Adresse bezeichnet dabei keine einzelne Maschine, sondern eine <b>Gruppe</b> von Empfängern, die den Stream per IGMP abonniert haben. Der Rest der Tabelle zur Wiederholung: 240.0.0.0/4 = experimentell/reserviert, 0.0.0.0/8 = unbekannte Adresse, 255.255.255.255 = Broadcast."},
+{"topic":"Grundlagen","q":"In welchem Frequenzbereich arbeiten TV, Mobilfunk, WLAN und Datenfunk laut Funkspektrum-Tabelle?","options":["3–30 kHz (VLF)","0,3–3 GHz (UHF, dm-Wellen)","30–300 GHz (EHF, mm-Wellen)","0,3–3 MHz (MW, Mittelwelle)"],"correct":1,"explain":"Aus der Frequenzbereichs-Tabelle: <b>UHF (0,3–3 GHz, Dezimeterwellen)</b> beherbergt TV, Mobilfunk, WLAN und Datenfunk – hier liegt auch das bekannte 2,4-GHz-WLAN-Band. Zur Orientierung nach oben: SHF (3–30 GHz, cm-Wellen) = Radar, Satellitenfunk, Richtfunk (auch 5-GHz-WLAN grenzt hier an), EHF (30–300 GHz, mm-Wellen) = Radar/Richtfunk (60-GHz-WLAN 802.11ad). Nach unten: UKW-Rundfunk bei VHF (30–300 MHz), Kurzwelle (HF), Mittelwelle (MF), Langwelle (LF), U-Boot-Funk ganz unten (ELF/VLF)."},
+{"topic":"Netzwerk-Grundlagen","q":"Was ist Quality of Service (QoS)?","options":["Eine Garantie für absolute Abhörsicherheit","Ein Kabel-Gütesiegel","Die Priorisierung wichtiger Datenpakete (z. B. AV-Streams, VoIP) gegenüber unkritischem Verkehr","Ein WLAN-Verschlüsselungsstandard"],"correct":2,"explain":"<b>QoS (Quality of Service)</b> priorisiert wichtige Pakete im Netz: Zeitkritischer Verkehr wie AV-Streams oder VoIP wird bevorzugt behandelt, damit er auch bei Auslastung pünktlich ankommt – unkritischer Verkehr (Downloads, Backups) muss warten. QoS ist eine Funktion von <b>Managed Switches</b> und ein Hauptgrund, warum AVoIP-Installationen managed Hardware brauchen. Zusammenspiel mit „bursty traffic“: Stoßweiser Verkehr anderer Anwendungen kann AV-Streams stören – QoS und VLAN-Trennung sind die Gegenmittel."},
+{"topic":"AVoIP","q":"Was bedeutet „OTT“ bzw. „SVoD“ im AVoIP-Umfeld?","options":["Optical Transport Technology – ein Glasfaserstandard","„Over the Top“ – Inhalte werden direkt über das offene Internet verbreitet (z. B. Subscription Video on Demand, Streaming-Abos)","One Time Transfer – einmalige Dateiübertragung","Out of Tolerance Transmission – Fehlerzustand"],"correct":1,"explain":"<b>OTT = „Over the Top“</b>: Medieninhalte werden direkt über das offene Internet an die Zuschauer verbreitet – „über die Köpfe“ der klassischen Verbreitungswege (Kabel-TV, Satellit) hinweg. <b>SVoD = Subscription Video on Demand</b> ist das Abo-Modell dazu (Streaming-Dienste). Abgrenzung zu <b>IPTV</b>: auch Fernsehen über IP, aber typischerweise im kontrollierten Netz des Anbieters statt übers offene Internet. Diese Begriffssammlung (AVoIP, AVoIT, IPTV, OTT/SVoD, IToAV, MoIP, Professional MoIP) stammt direkt aus der Begriffstabelle des Skripts."},
+{"topic":"Rechenaufgabe","q":"Zwei Monitore mit je 3840 × 2160 Pixeln: Aus wie vielen Megapixeln bestehen beide Bilder zusammen (1 Nachkommastelle)?","options":["8,3 MP","24,9 MP","16,6 MP","33,2 MP"],"correct":2,"explain":"Rechnung: 3840 × 2160 = 8.294.400 Pixel pro Monitor ≈ 8,3 MP. Zwei Monitore: 2 × 8.294.400 = 16.588.800 ≈ <b>16,6 Megapixel</b>. Vorgehen bei Megapixel-Aufgaben: Breite × Höhe multiplizieren, durch 1.000.000 teilen, auf die geforderte Nachkommastelle runden – und genau lesen, ob nach EINEM Bild oder der SUMME gefragt ist! Diese Aufgabe stammt aus den Beispielfragen des Professors. Bonus-Kontext: 3840×2160 ist UHD/„4K“ – solche Pixelzahlen bestimmen die nötige Bandbreite eines unkomprimierten AV-Streams."},
+{"topic":"Subnetting","q":"Zu welcher klassischen Adressklasse gehört 172.16.5.10 und was ist die Standard-Aufteilung?","options":["Klasse A – 8 Bit Netz","Klasse B (erstes Oktett 128–191) – Standard: 16 Bit Netz / 16 Bit Host, zugleich Beginn des privaten /12-Bereichs","Klasse C – 24 Bit Netz","Klasse D – Multicast"],"correct":1,"explain":"Das erste Oktett entscheidet: 1–126 = Klasse A · <b>128–191 = Klasse B</b> · 192–223 = Klasse C · 224–239 = Klasse D (Multicast). 172 liegt in 128–191 → <b>Klasse B</b> mit Standard-Aufteilung 16 Bit Netz / 16 Bit Host (Maske 255.255.0.0). Doppelt interessant: 172.16.5.10 liegt außerdem im <b>privaten Bereich 172.16.0.0/12</b> (172.16.x.x – 172.31.x.x) – also eine private Klasse-B-Adresse. Beide Einordnungen (Klasse UND privat/öffentlich) können in derselben Aufgabe abgefragt werden."},
+{"topic":"Netzwerksicherheit","q":"Warum ist „bursty traffic“ für AV-over-IP ungünstig?","options":["Stoßweiser Verkehr erzeugt kurzzeitige Überlastspitzen – Puffer laufen voll, Pakete verspäten sich oder gehen verloren, AV-Streams stocken","Er verbraucht zu wenig Bandbreite","Er verschlüsselt die Pakete falsch","Er betrifft nur WLAN"],"correct":0,"explain":"<b>Bursty traffic</b> = unregelmäßiger, stoßweiser Datenverkehr (z. B. Backups, große Downloads). Die Spitzen überlasten kurzzeitig Switch-Puffer und Links: Pakete werden verzögert oder verworfen. Für Dateiübertragungen egal (TCP sendet neu) – aber AV-Streams brauchen einen <b>gleichmäßigen, pünktlichen</b> Paketfluss: Jitter und Verluste bedeuten sofort Bild-/Tonstörungen. Gegenmittel im AV-Netzdesign: QoS-Priorisierung, VLAN-Trennung des AV-Verkehrs, ausreichende Bandbreitenreserven und Multicast statt vieler paralleler Unicasts."},
+{"topic":"Protokolle & Dienste","q":"Was ist der Vorteil von DDNS für Geräte mit häufig wechselnder IP-Adresse?","options":["Das Gerät bleibt unter seinem (gleichbleibenden) Namen erreichbar, obwohl sich die IP dahinter ändert","Die IP-Adresse ändert sich nie mehr","Das Gerät wird schneller","DDNS verschlüsselt die Verbindung"],"correct":0,"explain":"Der Kernnutzen von <b>DDNS</b>: Der <b>Name bleibt stabil</b>, auch wenn die IP wechselt. DHCP-Server und DNS-Server werden synchronisiert – bekommt das Gerät eine neue Adresse, aktualisiert sich der DNS-Eintrag automatisch. Ohne DDNS müsste man nach jedem IP-Wechsel manuell nachtragen oder das Gerät wäre unauffindbar. AV-Praxis-Einschränkung aus dem Skript: Viele AV-Geräte unterstützen DNS-Adressvergabe nur unzureichend – ein praktischer Grund, in AV-Netzen trotzdem mit <b>statischen IPs</b> zu arbeiten."},
+{"topic":"OSI-Modell","q":"Auf welcher OSI-Schicht arbeiten TCP und UDP und was ist die Aufgabe dieser Schicht?","options":["Schicht 2 – MAC-Adressierung","Schicht 4 (Transport) – Ende-zu-Ende-Übertragung: segmentieren, wieder zusammensetzen, Fehlerkorrektur (TCP mit, UDP ohne)","Schicht 5 – Sitzungsverwaltung","Schicht 7 – Nutzerzugriff"],"correct":1,"explain":"<b>Schicht 4 (Transport)</b> stellt die Ende-zu-Ende-Übermittlung zwischen den Endgeräten sicher: Daten werden in <b>Segmente</b> geteilt, beim Empfänger wieder zusammengesetzt, optional mit Fehlerkorrektur. Hier leben <b>TCP</b> (mit Fehlerkorrektur, verbindungsorientiert) und <b>UDP</b> (ohne, verbindungslos). Die Schichten-Zuordnung der wichtigsten Themen: MAC/Switch → 2, IP/Routing/IPSec → 3, TCP/UDP/Ports → 4, SDP → 5, TLS → 6, HTTP → 7. Wenn du diese Zuordnungen sicher kannst, sind OSI-Fragen geschenkte Punkte."},
+{"topic":"Übertragungsmedien","q":"Welcher Koax-Steckertyp wird verschraubt und ist dadurch besonders vibrationssicher?","options":["BNC","TNC","Cinch/RCA","RJ45"],"correct":1,"explain":"Die Koax-Stecker aus der Übersicht: <b>BNC</b> (Bajonett Neill-Concelman) = Bajonett-Verschluss, für Video/Daten. <b>TNC</b> (Threaded Neill-Concelman) = die <b>verschraubte</b> Variante – hält auch bei Vibration sicher (z. B. mobile Anwendungen). <b>Cinch/RCA</b> = Consumer-Audio/Video (Steckverbindung ohne Verriegelung). RJ45 ist kein Koax-Stecker, sondern für Twisted Pair. Merkhilfe: T wie „Threaded“ = Gewinde."},
+{"topic":"Lichtwellenleiter","q":"Welches optische Fenster wird typischerweise für Kurzstrecken/LAN genutzt?","options":["850 nm","1300 nm","1550 nm","2000 nm"],"correct":0,"explain":"Die Arbeitsteilung der drei Fenster: <b>850 nm</b> = Kurzstrecke/LAN – hier sind Sender (VCSEL) und Multimode-Technik günstig, die höhere Dämpfung stört auf kurzen Wegen nicht. <b>1300 nm</b> = niedrige Dispersion. <b>1550 nm</b> = geringste Dämpfung → Weitverkehr. Das spiegelt sich in den Ethernet-Standards: 1000Base-SX (850 nm, bis 550 m) fürs Gebäude, 10GBase-ER (1550 nm, 40 km) für die Ferne."},
+{"topic":"Übertragungsmedien","q":"Welche Nebensprechdämpfung wird laut Praxis-Richtwerten für hochwertige Audioübertragung mindestens verlangt?","options":["≥ 50 dB","≥ 58 dB","≥ 80 dB","≥ 20 dB"],"correct":2,"explain":"Die drei Richtwerte aus dem Skript: <b>TV-Übertragung ≥ 50 dB</b>, <b>analoges Telefon ≥ 58 dB</b>, <b>hochwertige Audioübertragung ≥ 80 dB</b> Nebensprechdämpfung. Logik dahinter: Je empfindlicher die Anwendung für hörbare Störungen, desto mehr „Abstand“ braucht das Nutzsignal zum übersprechenden Störsignal. Zur Erinnerung: Die Nebensprechdämpfung a<sub>N</sub> beschreibt, wie gut ein Adernpaar gegen Übersprechen der Nachbarkanäle geschützt ist – mehr dB = besser."},
+{"topic":"Lichtwellenleiter","q":"Wofür steht POF?","options":["Power over Fiber","Polymer Optical Fiber – Lichtwellenleiter aus Kunststoff","Passive Optical Filter","Point of Failure"],"correct":1,"explain":"<b>POF = Polymer Optical Fiber</b>: Lichtwellenleiter bestehen entweder aus <b>Glas</b> oder aus <b>polymeren (Kunststoff-)Fasern</b>. POF ist dicker, robuster und einfacher zu konfektionieren als Glasfaser, hat aber deutlich höhere Dämpfung – daher nur für kurze Strecken (z. B. Heimvernetzung, Fahrzeuge, Medientechnik im Raum). Nicht verwechseln mit SPoF (Single Point of Failure) – die Abkürzungen sehen sich ähnlich!"},
+{"topic":"Übertragungsmedien","q":"Welcher WLAN-Standard arbeitet als einziger der Tabelle auf BEIDEN Bändern (2,4 UND 5 GHz) und hat die größte Reichweite?","options":["802.11ac","802.11g","802.11n","802.11ad"],"correct":2,"explain":"<b>802.11n</b> ist der Dual-Band-Standard der Tabelle: <b>2,4 UND 5 GHz</b>, 150 Mbit/s, und mit <b>70 m</b> die größte Reichweite. Zum Vergleich: 802.11b/g nur 2,4 GHz (11/54 Mbit, ~35–38 m), 802.11a/ac nur 5 GHz (54/866,7 Mbit, 35 m), 802.11ad nur 60 GHz (6912 Mbit, aber 9 m). Das Muster fürs Verständnis: niedrigere Frequenz = mehr Reichweite, höhere Frequenz = mehr Datenrate."},
+{"topic":"Lichtwellenleiter","q":"Welche Multimode-Faser gilt laut Tabelle mit 10 Gbit/s als „zukunftssicher“ (Standard-Wahl)?","options":["OM2","OM3","OS1","OM1"],"correct":1,"explain":"Aus der Faser-Tabelle: <b>OM2</b> = 1 Gbit/s, „wird abgelöst“ · <b>OM3</b> = <b>10 Gbit/s, zukunftssicher</b> · <b>OM4</b> = 100 Gbit/s, zukunftssicher aber teurer. Alle Multimode-Fasern liegen bei ca. 3,5 dB/km Dämpfung. OS1/OS2 sind dagegen Singlemode (1 bzw. 0,4 dB/km). Für neue Multimode-Installationen im Gebäude ist OM3 die typische Basis-Empfehlung, OM4 wenn 100G absehbar gebraucht wird."},
+{"topic":"Übertragungsmedien","q":"Was bedeutet S-UTP (Screened UTP)?","options":["Jedes Adernpaar einzeln geschirmt, kein Gesamtschirm","Adernpaare ungeschirmt, aber gemeinsamer Gesamtschirm (Folie)","Komplett ungeschirmt","Doppelt geschirmt (Paare + Gesamt)"],"correct":1,"explain":"<b>S-UTP</b> ist die Zwischenstufe der Schirmungs-Hierarchie: Die Adernpaare selbst bleiben <b>ungeschirmt</b> (wie UTP), aber ein <b>gemeinsamer Gesamtschirm</b> (Folie) umschließt alle Paare – Schutz gegen äußere Störungen (EMI), aber nicht gegen Übersprechen zwischen den Paaren im Kabel. Komplette Reihe: UTP (nichts) → S-UTP (nur Gesamtschirm) → STP (nur Paar-Schirme) → S/FTP bzw. S-STP (beides)."},
+{"topic":"Lichtwellenleiter","q":"Was unterscheidet UPC- und APC-Stecker bei Glasfasern?","options":["Die Anzahl der Fasern pro Stecker","Unterschiedliche Schliffe der Steckerendfläche – mit unterschiedlicher Rückreflexionsdämpfung","Die Farbe des Steckergehäuses","UPC ist für Kupfer, APC für Glas"],"correct":1,"explain":"<b>UPC vs. APC</b> bezeichnet unterschiedliche <b>Schliffe der Steckerendfläche</b>: APC (Angled Physical Contact) ist angeschrägt, UPC (Ultra Physical Contact) plan poliert. Der Unterschied wirkt sich auf die <b>Rückreflexionsdämpfung</b> aus – also darauf, wie viel Licht an der Steckfläche zurück in Richtung Sender reflektiert wird. Das knüpft an die Reflexionsrechnung an: An jeder Grenzfläche wird ein Teil des Lichts reflektiert (Luft→Quarzglas: ca. 3 %) – der Schliff minimiert die störende Rückreflexion."},
+{"topic":"Verbindungstechnik","q":"Welche maximale Geschwindigkeit hat der QSFP-Transceiver (ohne Plus)?","options":["1 Gbit/s","10 Gbit/s","bis 4 Gbit/s (4× SFP)","100 Gbit/s"],"correct":2,"explain":"<b>QSFP = Quad SFP = 4× SFP</b> gebündelt → bis <b>4 Gbit/s</b> (4 × 1 Gbit). Analog: <b>QSFP+ = 4× SFP+</b> → bis 40 Gbit/s (4 × 10 Gbit). Die komplette Familie zum Merken: SFP 1G → QSFP 4G → SFP+ 10G → SFP28 25G → QSFP+ 40G. Das „Q“ bedeutet immer „vier Kanäle von dem, was dahinter steht“ – so kannst du die Werte herleiten statt auswendig lernen."},
+{"topic":"Verbindungstechnik","q":"Welcher Glasfaser-Ethernet-Standard kann laut Tabelle wahlweise über Multimode ODER Singlemode betrieben werden (1300 nm, 550 m / 5 km)?","options":["1000Base-SX","1000Base-LX","10GBase-ER","100Base-SX"],"correct":1,"explain":"<b>1000Base-LX</b> ist der flexible Standard der Tabelle: <b>Multimode ODER Singlemode</b> bei 1300 nm – über Multimode bis 550 m, über Singlemode bis <b>5 km</b>. Die Nachbarn: 1000Base-SX = nur Multimode, 850 nm, 275–550 m · 10GBase-LR = nur Singlemode, 10 km · 10GBase-ER = nur Singlemode, 40 km. Solche Tabellen-Detailfragen sind schnelle Punkte, wenn du die S/L/E-Logik (Short/Long/Extended) im Kopf hast."},
+{"topic":"Abkürzungen","q":"Wofür steht AWG?","options":["Advanced Wireless Gateway","American Wire Gauge – eine Norm für den Drahtdurchmesser","Audio Wave Generator","Automatic WLAN Group"],"correct":1,"explain":"<b>AWG = American Wire Gauge</b> – die amerikanische Norm zur Angabe des <b>Drahtdurchmessers</b> (Leiterquerschnitts). Wichtig zu wissen: je <b>höher</b> die AWG-Zahl, desto <b>dünner</b> der Draht. Für die Praxis relevant, weil der Querschnitt direkt in den Leitungswiderstand eingeht (R = ρ·l/A): dünnerer Draht = kleineres A = mehr Widerstand – bei PoE über lange Strecken kann das die nutzbare Leistung begrenzen. Steht im Abkürzungsverzeichnis des Skripts, das laut Recap prüfungsrelevant ist."}
+];
+
 let QUESTIONS = [];
 let activeQuizId = 1;
 let isReviewMode = false;
-let wrongQuestionsByQuiz = { 1: [], 2: [], 3: [] };
+let wrongQuestionsByQuiz = { 1: [], 2: [], 3: [], 4: [] };
 
 let current = 0;
 let answers = [];
@@ -435,7 +630,7 @@ function startQuiz(quizId, review) {
   if (isReviewMode) {
     baseQuestions = wrongQuestionsByQuiz[activeQuizId];
   } else {
-    baseQuestions = (activeQuizId === 1) ? QUESTIONS_1 : (activeQuizId === 2) ? QUESTIONS_2 : QUESTIONS_3;
+    baseQuestions = (activeQuizId === 1) ? QUESTIONS_1 : (activeQuizId === 2) ? QUESTIONS_2 : (activeQuizId === 4) ? QUESTIONS_4 : QUESTIONS_3;
   }
 
   // Shallow copy so we don't shuffle the original static arrays
@@ -446,7 +641,20 @@ function startQuiz(quizId, review) {
     shuffleArray(QUESTIONS);
   }
 
-  const quizName = (activeQuizId === 1) ? "Übertragungsmedien" : (activeQuizId === 2) ? "Netzwerktechnik" : "Prüfungssimulation";
+  // Antwort-Optionen pro Frage mischen (verhindert Positions-Lernen)
+  const shouldShuffleAnswers = document.getElementById('answer-shuffle-toggle').checked;
+  if (shouldShuffleAnswers) {
+    QUESTIONS = QUESTIONS.map(q => {
+      const idx = [0, 1, 2, 3];
+      shuffleArray(idx);
+      return Object.assign({}, q, {
+        options: idx.map(i => q.options[i]),
+        correct: idx.indexOf(q.correct)
+      });
+    });
+  }
+
+  const quizName = (activeQuizId === 1) ? "Übertragungsmedien" : (activeQuizId === 2) ? "Netzwerktechnik" : (activeQuizId === 4) ? "Komplett-Wiederholung" : "Prüfungssimulation";
   if (isReviewMode) {
     document.getElementById('quiz-title-display').textContent = quizName + " – Wiederholung der falschen Fragen";
     document.getElementById('quiz-desc-display').textContent = QUESTIONS.length + " Frage(n) zum gezielten Nachlernen · direktes Feedback";
@@ -456,6 +664,9 @@ function startQuiz(quizId, review) {
   } else if (activeQuizId === 2) {
     document.getElementById('quiz-title-display').textContent = "Netzwerktechnik – Probeklausur";
     document.getElementById('quiz-desc-display').textContent = "40 Multiple-Choice-Fragen · detaillierte Erklärungen nach jeder Frage";
+  } else if (activeQuizId === 4) {
+    document.getElementById('quiz-title-display').textContent = "Komplett-Wiederholung – Alle Themen";
+    document.getElementById('quiz-desc-display').textContent = QUESTIONS.length + " Fragen über alle Themengebiete · besonders ausführliche Lern-Erklärungen";
   } else {
     document.getElementById('quiz-title-display').textContent = "Prüfungssimulation – Gemischt";
     document.getElementById('quiz-desc-display').textContent = "35 prüfungsnahe Fragen · Beispielfragen, Rechenaufgaben & Kernthemen · direktes Feedback";
@@ -560,7 +771,7 @@ function skipQuestion() {
 }
 
 function updateMenuState() {
-  [1, 2, 3].forEach(qid => {
+  [1, 2, 3, 4].forEach(qid => {
     const count = (wrongQuestionsByQuiz[qid] || []).length;
     const btn = document.getElementById('review-btn-' + qid);
     const countSpan = document.getElementById('review-count-' + qid);
@@ -639,6 +850,716 @@ function showResults() {
 }
 
 function restartQuiz() {
+  document.getElementById('results-screen').classList.add('hidden');
+  document.getElementById('start-screen').classList.remove('hidden');
+  document.getElementById('quiz-title-display').textContent = "Übertragungsmedien & Netzwerktechnik";
+  document.getElementById('quiz-desc-display').textContent = "Wähle eine Probeklausur zum Lernen · direktes Feedback nach jeder Frage";
+  updateMenuState();
+  window.scrollTo(0,0);
+}
+
+/* ===================== LERNMODUS (Themen-Debrief) ===================== */
+const LEARN_TOPICS = [
+{topic:"Einstieg", title:"So funktioniert die Prüfung – und wie du diesen Lernmodus nutzt", html:`
+<p>Bevor es losgeht, das Wichtigste zum <b>Prüfungsformat</b> (laut Recap-Notizen):</p>
+<ul>
+<li><b>Computerbasierte Klausur</b> mit ca. <b>70–80 Fragen</b>: Mischung aus Multiple-Choice, Freitext-Eingabe und Rechenaufgaben.</li>
+<li><b>Formeln werden gegeben!</b> Du musst sie nicht auswendig lernen – aber verstehen, wie man sie umstellt und anwendet.</li>
+<li><b>Abkürzungen erklären können</b> ist ausdrücklich prüfungsrelevant (dafür gibt es hier ein eigenes Cheatsheet-Kapitel).</li>
+<li><b>Nicht prüfungsrelevant (SS26):</b> Modulationsverfahren (ASK/FSK/PSK, NRZ/RZ, Manchester) – nur wissen, dass es sie gibt.</li>
+</ul>
+<h4>Wie du diesen Modus nutzt</h4>
+<p>Mit den Pfeilen ◀ ▶ blätterst du durch alle Themengebiete – wie im Quiz, nur ohne Fragen. Jede Karte fasst ein Gebiet kompakt zusammen: Definitionen, Tabellen, Merksätze und typische Fallen. Ideal als Debrief <b>vor</b> den Quizzen oder zum gezielten Nachschlagen <b>nach</b> einem Quiz-Durchlauf.</p>
+<div class='merkbox'><b>Lern-Strategie für wenig Zeit:</b> ① Diesen Lernmodus einmal komplett durchblättern → ② Quiz 4 (Komplett-Wiederholung) machen → ③ Falsche Fragen wiederholen → ④ Quiz 3 (Prüfungssimulation) als Generalprobe → ⑤ Am Prüfungstag: die Karten „Rechen-Rezepte“, „Auswendig-Fakten“ und „Abkürzungen“ nochmal durchgehen.</div>`},
+{topic:"Grundlagen", title:"Grundbegriffe der Übertragungstechnik", html:`
+<p>Diese Begriffskette ist die Basis für alles – und ein Klassiker für Freitext-Fragen:</p>
+<ul>
+<li><b>Nachrichtentechnik:</b> befasst sich mit dem Austausch von Nachrichten/Information, meist über größere Distanzen.</li>
+<li><b>Nachricht:</b> eine Mitteilung zwischen Lebewesen und/oder Maschinen – enthält eine gewisse Menge an Information.</li>
+<li><b>Information:</b> „beseitigte Unsicherheit“ – eine <i>subjektive</i> Größe (was für den einen neu ist, ist für den anderen bekannt).</li>
+<li><b>Daten:</b> medienunabhängige Information – Voice, Audio, Image, Video; analog oder digital.</li>
+<li><b>Signal:</b> die Codierung von Information, <i>angepasst an das Übertragungsmedium</i> (lat. „signum“ = Zeichen).</li>
+<li><b>Übertragungskanal:</b> die Strecke zwischen Sender und Empfänger – hier wirken Störungen (Rauschen, Nebensprechen, Verzerrungen).</li>
+</ul>
+<h4>Übertragungskette (Reihenfolge können!)</h4>
+<p>Quelle → Quellencodierer → Kanalcodierer → <b>Kanal</b> → Kanaldecodierer → Quellendecodierer → Sinke</p>
+<h4>Energie- vs. Informationstechnik</h4>
+<table><tr><th></th><th>Energietechnik</th><th>Informationstechnik</th></tr>
+<tr><td>Ziel</td><td>Leistungsübertragung</td><td>Signalübertragung</td></tr>
+<tr><td>Anzustreben</td><td>minimale <b>Leistungs</b>verluste</td><td>minimale <b>Informations</b>verluste</td></tr>
+<tr><td>Erreicht durch</td><td>Hochspannung, Tieftemperaturkabel</td><td>hohe Sendeenergie, robuste Codierung, Fehlerkorrektur</td></tr></table>
+<h4>Analog vs. Digital</h4>
+<p><b>Analog</b> = zeit- und wertkontinuierlich. <b>Digital</b> = zeit- und wertdiskret (Bitfolgen 0/1).</p>
+<h4>Leitungsgebunden vs. drahtlos</h4>
+<p><b>Wired:</b> Zweidrahtleitung, Koaxialleitung, Hohlleiter, Streifenleiter, Lichtwellenleiter. <b>Wireless:</b> Rundfunk, Richtfunk, Mobilfunk, Satellitenfunk.</p>
+<div class='merkbox'><b>Frequenzspektrum grob:</b> je höher die Frequenz, desto kürzer die Wellenlänge, desto eher Sichtverbindung nötig. UHF (0,3–3 GHz) = TV, Mobilfunk, WLAN · SHF (3–30 GHz) = Radar, Satellit, Richtfunk · EHF (30–300 GHz) = mm-Wellen. Ganz unten: Langwelle/U-Boot-Funk.</div>`},
+{topic:"Übertragungsmedien", title:"Kupferkabel: Koax & Twisted Pair", html:`
+<h4>Koaxialkabel – die zwei Impedanzen</h4>
+<p><b>75 Ω = Videosignale</b> · <b>50 Ω = Daten/Kommunikation/Funkmikro-Antennen</b>. Die <b>Impedanz</b> (Wechselstromwiderstand) muss zwischen Sender, Kabel und Empfänger zusammenpassen (<b>Impedanzanpassung</b>), sonst entstehen Reflexionen und Signalverluste.</p>
+<h4>Twisted Pair – warum verdrillt?</h4>
+<p>Die Verdrillung reduziert das <b>Übersprechen (Crosstalk)</b> zwischen Adernpaaren. Standard-Netzwerkkabel nach ISO 11801: <b>4 Adernpaare = 8 Adern</b>, Stecker: <b>RJ45</b>.</p>
+<h4>Schirmungs-Varianten</h4>
+<table><tr><th>Kürzel</th><th>Bedeutung</th></tr>
+<tr><td><b>UTP</b></td><td>Unshielded – keine Schirmung; günstig, flexibel, anfälliger</td></tr>
+<tr><td><b>STP</b></td><td>Shielded – <b>jedes Adernpaar einzeln geschirmt</b>; kein Übersprechen, weniger flexibel</td></tr>
+<tr><td><b>S-UTP</b></td><td>Screened UTP – Paare ungeschirmt, aber <b>Gesamtschirm</b> (Folie)</td></tr>
+<tr><td><b>S/FTP (S-STP)</b></td><td>Paare geschirmt <b>UND</b> Gesamtschirm – Maximum</td></tr></table>
+<h4>Kabelkategorien</h4>
+<table><tr><th>Kategorie</th><th>Bandbreite</th><th>Geschwindigkeit</th></tr>
+<tr><td>Cat. 5</td><td>100 MHz</td><td>100 Mbit/s</td></tr>
+<tr><td>Cat. 5e</td><td>100 MHz</td><td>100 Mbit/s / 1 Gbit/s</td></tr>
+<tr><td>Cat. 6</td><td>250 MHz</td><td>100 Mbit/s / 1 Gbit/s</td></tr>
+<tr><td><b>Cat. 6a</b></td><td><b>500 MHz</b></td><td><b>10 Gbit/s</b></td></tr>
+<tr><td>Cat. 7</td><td>600 MHz</td><td>10 Gbit/s</td></tr>
+<tr><td>Cat. 7a</td><td>1000 MHz</td><td>bis 40 Gbit/s</td></tr></table>
+<div class='warnbox'><b>Falle:</b> Für 10 Gbit/s braucht es laut Tabelle mindestens <b>Cat. 6a</b>. Und: <b>Alien Crosstalk (AXT)</b> = Übersprechen <i>benachbarter Kabel</i> (nicht im selben Kabel!) – relevant bei &gt;1 Gbit/s, Abhilfe: geschirmte Cat.-6a-Kabel (schützen auch gegen EMI/RFI).</div>
+<h4>Steckverbinder-Übersicht</h4>
+<p><b>BNC</b> = Koax, Bajonett (Video/Daten) · <b>Cinch/RCA</b> = Consumer-AV · <b>TNC</b> = Koax verschraubt (vibrationssicher) · <b>RJ45</b> = Twisted Pair · <b>ST/SC/LC/E2000</b> = Glasfaser.</p>`},
+{topic:"Übertragungsmedien", title:"Kabel-Kennwerte: Dämpfung, Übersprechen, Augendiagramm", html:`
+<p>Diese Kennwerte beschreiben, wie „gut“ eine Leitung ist:</p>
+<ul>
+<li><b>Leitungsdämpfung a<sub>L</sub>:</b> Signalverlust über die Streckenlänge, in dB – steigt mit Frequenz und Länge.</li>
+<li><b>Nebensprechdämpfung a<sub>N</sub> (Crosstalk):</b> wie gut ein Adernpaar gegen Übersprechen von Nachbarkanälen geschützt ist – je höher, desto besser.</li>
+<li><b>ACR (Attenuation to Crosstalk Ratio):</b> Verhältnis von Nebensprechdämpfung zu Leitungsdämpfung – der „Abstand“ zwischen Nutzsignal und Störsignal am Kabelende.</li>
+</ul>
+<h4>Praxis-Richtwerte Nebensprechdämpfung</h4>
+<table><tr><th>Anwendung</th><th>Mindestwert</th></tr>
+<tr><td>TV-Übertragung</td><td>≥ 50 dB</td></tr>
+<tr><td>Analoges Telefon</td><td>≥ 58 dB</td></tr>
+<tr><td>Hochwertige Audioübertragung</td><td>≥ 80 dB</td></tr></table>
+<h4>Augendiagramm</h4>
+<p>Überlagerung aller möglichen Signalformen eines Digitalsignals. <b>Je „offener“ das Auge, desto besser die Signalqualität</b> – ein zugekniffenes Auge bedeutet Dämpfungsverzerrung und drohende Bitfehler.</p>
+<div class='merkbox'><b>Anforderungen an gute Übertragungsleitungen:</b> hohe Bandbreite · geringes Nebensprechen · geringe Dämpfung · geringe Störeinflüsse (EMV) · hohe Abhörsicherheit · geringe Kosten pro Kanal/km.</div>`},
+{topic:"Lichtwellenleiter", title:"LWL I: Aufbau, Totalreflexion & Fasertypen", html:`
+<h4>Aufbau & Grundprinzip</h4>
+<p>Ein LWL besteht aus <b>Kern</b> (höherer Brechungsindex n<sub>K</sub>) und <b>Mantel</b> (niedrigerer n<sub>M</sub>) – es gilt <b>n<sub>K</sub> &gt; n<sub>M</sub></b>. Licht wird durch <b>Totalreflexion</b> an der Kern-Mantel-Grenze geführt (Snellius). Bild: ein innen „verspiegelter“ Schlauch – trifft Licht flach genug auf die Wand, wird es zu 100 % zurückgeworfen und „hüpft“ durch die Faser.</p>
+<p>Materialien: Glas oder <b>POF</b> (Polymere Optische Fasern). <b>Stufenprofilfaser</b> = konstante Brechzahl im Kern · <b>Gradientenfaser</b> = Brechzahl nimmt nach außen ab → reduziert die Modendispersion.</p>
+<h4>Multimode vs. Singlemode</h4>
+<table><tr><th>Typ</th><th>Kern</th><th>Eigenschaft</th></tr>
+<tr><td><b>Multimode</b> (OM-Serie)</td><td>50–62,5 µm</td><td>viele Lichtmoden → Modendispersion → kürzere Strecken, günstiger</td></tr>
+<tr><td><b>Singlemode</b> (OS-Serie)</td><td>9–10 µm</td><td>nur ein Mode, kaum Dispersion, sehr lange Strecken, teurer</td></tr></table>
+<h4>Faser-Tabelle</h4>
+<table><tr><th>Faser</th><th>Bandbreite</th><th>Dämpfung</th></tr>
+<tr><td>OM2 (MM)</td><td>1 Gbit/s</td><td>3,5 dB/km</td></tr>
+<tr><td>OM3 (MM)</td><td>10 Gbit/s</td><td>3,5 dB/km</td></tr>
+<tr><td>OM4 (MM)</td><td>100 Gbit/s</td><td>3,5 dB/km</td></tr>
+<tr><td>OS1 (SM)</td><td>1 Gbit/s</td><td>1 dB/km</td></tr>
+<tr><td><b>OS2 (SM)</b></td><td>10 Gbit/s</td><td><b>0,4 dB/km</b></td></tr></table>
+<h4>Vor-/Nachteile gegenüber Kupfer</h4>
+<p><b>Pro:</b> hohe Bandbreite &amp; Reichweite, EMV-unempfindlich, kein Übersprechen, kurzschlusssicher, leicht &amp; flexibel. <b>Contra:</b> aufwändige Messtechnik, aufwändige Verbindungstechnik (Stecker, Spleiße), µm-genaue mechanische Toleranzen nötig.</p>`},
+{topic:"Lichtwellenleiter", title:"LWL II: Fenster, Dispersion, Kennwerte & Stecker", html:`
+<h4>Die drei optischen Fenster</h4>
+<table><tr><th>Wellenlänge</th><th>Einsatz</th></tr>
+<tr><td>850 nm</td><td>Kurzstrecke / LAN</td></tr>
+<tr><td>1300 nm</td><td>niedrige Dispersion</td></tr>
+<tr><td><b>1550 nm</b></td><td><b>geringste Dämpfung → Weitverkehr</b></td></tr></table>
+<h4>Dispersion = Impulsverbreiterung</h4>
+<p>Der Lichtimpuls „zerläuft“ unterwegs – das begrenzt Streckenlänge und Bandbreite. Arten: <b>Modendispersion</b> (verschiedene Lichtwege bei Multimode, Abhilfe: Gradientenfaser), <b>chromatische Dispersion</b> (Material- + Wellenleiterdispersion), <b>Polarisationsmodendispersion</b>.</p>
+<h4>Wichtige Kennwerte</h4>
+<ul>
+<li><b>Bandbreite-Längen-Produkt (BLP):</b> Bandbreite und Länge verhalten sich <b>invers</b>: B = BLP / L. Doppelte Strecke = halbe Bandbreite.</li>
+<li><b>Numerische Apertur (A<sub>N</sub>):</b> der <b>Akzeptanzwinkel</b>, unter dem Licht noch erfolgreich eingekoppelt wird.</li>
+<li><b>Kritischer Winkel:</b> sin(γ<sub>T</sub>) = n₂/n₁ – für Quarzglas→Luft: arcsin(1/1,45) ≈ <b>43,6°</b>.</li>
+</ul>
+<h4>Steckertypen</h4>
+<p><b>ST</b> = Bajonett („stecken und drehen“) · <b>SC</b> = „stecken und klicken“ · <b>LC</b> = Duplex, „push-pull“ · <b>E2000</b>. Schliffe: <b>UPC vs. APC</b> = unterschiedliche Steckerendflächen → unterschiedliche Rückreflexionsdämpfung.</p>
+<h4>Ethernet über Glasfaser (Auszug)</h4>
+<table><tr><th>Standard</th><th>Medium</th><th>Distanz</th></tr>
+<tr><td>1000Base-SX</td><td>Multimode, 850 nm</td><td>275–550 m</td></tr>
+<tr><td>1000Base-LX</td><td>MM oder SM, 1300 nm</td><td>550 m / 5 km</td></tr>
+<tr><td>10GBase-LR</td><td>Singlemode, 1310 nm</td><td>10 km</td></tr>
+<tr><td>10GBase-ER</td><td>Singlemode, 1550 nm</td><td>40 km</td></tr></table>
+<div class='merkbox'><b>Namens-Logik:</b> S = Short (Multimode, 850 nm) · L = Long (10 km) · E = Extended (40 km). Die längsten Strecken laufen im 1550-nm-Fenster.</div>`},
+{topic:"Übertragungsmedien", title:"Drahtlos: WLAN-Standards & Funk", html:`
+<h4>WLAN-Standards (IEEE 802.11)</h4>
+<table><tr><th>Protokoll</th><th>Frequenz</th><th>Max. Datenrate</th><th>Reichweite</th></tr>
+<tr><td>802.11a</td><td>5 GHz</td><td>54 Mbit/s</td><td>35 m</td></tr>
+<tr><td>802.11b</td><td>2,4 GHz</td><td>11 Mbit/s</td><td>35 m</td></tr>
+<tr><td>802.11g</td><td>2,4 GHz</td><td>54 Mbit/s</td><td>38 m</td></tr>
+<tr><td>802.11n</td><td>2,4/5 GHz</td><td>150 Mbit/s</td><td>70 m</td></tr>
+<tr><td>802.11ac</td><td>5 GHz</td><td>866,7 Mbit/s</td><td>35 m</td></tr>
+<tr><td><b>802.11ad</b></td><td><b>60 GHz</b></td><td><b>6912 Mbit/s</b></td><td><b>9 m</b></td></tr></table>
+<div class='merkbox'><b>Muster erkennen:</b> je höher die Frequenz, desto mehr Datenrate, aber desto kürzer die Reichweite (802.11ad: 60 GHz → schnellste Rate, nur 9 m). 2,4 GHz kommt weiter und besser durch Wände als 5/60 GHz.</div>
+<h4>WLAN: Vor- und Nachteile</h4>
+<p><b>Pro:</b> bequem, „ad-hoc“ verfügbar, geringe Infrastrukturanforderungen. <b>Contra:</b> reichweitenbegrenzt, störanfällig, <b>Bandbreite wird geteilt</b>, Gebäudematerialien dämpfen/reflektieren HF-Signale, teils aus Sicherheitsgründen verboten.</p>
+<h4>Funkmikrofonie</h4>
+<p>Drahtlose Mikrofone/In-Ear-Systeme werden von der <b>Bundesnetzagentur</b> reguliert (VVnömL-Verwaltungsvorschrift).</p>`},
+{topic:"Verbindungstechnik", title:"PoE, Transceiver & strukturierte Verkabelung", html:`
+<h4>Power over Ethernet (PoE)</h4>
+<p>Strom UND Daten über <b>ein</b> Twisted-Pair-Kabel. Typische Geräte: Access Points, IP-/PTZ-Kameras, VoIP-Telefone, Lautsprecher, Displays, Leuchten, AV-Signalconverter.</p>
+<table><tr><th>PoE-Klasse</th><th>Max. Strom</th><th>Leistung am Endgerät</th><th>Name</th></tr>
+<tr><td>0–3</td><td>350 mA</td><td>6,49–12,95 W</td><td>Very Low/Low/Mid Power</td></tr>
+<tr><td><b>4</b></td><td>600 mA</td><td><b>12,95–25,5 W</b></td><td><b>High Power / PoE+</b></td></tr>
+<tr><td>5–8</td><td>2× 960 mA</td><td>40–71 W</td><td>4PPoE</td></tr></table>
+<p><b>PoE-Injector</b> = fügt einer Nicht-PoE-Strecke nachträglich PoE hinzu · <b>PoE-Extender</b> = verlängert die Reichweite (z. B. 2× 90 m).</p>
+<div class='warnbox'><b>LED-Diagnose:</b> Link-LED an + PoE-LED aus = Datenverbindung okay, aber KEINE Stromlieferung über das Kabel.</div>
+<h4>Transceiver (SFP-Familie)</h4>
+<table><tr><th>Typ</th><th>Max. Geschwindigkeit</th></tr>
+<tr><td>SFP</td><td>1 Gbit/s</td></tr>
+<tr><td>SFP+</td><td>10 Gbit/s</td></tr>
+<tr><td>QSFP (4× SFP)</td><td>4 Gbit/s</td></tr>
+<tr><td>SFP28</td><td>25 Gbit/s</td></tr>
+<tr><td>QSFP+ (4× SFP+)</td><td>40 Gbit/s</td></tr></table>
+<p>Der Switch-Port bleibt gleich – nur das Modul wird passend zum Medium (CAT / Multimode / Singlemode) getauscht.</p>
+<h4>Strukturierte Verkabelung</h4>
+<p>Einheitliches, herstellerunabhängiges Konzept für Gebäude/Campus – hierarchisch: <b>Primär- / Sekundär- / Tertiärverkabelung</b> (vergleichbar Core–Aggregation–Access). Twisted Pair für die Horizontale, <b>LWL für Backbone-Strecken</b>. Praxis: redundante (gestackte) Core-Switches, Access-Switches pro Gebäude/Etage per <b>LACP</b> (Link Aggregation) mehrfach angebunden – kein SPoF.</p>`},
+{topic:"Netzwerktechnik", title:"Netzwerk-Basics: MAC, IP & Geräte", html:`
+<h4>Die zwei Adressen jedes Netzwerkknotens</h4>
+<table><tr><th></th><th>MAC-Adresse</th><th>IP-Adresse</th></tr>
+<tr><td>Was</td><td>Hardware-Adresse der <b>NIC</b> (Netzwerkkarte)</td><td>logische Adresse für Datenpakete</td></tr>
+<tr><td>Länge</td><td><b>48 Bit</b> – 6 Gruppen à 2 Hex-Ziffern</td><td>IPv4: <b>32 Bit</b> · IPv6: <b>128 Bit</b></td></tr>
+<tr><td>Beispiel</td><td>94:18:65:7D:98:7C</td><td>192.168.0.125</td></tr>
+<tr><td>Vergabe</td><td>fest „eingebrannt“, weltweit einzigartig</td><td>manuell, per DHCP oder automatisch</td></tr>
+<tr><td>OSI</td><td>Layer 2 (Switch)</td><td>Layer 3 (Router)</td></tr></table>
+<p>Die ersten 3 Byte der MAC = <b>OUI</b> (Organizationally Unique Identifier) → identifizieren den <b>Hersteller</b> (94:18:65 = Netgear). Analogie: MAC = Personalausweisnummer (fest), IP = Wohnadresse (kann sich ändern).</p>
+<h4>Geräte im Netzwerk – die Merksätze</h4>
+<table><tr><th>Gerät</th><th>Funktion</th></tr>
+<tr><td><b>Switch</b></td><td>leitet im LAN anhand der <b>MAC-Adresse</b> weiter (Layer 2). Managed = kann VLAN/QoS, Unmanaged = nur anstecken</td></tr>
+<tr><td><b>Router</b></td><td>verbindet Netzwerke anhand der <b>IP-Adresse</b> (Layer 3), Grenze WAN ↔ LAN, leitet KEINE Broadcasts weiter</td></tr>
+<tr><td><b>Gateway</b></td><td>= Router, der zusätzlich zwischen Adressräumen/<b>Protokollen übersetzt</b></td></tr></table>
+<h4>Die Skript-Testfragen (sofort beantworten können!)</h4>
+<ul>
+<li>Untersucht die IP-Adresse eines Pakets? → <b>Router</b></li>
+<li>Übersetzt Protokolle? → <b>Gateway</b></li>
+<li>Leitet zwischen nicht direkt verbundenen Geräten? → <b>Router</b></li>
+<li>Ermöglicht VLANs/Verkehrsregeln? → <b>(Managed) Switch</b></li>
+<li>Leitet Ethernet-Verkehr anhand der MAC weiter? → <b>Switch</b></li>
+<li>Verbindet privates Netz mit dem Internet? → <b>Router/Gateway</b></li>
+<li>Physische Verbindung mehrerer Endgeräte im LAN? → <b>Switch</b></li>
+</ul>
+<p><b>Hops</b> = Anzahl der Geräte, die ein Datenstrom auf dem Weg zum Ziel passiert. <b>QoS</b> = Priorisierung wichtiger Pakete (AV/VoIP) – Funktion von Managed Switches. <b>Broadcast-Domain</b> = alle Teilnehmer, die ein einziger Broadcast erreicht; Router begrenzen sie, jedes VLAN ist eine eigene.</p>`},
+{topic:"Zahlensysteme", title:"Binär · Dezimal · Hexadezimal – Schritt für Schritt", html:`
+<p>Die Basis für MAC-Adressen, IP-Adressen und Subnetting. Kernwissen: <b>1 Byte = 8 Bit = 2 Hex-Ziffern</b>, Wertebereich 0–255.</p>
+<h4>Die Bit-Wertetabelle (auswendig!)</h4>
+<table><tr><th>Bit</th><td>128</td><td>64</td><td>32</td><td>16</td><td>8</td><td>4</td><td>2</td><td>1</td></tr></table>
+<h4>Dezimal → Binär</h4>
+<p>Immer die größte passende Zweierpotenz abziehen. Beispiel <b>115</b>: 115−64=51 → 51−32=19 → 19−16=3 → 3−2=1 → 1−1=0. Gesetzt: 64+32+16+2+1 → <b>0111 0011</b>.</p>
+<h4>Binär → Dezimal</h4>
+<p>Werte der gesetzten Bits addieren. <b>1110 1111</b> = 128+64+32+8+4+2+1 = <b>239</b>. Trick: 1111 1111 = 255, es fehlt die 16 → 255−16 = 239.</p>
+<h4>Hex → Dezimal (je Byte)</h4>
+<p>Wert = 16 × (erste Ziffer) + (zweite Ziffer), mit A=10, B=11, C=12, D=13, E=14, F=15.</p>
+<ul>
+<li><b>7D</b> = 7·16 + 13 = <b>125</b></li>
+<li><b>98</b> = 9·16 + 8 = <b>152</b></li>
+<li><b>AA</b> = 10·16 + 10 = <b>170</b></li>
+<li><b>FF</b> = 15·16 + 15 = <b>255</b> (Maximum)</li>
+</ul>
+<h4>Dezimal → Hex</h4>
+<p>Erst binär, dann je 4 Bit eine Hex-Ziffer. <b>192</b> = 128+64 = 1100 0000 → 1100=C, 0000=0 → <b>C0</b>. <b>168</b> = 1010 1000 → <b>A8</b>.</p>
+<h4>Beispiele aus dem Skript</h4>
+<table><tr><th>IP (dezimal)</th><th>Hex</th><th>Binär</th></tr>
+<tr><td>192.168.0.125</td><td>C0.A8.00.7D</td><td>11000000.10101000.00000000.01111101</td></tr>
+<tr><td>10.15.115.37</td><td>0A.0F.73.25</td><td>00001010.00001111.01110011.00100101</td></tr>
+<tr><td>239.200.100.7</td><td>EF.C8.64.07</td><td>11101111.11001000.01100100.00000111</td></tr></table>
+<div class='merkbox'>MAC-Beispiel: 94:18:65:7D:98:7C (OUI 94:18:65 = Netgear) → dezimal 148:24:101:125:152:124. Jede Gruppe einzeln umrechnen!</div>`},
+{topic:"IP-Adressierung", title:"IPv4, IPv6 & die IANA-Bereiche", html:`
+<h4>IPv4</h4>
+<p>32 Bit = 4 Oktette à 8 Bit, dezimal notiert (192.168.0.125). RFC 760 (1980). Knapper Adressraum (~4 Mrd.) → Workaround: <b>NAT</b>.</p>
+<h4>Die IANA-Tabelle (unbedingt sicher können!)</h4>
+<table><tr><th>Bereich</th><th>Zweck</th><th>Geroutet?</th></tr>
+<tr><td><b>10.0.0.0/8</b></td><td>privat – große Netze</td><td>nein</td></tr>
+<tr><td><b>172.16.0.0/12</b> (172.16–172.31!)</td><td>privat – mittelgroße Netze</td><td>nein</td></tr>
+<tr><td><b>192.168.0.0/16</b></td><td>privat – kleine Netze</td><td>nein</td></tr>
+<tr><td><b>127.0.0.0/8</b></td><td>Loopback / localhost (Diagnose)</td><td>nein</td></tr>
+<tr><td><b>169.254.0.0/16</b></td><td>APIPA / Link-Local (Selbstvergabe ohne DHCP)</td><td>nein</td></tr>
+<tr><td><b>224.0.0.0/4</b> (224–239.x)</td><td>Multicast</td><td><b>ja</b></td></tr>
+<tr><td>240.0.0.0/4</td><td>experimentell/reserviert</td><td>–</td></tr>
+<tr><td>0.0.0.0/8</td><td>unbekannte IP-Adresse</td><td>nein</td></tr>
+<tr><td>x.x.x.255 (im Subnetz)</td><td>Broadcast</td><td>nein</td></tr></table>
+<div class='merkbox'><b>Schnell-Erkennung:</b> beginnt mit 10. / 172.16–31. / 192.168. → privat · 127. → Loopback · 169.254. → APIPA · endet auf .255 (im Subnetz) → Broadcast · alles andere → öffentlich.</div>
+<div class='warnbox'><b>Die zwei Klassiker-Fallen:</b> ① 169.<b>127</b>.x.x ist NICHT APIPA (nur 169.<b>254</b>.x.x!) – sondern öffentlich. ② 172.<b>32</b>.x.x ist NICHT privat (der Bereich endet bei 172.31.255.254!). Immer das zweite Oktett genau prüfen.</div>
+<h4>Klassische Netzklassen</h4>
+<p><b>A</b>: 8 Bit Netz / 24 Bit Host (1–126) · <b>B</b>: 16/16 (128–191) · <b>C</b>: 24/8 (192–223) · <b>D</b>: Multicast (224–239).</p>
+<h4>IPv4 vs. IPv6</h4>
+<table><tr><th></th><th>IPv4</th><th>IPv6</th></tr>
+<tr><td>Adresse</td><td>32 Bit, 4× 8 Bit, dezimal</td><td><b>128 Bit, 8× 16-Bit-Blöcke, hexadezimal</b></td></tr>
+<tr><td>Adressraum</td><td>knapp (NAT nötig)</td><td>„unvorstellbar groß“</td></tr>
+<tr><td>Protokolle</td><td>IPSec/QoS/Multicast getrennt</td><td><b>nativ unterstützt</b></td></tr>
+<tr><td>Vergabe</td><td>manuell oder DHCP</td><td>Auto-Konfiguration ohne DHCP möglich</td></tr>
+<tr><td>Besonderheit</td><td>–</td><td>kann MAC enthalten → eindeutig; min. Paket 1280 Byte</td></tr></table>
+<p>IPv6-CIDR-Suffix: fast immer zwischen <b>/48 und /64</b>. Beispiel: FEDC:BA98:7654:3210:…</p>`},
+{topic:"Subnetting", title:"Subnetting Schritt für Schritt (mit allen Rechenwegen)", html:`
+<h4>Grundidee</h4>
+<p>Die <b>Subnetzmaske</b> teilt die IP-Adresse in <b>Netz-Bits</b> (welches Netz – „Straße“) und <b>Host-Bits</b> (welches Gerät – „Hausnummer“). <b>CIDR</b>-Schreibweise: /24 = 24 Netz-Bits = 255.255.255.0. <b>VLSM</b> = Subnetze dürfen unterschiedlich groß sein.</p>
+<p>In jedem Subnetz reserviert: <b>erste Adresse = Netz-ID</b>, <b>letzte = Broadcast</b> → nutzbare Hosts = <b>2^(Host-Bits) − 2</b>.</p>
+<h4>Das 4-Schritte-Rezept</h4>
+<ul>
+<li>① <b>Host-Bits</b> = 32 − CIDR-Wert</li>
+<li>② <b>Blockgröße</b> = 2^(Host-Bits) — oder schneller: 256 − Maskenwert im „interessanten“ Oktett</li>
+<li>③ In welchen <b>Block</b> (Vielfaches der Blockgröße) fällt die Adresse? → untere Grenze = Netz-ID, obere Grenze −1... genauer: nächster Block-Anfang −1 = Broadcast</li>
+<li>④ <b>Nutzbar</b> = Netz-ID+1 bis Broadcast−1 = 2^h − 2 Hosts</li>
+</ul>
+<h4>Beispiel 1: 192.168.56.30 /24</h4>
+<p>Netz-ID <b>192.168.56.0</b> · nutzbar .1–.254 (254 Hosts) · Broadcast <b>192.168.56.255</b>.</p>
+<h4>Beispiel 2: 192.168.10.77 /26 (Maske 255.255.255.192)</h4>
+<p>① h = 6 → ② Blockgröße 64 (256−192) → ③ Blöcke: 0–63, 64–127, 128–191, 192–255; die 77 liegt in <b>64–127</b> → Netz-ID <b>.64</b>, Broadcast <b>.127</b> → ④ nutzbar .65–.126 = <b>62 Hosts</b>.</p>
+<h4>Beispiel 3: „mindestens 2000 Hosts“ (Klasse B)</h4>
+<p>Kleinstes h mit 2^h−2 ≥ 2000: 2¹⁰−2=1022 ✗, 2¹¹−2=2046 ✓ → <b>11 Host-Bits</b> → /21 → Maske <b>255.255.248.0</b> (drittes Oktett: 128+64+32+16+8=248).</p>
+<h4>Beispiel 4: 210.52.190.0, mindestens 10 Hosts</h4>
+<p>2⁴−2=14 ≥ 10 → 4 Host-Bits → <b>/28</b>, Maske <b>255.255.255.240</b> (256−16=240) → erstes Subnetz: Netz-ID .0, Broadcast .15, nutzbar <b>.1 bis .14</b>.</p>
+<div class='warnbox'><b>Häufigste Fehler:</b> die −2 vergessen · Blockgrenzen falsch (immer bei Vielfachen der Blockgröße!) · bei „mindestens X Hosts“ zu kleine Potenz wählen. Maskenwerte der letzten Bits: /25=128, /26=192, /27=224, /28=240, /29=248, /30=252.</div>`},
+{topic:"Protokolle & Dienste", title:"DHCP, APIPA, DNS & DDNS", html:`
+<h4>Statisch vs. dynamisch</h4>
+<table><tr><th>Dynamisch (DHCP)</th><th>Statisch</th></tr>
+<tr><td>einfacher zu verwalten, üblich in großen Netzen, vermeidet Fehlkonfigurationen</td><td>sinnvoll, wenn Ressourcen per fester IP gefunden werden müssen – <b>typisch für AV-Geräte/Mediensteuerung!</b></td></tr></table>
+<h4>DHCP (Dynamic Host Configuration Protocol)</h4>
+<p>Server verteilt auf Anfrage IP-Adressen aus einem <b>Adress-Pool</b>. Mitgeliefert werden auch Subnetzmaske und <b>DNS-Server-Infos</b>. Analogie: der Kellner, der Gästen automatisch freie Tische zuweist – niemand setzt sich versehentlich auf einen besetzten Platz (= IP-Konflikt).</p>
+<h4>Link-Local / APIPA</h4>
+<p>Antwortet der DHCP-Server nach <b>5 Sekunden</b> nicht, vergibt sich das Gerät selbst eine Adresse aus <b>169.254.x.x</b>. Vorher prüft es per ARP-Broadcast („Is anyone using 169.254.x.x?“), ob die Adresse frei ist. Eine 169.254er-Adresse ist in der Praxis fast immer ein <b>DHCP-Problem-Symptom</b>. Weitere Auto-Config-Verfahren: Apple Bonjour, NetBIOS Discovery, UPnP.</p>
+<h4>DNS & DDNS</h4>
+<ul>
+<li><b>DNS</b> löst Namen in IP-Adressen auf (Telefonbuch). Domainname = <b>Host + Domain + TLD</b>.</li>
+<li><b>DDNS</b> (Dynamic DNS) <b>verknüpft und synchronisiert DHCP- und DNS-Server</b>: ändert sich die IP, wird der Namenseintrag automatisch aktualisiert → Gerät bleibt unter seinem Namen erreichbar.</li>
+<li>AV-Praxis: Viele AV-Geräte unterstützen DNS nur unzureichend → ein Grund mehr für <b>statische IPs</b> im AV-Netz.</li>
+</ul>`},
+{topic:"Protokolle & Dienste", title:"ARP, NAT/PAT & Routing", html:`
+<h4>ARP (Address Resolution Protocol)</h4>
+<p>Findet zur bekannten <b>IP</b> die zugehörige <b>MAC</b>-Adresse (verbindet Layer 3 mit Layer 2):</p>
+<ul>
+<li>① Gerät sendet <b>Broadcast</b>: „Who has IP X?“</li>
+<li>② Das Gerät mit dieser IP antwortet mit seiner MAC.</li>
+<li>③ Ergebnis wird in der <b>ARP-Tabelle</b> gespeichert (Cache). Befehl: <code>arp -a</code></li>
+</ul>
+<p>Analogie: Zuruf ins Treppenhaus „Wer ist Frau Müller?“ – Antwort mit Wohnungsnummer, die du dir im Adressbuch merkst.</p>
+<h4>NAT / PAT / Port Forwarding</h4>
+<ul>
+<li><b>NAT</b> (RFC 1631): übersetzt private ↔ öffentliche Adressen im Paket-Header, weil private Adressen nicht ins Internet geroutet werden. Nebeneffekt: mehr Sicherheit (interne Geräte von außen nicht direkt erreichbar), meist Teil der Firewall-Strategie.</li>
+<li><b>PAT / NAPT / IP-Masquerading</b>: „One to Many“ – <b>viele</b> private Geräte teilen sich <b>eine</b> öffentliche IP, unterschieden per Portnummer. Analogie: eine Firmen-Telefonnummer, intern Durchwahlen.</li>
+<li><b>Port Forwarding</b> = PAT + Paketfilterung kombiniert (z. B. nur EIN Rechner darf per Telnet/Port 23 aufs AV-Gerät).</li>
+</ul>
+<h4>Routing & TTL</h4>
+<p>Router/L3-Switches führen eine <b>Routing-Tabelle</b> (Zielnetz, Subnetzmaske, Next-Hop/Gateway). <b>TTL</b> (Time to Live) im IP-Header wird pro Router-Hop um 1 verringert – bei 0 wird das Paket verworfen (Schutz vor Endlos-Schleifen). <code>tracert</code>/<code>traceroute</code> nutzt genau das, um Routen sichtbar zu machen.</p>`},
+{topic:"VLAN & Architektur", title:"VLAN im Detail", html:`
+<h4>Warum VLANs?</h4>
+<ul>
+<li><b>Sicherheit:</b> Zugriff einschränken.</li>
+<li><b>Verkehr begrenzen:</b> weniger Adressen → schnellere Auflösung; v. a. <b>Broadcast-Verkehr</b> kann zeitkritische AV-Anwendungen ernsthaft stören.</li>
+<li><b>Effizienz:</b> Hardware/Ports besser nutzen, einfachere Administration.</li>
+</ul>
+<h4>Technik: IEEE 802.1Q</h4>
+<p>Optionales <b>4-Byte-Tag</b> im Ethernet-Frame zwischen Quell-MAC und EtherType. Beginnt mit <b>TPID 0x8100</b>, enthält Priorität + VLAN-ID. Mögliche IDs: <b>1–4094</b>. Jedes VLAN = eigenes Subnetz = eigene Broadcast-Domain.</p>
+<h4>Access-Port vs. Trunk-Port</h4>
+<table><tr><th>Port-Typ</th><th>Eigenschaft</th></tr>
+<tr><td><b>Access</b></td><td>für Endgeräte, die VLANs nicht verstehen (PC, Telefon). Eingehend: feste <b>PVID</b> wird zugewiesen · Ausgehend: <b>untagged</b></td></tr>
+<tr><td><b>Trunk</b></td><td>verbindet Switches, trägt <b>mehrere VLANs gleichzeitig getaggt</b>, damit der Empfänger-Switch die Zuordnung kennt</td></tr></table>
+<p>Bild: VLANs = abschließbare Wohnungen im selben Haus (Switch), der Trunk = der Aufzug, der alle Bewohner mit Etikett transportiert.</p>
+<h4>Inter-VLAN-Routing</h4>
+<p>Geräte in verschiedenen VLANs (= verschiedenen Subnetzen) brauchen zum Kommunizieren einen <b>Router oder Layer-3-Switch</b>. Praxis: Data-VLAN, VoIP-VLAN, AV-VLAN getrennt; Switches untereinander per Trunk.</p>`},
+{topic:"VLAN & Architektur", title:"Topologien, Spine-Leaf, STP & Ethernet-Frame", html:`
+<h4>Grundtopologien</h4>
+<table><tr><th>Topologie</th><th>Merkmal</th></tr>
+<tr><td>Stern</td><td>ein zentraler Knoten → dessen Ausfall = <b>SPoF</b> (Single Point of Failure)</td></tr>
+<tr><td>Teilvermascht</td><td>Redundanz nur wo nötig, weniger Hops</td></tr>
+<tr><td>Vollvermascht</td><td>jeder mit jedem – maximale Redundanz, teuer</td></tr>
+<tr><td>Erweiterter Stern</td><td>mehrere Sterne hierarchisch – Praxisstandard in Gebäuden</td></tr></table>
+<h4>3-Tier vs. Spine-Leaf</h4>
+<p><b>3-Tier</b> (Core → Aggregation → Access): baumartig; Verkehr zwischen Access-Switches läuft über mehrere Ebenen → variable Hops und Latenz. <b>Spine-Leaf</b>: 2 Ebenen, <b>jeder Leaf mit jedem Spine verbunden</b> → zwischen 2 Leafs <b>IMMER genau 2 Hops</b> → planbare Latenz. Vorteile: Redundanz, Bandbreite, Skalierbarkeit, geringere Kosten/Latenz, weniger Bottlenecks.</p>
+<p><b>North-South</b> = Verkehr rein/raus (Client ↔ Server/Internet) · <b>East-West</b> = horizontal (Server ↔ Server) – dominiert in modernen AV-/RZ-Netzen → begünstigt Spine-Leaf.</p>
+<p>Praxis „Pro-AV“: 2 Core-Switches <b>gestackt</b> (kein SPoF), Gebäude per <b>LACP</b> redundant angebunden. <b>Achtung:</b> Stacking, AVB und PTP TC schließen sich gegenseitig aus!</p>
+<h4>Broadcast Storm & STP</h4>
+<p>Redundante Verkabelung (Schleife) ohne Schutz → Broadcasts kreisen endlos = <b>Broadcast Storm</b>. <b>STP (Spanning Tree Protocol</b>, Radia Perlman<b>)</b> deaktiviert redundante Verbindungen logisch, bis sie gebraucht werden.</p>
+<div class='warnbox'><b>Nicht verwechseln:</b> STP = Spanning Tree Protocol (Netz) ODER Shielded Twisted Pair (Kabel) – Kontext!</div>
+<h4>Ethernet-Frame</h4>
+<p>Max. <b>1518 Byte</b>, Nutzdaten <b>46–1500 Byte</b>. Aufbau: Preamble → SFD → Ziel-MAC → Quell-MAC → EtherType/Size → Payload → <b>CRC/FCS</b> (Prüfsumme). Das VLAN-Tag (4 Byte) sitzt optional zwischen Quell-MAC und EtherType.</p>`},
+{topic:"Protokolle & Dienste", title:"TCP vs. UDP, Ports & VPN", html:`
+<h4>TCP vs. UDP (Layer 4)</h4>
+<table><tr><th></th><th>TCP</th><th>UDP</th></tr>
+<tr><td>Verbindung</td><td>verbindungsorientiert</td><td>verbindungslos</td></tr>
+<tr><td>Zuverlässigkeit</td><td>Handshake, Sliding Window, Resend – Pakete geprüft &amp; sortiert</td><td>„Fire and forget“ – keine Rückmeldung</td></tr>
+<tr><td>Nachteil</td><td>Overhead, höhere Latenz</td><td>Verluste unbemerkt</td></tr>
+<tr><td>Einsatz</td><td>Steuerung, garantierte Zustellung</td><td><b>Echtzeit-AV-Streams</b> (Timing schlägt Perfektion)</td></tr></table>
+<p>Analogie: TCP = Einschreiben mit Unterschrift · UDP = Postkarte. AV-Streams nutzen UDP, weil ein nachgesendetes Paket ohnehin zu spät käme.</p>
+<h4>Ports</h4>
+<p>Logische Endpunkt-Nummern, vergeben über die <b>IANA</b>. Bereiche: <b>0–1023</b> Systemports („well known“) · <b>1024–49151</b> registrierte User-Ports · <b>49152–65535</b> dynamische „high ports“.</p>
+<table><tr><th>Dienst</th><th>Port</th></tr>
+<tr><td>HTTP</td><td><b>80</b></td></tr>
+<tr><td>HTTPS</td><td><b>443</b></td></tr>
+<tr><td>FTP</td><td><b>20</b> (Daten) / <b>21</b> (Steuerung)</td></tr>
+<tr><td>SSH</td><td><b>22</b></td></tr>
+<tr><td>Telnet</td><td><b>23</b></td></tr>
+<tr><td>DNS</td><td><b>53</b></td></tr>
+<tr><td>SNMP</td><td><b>161</b></td></tr></table>
+<h4>VPN-Typen</h4>
+<table><tr><th>Typ</th><th>OSI-Schicht</th><th>Eigenschaften</th></tr>
+<tr><td><b>L2TP</b></td><td><b>2</b> – Sicherung</td><td>Client nötig, auch Nicht-IP-Daten, spürbare Latenz möglich, heute selten</td></tr>
+<tr><td><b>IPSec</b></td><td><b>3</b> – Vermittlung</td><td>Client nötig, sichert jedes IP-Transportprotokoll, üblich zwischen Standorten</td></tr>
+<tr><td><b>SSL-VPN</b></td><td><b>7</b> – Anwendung</td><td><b>keine Client-Software</b> (Browser!), nur TCP, granulare Kontrolle, mobil</td></tr></table>
+<div class='warnbox'><b>VPN + Echtzeit-AV:</b> Verschlüsselung + Tunnel-Wrapper = Overhead → Pakete werden größer → <b>Fragmentierung</b> droht → Lösung: Framegröße reduzieren.</div>`},
+{topic:"Multicast & Zeit", title:"Unicast/Multicast, IGMP, NTP & PTP", html:`
+<h4>Die drei Transportmethoden</h4>
+<table><tr><th>Verfahren</th><th>Prinzip</th></tr>
+<tr><td><b>Unicast</b></td><td>einer an einen – beste Latenz, für Switches am einfachsten</td></tr>
+<tr><td><b>Broadcast</b></td><td>einer an alle (in der Broadcast-Domain) – u. a. für Verbindungsaufbau (ARP, DHCP)</td></tr>
+<tr><td><b>Multicast</b></td><td>einer an viele <b>Abonnenten</b> – besseres Bandbreitenmanagement; je mehr Kanäle, desto wichtiger. Adressbereich 224–239.x.x.x</td></tr></table>
+<h4>IGMP – das Multicast-Management</h4>
+<ul>
+<li><b>IGMP:</b> Geräte abonnieren (<b>join</b>) / kündigen (<b>leave</b>) Multicast-Streams – Voraussetzung für Multicasting.</li>
+<li><b>IGMP Snooping:</b> Switch schickt Streams nur an interessierte Ports (sonst würde geflutet wie Broadcast).</li>
+<li><b>IGMP Querier:</b> fragt aktiv Interessen ab – <b>nur EINER pro Netzsegment!</b></li>
+<li><b>TTL = 1</b> typisch: Paket kommt über keinen Router hinaus, bleibt im lokalen Segment.</li>
+</ul>
+<h4>Zeitsynchronisation: NTP vs. PTP</h4>
+<table><tr><th></th><th>NTP</th><th>PTP (IEEE 1588)</th></tr>
+<tr><td>Genauigkeit</td><td>ca. 200 µs – 10 ms</td><td><b>µs- bis ns-Bereich</b></td></tr>
+<tr><td>Einsatz</td><td>Datum/Uhrzeit von Zeitservern (pool.ntp.org)</td><td>Takt für AVoIP: <b>Dante, AES67, AVB</b></td></tr></table>
+<p><b>PTP-Rollen:</b> <b>GM</b> Grandmaster Clock (Referenzzeit) · <b>BC</b> Boundary Clock (reicht Zeit zwischen Segmenten weiter) · <b>TC</b> Transparent Clock (korrigiert nur Laufzeiten, keine eigene Zeitquelle). <b>AVB</b> = IEEE-Standardfamilie für zeitsynchrones AV mit garantierter Bandbreite, nutzt PTP.</p>
+<div class='warnbox'>Stacking, AVB und PTP TC/BC/GM schließen sich gegenseitig aus – ein Switch-Stack kann keine dieser Rollen ausführen!</div>`},
+{topic:"Netzwerksicherheit", title:"Access Control, NAC/ACL & Firewall", html:`
+<h4>Grundbausteine</h4>
+<ul>
+<li><b>Authentifizierung & Autorisierung:</b> Benutzerprofil, Zugriffsrechte, Gruppenmitgliedschaft, Passwort / <b>2FA</b> / Biometrie.</li>
+<li><b>Least-Privilege-Prinzip:</b> nur so viele Rechte wie nötig; erweiterte Rechte nur per Genehmigungsprozess.</li>
+<li><b>NAC</b> (Network Access Control): was du darfst, hängt davon ab, <b>wer du bist</b> (Login-abhängig).</li>
+<li><b>ACL</b> (Access Control List): Regelliste, <b>was durch den Router geleitet</b> werden darf.</li>
+</ul>
+<div class='merkbox'>Kurzform: NAC fragt „Wer bist du?“ · ACL fragt „Darf dieses Paket durch?“</div>
+<h4>Firewall</h4>
+<p>Hard- oder Software, die unberechtigtes Eindringen verhindert und Verkehr regelt – per <b>Paketfilterung</b> (Quelle/Ziel-Adresse &amp; -Port, Protokoll, Inhalt).</p>
+<table><tr><th>Konzept</th><th>Prinzip</th><th>Bewertung</th></tr>
+<tr><td><b>Default Allow</b></td><td>alles erlaubt, außer explizit verboten</td><td>benutzerfreundlicher, riskanter</td></tr>
+<tr><td><b>Default Deny</b></td><td>alles verboten, außer explizit erlaubt</td><td><b>sicherer</b>, aber aufwändiger</td></tr></table>
+<p>Türsteher-Bild: Default Allow = Verbotsliste · Default Deny = Gästeliste.</p>
+<h4>AV-Design-Praxis</h4>
+<p>System-Ports und Protokolle der AV-Geräte <b>dokumentieren</b> und mit dem Netzwerk-Administrator abstimmen. Auch beachten: <b>bursty traffic</b> (stoßweiser Verkehr) stört zeitkritische AV-Streams → QoS, VLAN-Trennung, Bandbreitenreserven.</p>`},
+{topic:"OSI-Modell", title:"Das OSI-Modell – 7 Schichten + Merksätze", html:`
+<p>Das OSI-Modell (Open Systems Interconnection) beschreibt Netzwerkkommunikation in 7 Schichten. <b>1–4 = Transportsystem, 5–7 = Anwendungssystem.</b></p>
+<table><tr><th>#</th><th>Schicht (DE/EN)</th><th>Aufgabe / Beispiel</th></tr>
+<tr><td>7</td><td>Anwendung / Application</td><td>Nutzerzugriff auf Netzwerkdaten – <b>HTTP</b> im Browser</td></tr>
+<tr><td>6</td><td>Darstellung / Presentation</td><td>Zwischenform: Verschlüsselung, Kompression – <b>TLS</b></td></tr>
+<tr><td>5</td><td>Sitzung / Session</td><td>baut/verwaltet/beendet Sitzungen, wer/wann sendet – <b>SDP</b> (Webkonferenzen)</td></tr>
+<tr><td>4</td><td>Transport</td><td>Ende-zu-Ende, segmentiert/reassembliert, Fehlerkorrektur – <b>TCP, UDP</b></td></tr>
+<tr><td>3</td><td>Vermittlung / Network</td><td>adressiert &amp; routet Pakete zu IP-Adressen, MAC ↔ IP – <b>Routing, IPSec</b></td></tr>
+<tr><td>2</td><td>Sicherung / Data Link</td><td>fehlerfreier Transfer Gerät-zu-Gerät, Dateneinheit <b>Frame</b>, MAC-Adressen – <b>Switch</b></td></tr>
+<tr><td>1</td><td>Bitübertragung / Physical</td><td>physische Übertragung von Bits – <b>Cat-Kabel, WLAN-Normen</b></td></tr></table>
+<div class='merkbox'><b>Merksätze:</b><br>Deutsch (7→1): „<b>A</b>lle <b>D</b>eutschen <b>S</b>tudenten <b>t</b>rinken <b>v</b>erschiedene <b>S</b>orten <b>B</b>ier“<br>Englisch (1→7): „<b>P</b>lease <b>D</b>o <b>N</b>ot <b>T</b>hrow <b>S</b>ausage <b>P</b>izza <b>A</b>way“</div>
+<h4>Die wichtigsten Zuordnungen für die Klausur</h4>
+<ul>
+<li>MAC / Switch / Frame → <b>Schicht 2</b></li>
+<li>IP / Router / Routing / IPSec → <b>Schicht 3</b></li>
+<li>TCP / UDP / Ports → <b>Schicht 4</b></li>
+<li>SDP → <b>5</b> · TLS → <b>6</b> · HTTP → <b>7</b></li>
+<li>L2TP → 2 · IPSec → 3 · SSL-VPN → 7 (VPN-Typen)</li>
+</ul>`},
+{topic:"AVoIP", title:"AVoIP: Begriffe, MoIP-Topologien & Dante", html:`
+<h4>Begriffe rund um Media over IP</h4>
+<table><tr><th>Begriff</th><th>Bedeutung</th></tr>
+<tr><td><b>AVoIP</b></td><td>Audio Video over IP – AV-Signale über Standard-IP-Netze</td></tr>
+<tr><td><b>MoIP</b></td><td>Media over IP – Oberbegriff</td></tr>
+<tr><td><b>IPTV</b></td><td>Fernsehen über IP-Netzwerke</td></tr>
+<tr><td><b>OTT / SVoD</b></td><td>„Over the Top“ – Inhalte direkt übers offene Internet / Streaming-Abo</td></tr>
+<tr><td><b>IToAV</b></td><td>IT-Technologien ziehen in die AV-Welt ein</td></tr>
+<tr><td><b>Professional MoIP</b></td><td>MoIP für Profi-AV (Broadcast, Live-Produktion)</td></tr></table>
+<h4>MoIP-Topologien (Enc = Encoder, Dec = Decoder, MP = Matrix-Processor)</h4>
+<table><tr><th>Topologie</th><th>Aufbau</th></tr>
+<tr><td>One to One</td><td>1 Enc → Switch → 1 Dec (Punkt-zu-Punkt; KVM-Variante für Tastatur/Video/Maus)</td></tr>
+<tr><td>One to Many</td><td>1 Enc → mehrere Dec (Verteilung, z. B. <b>Digital Signage</b>)</td></tr>
+<tr><td>Many to Many</td><td>mehrere Enc → mehrere Dec (volle Matrix, ggf. Transcoder)</td></tr>
+<tr><td><b>Multiviewer</b></td><td>mehrere Enc → <b>1 Dec</b>: mehrere Quellen gleichzeitig auf EINEM Bildschirm</td></tr>
+<tr><td><b>Videowall</b></td><td>1 Enc → <b>mehrere Dec</b>, die sich EIN großes Bild aufteilen</td></tr></table>
+<h4>Dante (Audinate)</h4>
+<table><tr><th></th><th>Dante Virtual Soundcard</th><th>Dante Via</th></tr>
+<tr><td>Kanäle</td><td><b>bis 64</b></td><td>bis 16</td></tr>
+<tr><td>USB/Firewire-Geräte</td><td>nein</td><td><b>ja</b></td></tr>
+<tr><td>Audio zwischen Apps routen/mischen</td><td>nein</td><td><b>ja</b></td></tr>
+<tr><td>Standalone-Netz nur mit PCs</td><td>nein</td><td><b>ja</b></td></tr>
+<tr><td>Dante-Controller-Routing</td><td>ja</td><td>ja</td></tr></table>
+<h4>Weitere Standards & Wissenswertes</h4>
+<p><b>SDVoE</b> = unkomprimiertes Video über 10G-Ethernet · <b>AES67/Ravenna</b> = Audio-over-IP-Interoperabilität · <b>NDI</b> = Video over IP (Broadcast) · <b>AVB</b> = IEEE-Familie mit garantierter Bandbreite/Sync. <b>Latenz:</b> höhere Netzwerkgeschwindigkeit = kürzere Wartezeit auf Sendegelegenheiten = geringere Latenz, besseres Clocking, mehr Kanäle. Codec-Wissen: <b>Intra-Frame</b> = jedes Bild einzeln (niedrige Latenz) · <b>Inter-Frame</b> = nur Differenzen (effizient, mehr Latenz).</p>`},
+{topic:"Rechenteil", title:"Rechen-Rezepte: alle Formeln mit Lösungsweg", html:`
+<p><i>Formeln werden in der Klausur gegeben – trainiere den WEG, nicht das Auswendiglernen.</i></p>
+<h4>① Leitungswiderstand</h4>
+<p><code>R = ρ·l/A</code> · bei Durchmesser d zuerst: <code>A = (d²·π)/4</code></p>
+<p>Beispiel: Kupfer (ρ=0,017), 50 m, d=3 mm → A = 9π/4 ≈ 7,07 mm² → R = 0,017·50/7,07 ≈ <b>0,12 Ω</b>. Eisen (ρ=0,1) gleiche Maße: ≈ 0,71 Ω (≈ 6× schlechter). ρ-Werte (Ω·mm²/m): Silber 0,016 · <b>Kupfer 0,017</b> · Gold 0,022 · Alu 0,027 · <b>Eisen 0,1</b>.</p>
+<h4>② Zahlensysteme</h4>
+<p>Hex→Dez je Byte: 16·(1. Ziffer) + (2. Ziffer) → 7D = 125. Dez→Binär: Zweierpotenzen abziehen (Tabelle 128/64/32/16/8/4/2/1) → 115 = 0111 0011.</p>
+<h4>③ Subnetting</h4>
+<p>Host-Bits h = 32 − CIDR → Blockgröße = 2^h (oder 256 − Maskenoktett) → Block finden → Netz-ID / Broadcast → nutzbar = <b>2^h − 2</b>. „Mindestens X Hosts“: kleinstes h mit 2^h−2 ≥ X.</p>
+<h4>④ Dämpfung / Pegel (dB)</h4>
+<p><code>a = 10·log(P1/P2)</code> [dB] · <code>L = 10·log(P/1mW)</code> [dBm]</p>
+<p>Merkwerte: Faktor 10 = 10 dB · Faktor 100 = 20 dB · Faktor 2 ≈ 3 dB (Halbierung!).</p>
+<h4>⑤ Reflexionsgrad an Grenzflächen</h4>
+<p><code>P_refl/P_ein = ((n1−n2)/(n1+n2))²</code></p>
+<p>Luft→Quarzglas: (−0,45/2,45)² ≈ 0,034 → <b>ca. 3 % reflektiert</b>. Nicht das Quadrieren vergessen!</p>
+<h4>⑥ Totalreflexion</h4>
+<p><code>sin(γT) = n2/n1</code> (n1 = dichteres Medium) → Quarzglas→Luft: arcsin(1/1,45) ≈ <b>43,6°</b>.</p>
+<h4>⑦ Bandbreite-Längen-Produkt</h4>
+<p><code>B = BLP / L</code> → BLP 20 MHz·km, 4 km → <b>5 MHz</b>. Doppelte Länge = halbe Bandbreite.</p>
+<h4>⑧ Megapixel</h4>
+<p>Breite × Höhe / 1.000.000. Beispiel: 2× (3840×2160) = 2 × 8,29 MP ≈ <b>16,6 MP</b>. Genau lesen: EIN Bild oder Summe?</p>
+<h4>⑨ NRZ-Bandbreite (nur falls doch gefragt)</h4>
+<p>B ≥ n·k·f_max/2 („Bitrate braucht mindestens die halbe Bandbreite“); RZ braucht doppelt so viel wie NRZ. Mehr Tiefe laut Recap nicht nötig.</p>`},
+{topic:"Auswendig-Fakten", title:"Die Auswendig-Lern-Seite (Zahlen & Fakten)", html:`
+<p>Reine Fakten, die NICHT als Formel gegeben werden:</p>
+<table><tr><th>Thema</th><th>Fakten</th></tr>
+<tr><td>Adresslängen</td><td><b>MAC = 48 Bit</b> (6 Hex-Bytes) · <b>IPv4 = 32 Bit</b> · <b>IPv6 = 128 Bit</b></td></tr>
+<tr><td>Private Bereiche</td><td>10.0.0.0/8 · 172.16.0.0/12 · 192.168.0.0/16</td></tr>
+<tr><td>Reserviert</td><td>127.x = Loopback · 169.254.x = APIPA · 224–239.x = Multicast · endet auf .255 = Broadcast</td></tr>
+<tr><td>Ethernet-Frame</td><td>max. <b>1518 Byte</b> · Nutzdaten 46–1500 Byte</td></tr>
+<tr><td>VLAN</td><td>IDs <b>1–4094</b> · Tag = 4 Byte · IEEE 802.1Q · TPID 0x8100</td></tr>
+<tr><td>Ports (Bereiche)</td><td>0–1023 well-known · 1024–49151 registered · 49152–65535 dynamisch</td></tr>
+<tr><td>Ports (Dienste)</td><td>HTTP 80 · HTTPS 443 · FTP 20/21 · SSH 22 · Telnet 23 · DNS 53 · SNMP 161</td></tr>
+<tr><td>PoE</td><td>Kl. 0–3: bis 12,95 W · Kl. 4 (PoE+): bis 25,5 W · Kl. 5–8 (4PPoE): 40–71 W</td></tr>
+<tr><td>Transceiver</td><td>SFP 1G · SFP+ 10G · SFP28 25G · QSFP+ 40G</td></tr>
+<tr><td>Kabel</td><td>Cat.5/5e 100M–1G · Cat.6 1G (250 MHz) · Cat.6a 10G (500 MHz) · Cat.7/7a 10–40G</td></tr>
+<tr><td>Fasern</td><td>MM: OM2 1G / OM3 10G / OM4 100G (3,5 dB/km) · SM: OS1 1 dB/km / OS2 0,4 dB/km</td></tr>
+<tr><td>Fenster</td><td>850 nm LAN · 1300 nm wenig Dispersion · <b>1550 nm geringste Dämpfung</b></td></tr>
+<tr><td>VPN</td><td>L2TP = L2 · IPSec = L3 · SSL = L7 (Browser, kein Client)</td></tr>
+<tr><td>Zeit</td><td>NTP 200 µs–10 ms · PTP µs–ns (IEEE 1588; GM/BC/TC)</td></tr>
+<tr><td>Spine-Leaf</td><td>jeder Leaf ↔ jeder Spine · zwischen 2 Leafs <b>immer 2 Hops</b></td></tr>
+<tr><td>Dante</td><td>Virtual Soundcard 64 Kanäle · Via 16 Kanäle + USB/Firewire + Standalone</td></tr>
+<tr><td>Koax</td><td><b>75 Ω Video</b> · 50 Ω Daten/Funk</td></tr>
+<tr><td>OSI</td><td>„Alle Deutschen Studenten trinken verschiedene Sorten Bier“ (7→1)</td></tr></table>
+<div class='warnbox'><b>Nicht verwechseln:</b> STP (Spanning Tree ↔ Shielded Twisted Pair) · 169.254.x (APIPA) ↔ 169.andere.x (öffentlich!) · 172.16–31 (privat) ↔ 172.32+ (öffentlich) · Videowall ↔ Multiviewer.</div>`},
+{topic:"Abkürzungen", title:"Abkürzungs-Cheatsheet (alle prüfungsrelevanten Kürzel)", html:`
+<p>Laut Recap-Notizen sollst du Abkürzungen <b>erklären</b> können. Die wichtigsten kompakt:</p>
+<h4>Adressen & Vergabe</h4>
+<p><b>NIC</b> Network Interface Card (Netzwerkkarte) · <b>MAC</b> Media Access Control (48-Bit-Hardware-Adresse) · <b>OUI</b> Organizationally Unique Identifier (Herstellerkennung, erste 3 MAC-Bytes) · <b>IP</b> Internet Protocol · <b>CIDR</b> Classless Inter-Domain Routing (/24-Schreibweise) · <b>VLSM</b> Variable-Length Subnet Masking (verschieden große Subnetze) · <b>DHCP</b> Dynamic Host Configuration Protocol (automatische IP-Vergabe) · <b>APIPA</b> Automatic Private IP Addressing (169.254.x Selbstvergabe) · <b>DNS</b> Domain Name System (Name→IP) · <b>DDNS</b> Dynamic DNS (DHCP+DNS synchron) · <b>NAT</b> Network Address Translation (privat↔öffentlich) · <b>PAT/NAPT</b> Port Address Translation (viele hinter einer IP) · <b>IANA</b> Internet Assigned Numbers Authority · <b>TLD</b> Top-Level-Domain</p>
+<h4>Netzwerktechnik</h4>
+<p><b>LAN/WAN</b> Local/Wide Area Network · <b>VLAN</b> Virtual LAN · <b>PVID</b> Port VLAN Identifier · <b>ARP</b> Address Resolution Protocol (IP→MAC) · <b>STP</b> ① Spanning Tree Protocol ② Shielded Twisted Pair · <b>SPoF</b> Single Point of Failure · <b>LACP</b> Link Aggregation Control Protocol (Link-Bündelung) · <b>QoS</b> Quality of Service (Priorisierung) · <b>TTL</b> Time to Live (Hop-Zähler) · <b>IGMP</b> Internet Group Management Protocol (Multicast join/leave) · <b>ICMP</b> Internet Control Message Protocol (ping) · <b>TCP</b> Transmission Control Protocol (zuverlässig) · <b>UDP</b> User Datagram Protocol (schnell) · <b>OSI</b> Open Systems Interconnection</p>
+<h4>Sicherheit & Dienste</h4>
+<p><b>ACL</b> Access Control List (Router-Regeln) · <b>NAC</b> Network Access Control (identitätsbasiert) · <b>2FA</b> Two-Factor Authentication · <b>VPN</b> Virtual Private Network · <b>L2TP</b> Layer 2 Tunneling Protocol · <b>IPSec</b> IP Security (L3) · <b>SSL/TLS</b> Secure Socket Layer / Transport Layer Security · <b>SSH</b> Secure Shell (Port 22) · <b>FTP</b> File Transfer Protocol (20/21) · <b>HTTP(S)</b> Hypertext Transfer Protocol (Secure) (80/443) · <b>SNMP</b> Simple Network Management Protocol (161) · <b>SDP</b> Session Description Protocol (L5) · <b>NTP</b> Network Time Protocol · <b>PTP</b> Precision Time Protocol (IEEE 1588) · <b>GM/BC/TC</b> Grandmaster/Boundary/Transparent Clock · <b>UPnP</b> Universal Plug and Play · <b>RFC</b> Request for Comments · <b>IETF/IEEE</b> Standardisierungsgremien</p>
+<h4>Kabel & Medien</h4>
+<p><b>UTP/STP/S-UTP/S-FTP</b> Twisted-Pair-Schirmvarianten · <b>AXT</b> Alien Crosstalk · <b>ACR</b> Attenuation to Crosstalk Ratio · <b>EMV</b> Elektromagnetische Verträglichkeit · <b>LWL</b> Lichtwellenleiter · <b>POF</b> Polymer Optical Fiber · <b>BLP</b> Bandbreite-Längen-Produkt · <b>AN</b> Numerische Apertur · <b>BNC/TNC</b> Koax-Stecker (Bajonett/verschraubt) · <b>RJ45</b> TP-Stecker · <b>AWG</b> American Wire Gauge · <b>PoE</b> Power over Ethernet · <b>SFP/QSFP</b> (Quad) Small Form-factor Pluggable · <b>WLAN</b> Wireless LAN</p>
+<h4>AVoIP</h4>
+<p><b>AVoIP/AVoIT</b> Audio Video over IP/IT · <b>MoIP</b> Media over IP · <b>IPTV</b> Internet Protocol Television · <b>OTT/SVoD</b> Over the Top / Subscription Video on Demand · <b>IToAV</b> IT-Tech in der AV-Welt · <b>KVM</b> Keyboard, Video, Mouse · <b>AVB</b> Audio Video Bridging · <b>SDVoE</b> Software Defined Video over Ethernet · <b>NDI</b> Network Device Interface · <b>SNG</b> Satellite News Gathering · <b>DAB(+)/DVB-T2</b> Digital-Rundfunk/-TV</p>
+<h4>Nicht SS26-relevant (nur einordnen können)</h4>
+<p><b>ASK/FSK/PSK</b> Amplituden-/Frequenz-/Phasenumtastung (Modulation) · <b>NRZ/RZ</b> Non-Return-to-Zero/Return-to-Zero (Leitungscodes) · <b>FDM/TDM</b> Frequenz-/Zeitmultiplex</p>`},
+{topic:"Praxis & Befehle", title:"Befehle & Praxis-Checkliste (fremdes Netzwerk)", html:`
+<h4>Vorgehen im fremden Netzwerk</h4>
+<p>① Konfiguration feststellen: Netzadresse &amp; Subnetzmaske, Standardgateway, DHCP oder feste IPs, weitere Geräte, Proxy → ② eigenen PC anpassen → ③ mit <code>ping</code> testen. Niemals blind IPs vergeben (Konfliktgefahr)!</p>
+<h4>Windows (Win+R → cmd)</h4>
+<table><tr><th>Befehl</th><th>Funktion</th></tr>
+<tr><td><code>ipconfig</code> / <code>ipconfig /all</code></td><td>IP-Konfiguration anzeigen (mit Details)</td></tr>
+<tr><td><code>ping &lt;ziel&gt;</code></td><td>Erreichbarkeit testen</td></tr>
+<tr><td><code>nslookup &lt;name&gt;</code></td><td>DNS-Auflösung (Name ↔ IP)</td></tr>
+<tr><td><code>arp -a</code></td><td>ARP-/MAC-Tabelle ausgeben</td></tr>
+<tr><td><code>tracert &lt;ziel&gt;</code></td><td>Routenverfolgung (via TTL-Trick)</td></tr></table>
+<p>Netzwerkeinstellungen: Win+R → <code>ncpa.cpl</code> → Rechtsklick auf Verbindung → Eigenschaften → IPv4.</p>
+<h4>macOS / Linux (Terminal)</h4>
+<p><code>ifconfig</code> (statt ipconfig) · <code>ping</code> · <code>nslookup</code> · <code>arp -a</code> · <code>traceroute</code> (statt tracert). Hilfe: <code>Befehl /?</code> (Win) bzw. <code>man Befehl</code> (Unix).</p>
+<h4>Kurs-Zusammenfassung in einem Satz</h4>
+<p>Netzwerkkomponenten · Verbindungen · Ethernet · IP · Adressvergabe · Transportprotokolle · Sicherheit · OSI – und als AV-Fachkraft stimmst du dich mit dem IT-Personal ab (Netzlayout, VLANs für AV, IP-Adressierung, Sicherheit). Mit AVoIP werden Netzwerk-Kompetenzen immer wichtiger.</p>
+<div class='merkbox'><b>Geschafft!</b> Du hast alle Themengebiete durchgeblättert. Empfehlung: Jetzt Quiz 4 (Komplett-Wiederholung) starten – und danach gezielt die falschen Fragen wiederholen. Viel Erfolg am Mittwoch! 🍀</div>`}
+];
+
+let learnIndex = 0;
+
+function startLearn() {
+  learnIndex = 0;
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('results-screen').classList.add('hidden');
+  document.getElementById('learn-screen').classList.remove('hidden');
+  document.getElementById('quiz-title-display').textContent = "Lernmodus – Themen-Debrief";
+  document.getElementById('quiz-desc-display').textContent = LEARN_TOPICS.length + " Themenkarten · kein Quiz, nur Wissen · mit ◀ ▶ blättern";
+  renderLearn();
+}
+
+function renderLearn() {
+  const t = LEARN_TOPICS[learnIndex];
+  document.getElementById('learn-topic-tag').textContent = t.topic;
+  document.getElementById('learn-title').textContent = (learnIndex+1) + ". " + t.title;
+  document.getElementById('learn-content').innerHTML = t.html;
+  const pct = Math.round(((learnIndex+1) / LEARN_TOPICS.length) * 100);
+  document.getElementById('learn-progress-bar').style.width = pct + '%';
+  document.getElementById('learn-progress-label').textContent = 'Thema ' + (learnIndex+1) + ' von ' + LEARN_TOPICS.length;
+  document.getElementById('learn-prev-btn').disabled = learnIndex === 0;
+  document.getElementById('learn-next-btn').disabled = learnIndex === LEARN_TOPICS.length - 1;
+  document.getElementById('learn-action-btn').textContent = (learnIndex === LEARN_TOPICS.length - 1) ? 'Fertig – zurück zum Hauptmenü' : 'Weiter ▶';
+  window.scrollTo(0,0);
+}
+
+function learnPrev() {
+  if (learnIndex > 0) { learnIndex--; renderLearn(); }
+}
+
+function learnNext() {
+  if (learnIndex < LEARN_TOPICS.length - 1) { learnIndex++; renderLearn(); }
+}
+
+function learnAction() {
+  if (learnIndex < LEARN_TOPICS.length - 1) { learnIndex++; renderLearn(); }
+  else { learnBackToMenu(); }
+}
+
+function learnBackToMenu() {
+  document.getElementById('learn-screen').classList.add('hidden');
+  document.getElementById('start-screen').classList.remove('hidden');
+  document.getElementById('quiz-title-display').textContent = "Übertragungsmedien & Netzwerktechnik";
+  document.getElementById('quiz-desc-display').textContent = "Wähle eine Probeklausur zum Lernen · direktes Feedback nach jeder Frage";
+  updateMenuState();
+  window.scrollTo(0,0);
+}
+
+/* ===================== KARTEIKARTEN (Freitext-Training) ===================== */
+const FLASHCARDS = [
+{topic:"Abkürzungen", front:"Wofür steht NIC – und was ist das?", back:"<b>Network Interface Card</b> – die Netzwerkkarte bzw. Netzwerkschnittstelle eines Geräts. Jeder Netzwerkknoten hat eine NIC, und jede NIC trägt eine weltweit einzigartige MAC-Adresse."},
+{topic:"Abkürzungen", front:"Wofür steht MAC – und wie ist eine MAC-Adresse aufgebaut?", back:"<b>Media Access Control</b> – die Hardware-Adresse der NIC: <b>48 Bit</b>, notiert als 6 Gruppen à 2 Hex-Ziffern (z. B. 94:18:65:7D:98:7C). Die ersten 3 Byte sind der <b>OUI</b> (Herstellerkennung). Arbeitet auf OSI-Schicht 2."},
+{topic:"Abkürzungen", front:"Wofür steht OUI?", back:"<b>Organizationally Unique Identifier</b> – die ersten 3 Byte einer MAC-Adresse, die den <b>Hersteller</b> identifizieren (z. B. 94:18:65 = Netgear)."},
+{topic:"Abkürzungen", front:"Wofür steht CIDR – und was bedeutet z. B. /24?", back:"<b>Classless Inter-Domain Routing</b> – Schreibweise der Netzgröße als Suffix: <b>/24</b> = die ersten 24 Bit sind Netz-Bits = Maske 255.255.255.0 = 254 nutzbare Hosts."},
+{topic:"Abkürzungen", front:"Wofür steht VLSM?", back:"<b>Variable-Length Subnet Masking</b> – erlaubt, ein Netz in <b>unterschiedlich große</b> Subnetze aufzuteilen (nicht jedes Subnetz muss gleich groß sein)."},
+{topic:"Abkürzungen", front:"Wofür steht DHCP – und was liefert der Server außer der IP?", back:"<b>Dynamic Host Configuration Protocol</b> – vergibt automatisch IP-Adressen aus einem Pool. Zusätzlich werden Subnetzmaske und <b>DNS-Server-Informationen</b> mitgeliefert. Vermeidet Fehlkonfigurationen und doppelte Adressen."},
+{topic:"Abkürzungen", front:"Wofür steht APIPA – wann und aus welchem Bereich vergibt sich ein Gerät so eine Adresse?", back:"<b>Automatic Private IP Addressing</b> (Link-Local): Antwortet der DHCP-Server nach ca. <b>5 Sekunden</b> nicht, vergibt sich das Gerät selbst eine Adresse aus <b>169.254.x.x</b> – vorher prüft es per ARP-Broadcast, ob sie frei ist. Praktisch immer ein Symptom für ein DHCP-Problem."},
+{topic:"Abkürzungen", front:"Wofür stehen DNS und DDNS – und was ist der Unterschied?", back:"<b>DNS</b> (Domain Name System) löst Namen in IP-Adressen auf. <b>DDNS</b> (Dynamic DNS) verknüpft/synchronisiert DHCP- und DNS-Server: Ändert sich die IP, wird der Namenseintrag automatisch aktualisiert – das Gerät bleibt unter seinem Namen erreichbar. Domainname = Host + Domain + TLD."},
+{topic:"Abkürzungen", front:"Wofür steht NAT – welches Problem löst es?", back:"<b>Network Address Translation</b> (RFC 1631) – übersetzt private ↔ öffentliche IP-Adressen im Paket-Header, weil private Adressen nicht ins Internet geroutet werden. Nebeneffekt: mehr Sicherheit, da interne Geräte von außen nicht direkt erreichbar sind."},
+{topic:"Abkürzungen", front:"Wofür steht PAT (NAPT) – und was ist Port Forwarding?", back:"<b>Port Address Translation</b> / IP-Masquerading: <b>viele</b> private Geräte teilen sich <b>eine</b> öffentliche IP, unterschieden per Portnummer („One to Many NAT“). <b>Port Forwarding</b> = PAT + Paketfilterung kombiniert."},
+{topic:"Abkürzungen", front:"Wofür steht ARP – und mit welchem Befehl zeigt man die ARP-Tabelle an?", back:"<b>Address Resolution Protocol</b> – findet per Broadcast („Who has IP X?“) die <b>MAC-Adresse</b> zu einer bekannten IP; Ergebnisse landen in der ARP-Tabelle. Befehl auf allen Systemen: <code>arp -a</code>."},
+{topic:"Abkürzungen", front:"Wofür steht TTL – und was passiert bei TTL = 0?", back:"<b>Time to Live</b> – Zähler im IP-Header, wird pro Router-Hop um 1 verringert. Bei <b>0 wird das Paket verworfen</b> (Schutz vor endlos kreisenden Paketen). TTL = 1 (typisch bei IGMP) heißt: Paket kommt über keinen Router hinaus."},
+{topic:"Abkürzungen", front:"Wofür steht IGMP – und was machen Snooping und Querier?", back:"<b>Internet Group Management Protocol</b> – Geräte abonnieren/kündigen Multicast-Streams (<b>join/leave</b>). <b>IGMP Snooping</b>: Switch leitet Streams nur an interessierte Ports. <b>Querier</b>: fragt aktiv Interessen ab – nur EINER pro Netzsegment!"},
+{topic:"Abkürzungen", front:"Wofür steht QoS?", back:"<b>Quality of Service</b> – bevorzugte Behandlung wichtiger Datenpakete (z. B. zeitkritische AV-Streams, VoIP) gegenüber unkritischem Verkehr. Funktion von Managed Switches – für AVoIP praktisch Pflicht."},
+{topic:"Abkürzungen", front:"STP hat in dieser Prüfung ZWEI Bedeutungen – welche?", back:"① <b>Spanning Tree Protocol</b>: verhindert Netzwerkschleifen und Broadcast Storms, indem redundante Verbindungen logisch deaktiviert werden (Erfinderin: Radia Perlman). ② <b>Shielded Twisted Pair</b>: Kabel, bei dem jedes Adernpaar einzeln geschirmt ist. Kontext beachten!"},
+{topic:"Abkürzungen", front:"Wofür steht SPoF – und wie vermeidet man ihn?", back:"<b>Single Point of Failure</b> – eine einzelne Komponente, deren Ausfall das ganze Netz(-segment) lahmlegt. Vermeidung durch Redundanz: gestackte Core-Switches, mehrfache Anbindung per LACP, redundante Wege (mit STP gegen Schleifen)."},
+{topic:"Abkürzungen", front:"Wofür steht LACP?", back:"<b>Link Aggregation Control Protocol</b> – bündelt mehrere physische Links zu einem logischen: mehr Bandbreite UND Redundanz. Praxisbeispiel: Gebäude-Switches hängen per LACP an beiden gestackten Core-Switches – fällt einer aus, läuft alles weiter."},
+{topic:"Abkürzungen", front:"Wofür steht VLAN – und welche 3 Gründe sprechen für den Einsatz?", back:"<b>Virtual Local Area Network</b> – logische Aufteilung eines physischen Netzes (IEEE 802.1Q, 4-Byte-Tag, IDs 1–4094). Gründe: ① Sicherheit/Zugriff einschränken, ② Broadcast-Verkehr begrenzen (wichtig für zeitkritisches AV!), ③ effizientere Hardware-Nutzung/Administration."},
+{topic:"Abkürzungen", front:"Wofür steht PVID?", back:"<b>Port VLAN Identifier</b> – das VLAN, das ein Access-Port ungetaggtem eingehendem Verkehr zuweist. Ausgehend zum Endgerät wird das Tag entfernt (untagged) – das Endgerät merkt nichts vom VLAN."},
+{topic:"Abkürzungen", front:"Was unterscheidet NAC und ACL?", back:"<b>NAC</b> (Network Access Control): Rechte hängen von der <b>Identität</b> ab – „Wer bist du?“ (Login-abhängig). <b>ACL</b> (Access Control List): Regelliste, <b>was durch den Router</b> geleitet werden darf – „Darf dieses Paket durch?“"},
+{topic:"Abkürzungen", front:"Auf welchen OSI-Schichten arbeiten die VPN-Typen L2TP, IPSec und SSL?", back:"<b>L2TP</b> = Schicht <b>2</b> (Client nötig, heute selten) · <b>IPSec</b> = Schicht <b>3</b> (Client nötig, üblich zwischen Standorten) · <b>SSL-VPN</b> = Schicht <b>7</b> (KEINE Client-Software – Zugriff per Browser, nur TCP, für mobile Nutzer). Eselsbrücke: L2TP = Layer-2-Tunneling, IPSec = IP = L3."},
+{topic:"Abkürzungen", front:"TCP vs. UDP – erkläre beide in je einem Satz. Welches nutzen AV-Streams und warum?", back:"<b>TCP</b> = verbindungsorientiert und zuverlässig (Handshake, Prüfung, Neusendung) – aber Overhead und Latenz. <b>UDP</b> = verbindungslos, „Fire and forget“ – schnell, ohne Prüfung. AV-Streams nutzen <b>UDP</b>: Timing ist wichtiger als einzelne verlorene Pakete – ein nachgesendetes Paket käme ohnehin zu spät."},
+{topic:"Abkürzungen", front:"NTP vs. PTP – Aufgabe und Genauigkeit?", back:"<b>NTP</b> (Network Time Protocol): Datum/Uhrzeit von externen Zeitservern, Genauigkeit ca. <b>200 µs – 10 ms</b>. <b>PTP</b> (Precision Time Protocol, IEEE 1588): <b>µs- bis ns-genau</b> – liefert den gemeinsamen Takt für AVoIP (Dante, AES67, AVB)."},
+{topic:"Abkürzungen", front:"Welche drei Rollen gibt es im PTP?", back:"<b>GM</b> – Grandmaster Clock: liefert die Referenzzeit. <b>BC</b> – Boundary Clock: reicht die Zeit zwischen Netzsegmenten weiter. <b>TC</b> – Transparent Clock: keine eigene Zeitquelle, korrigiert nur die Laufzeitverzögerung beim Durchleiten. Merke: Stacking, AVB und PTP TC/BC/GM schließen sich gegenseitig aus!"},
+{topic:"Abkürzungen", front:"Wofür steht AVB?", back:"<b>Audio Video Bridging</b> – IEEE-Standardfamilie für zeitsynchronisierte AV-Übertragung mit <b>garantierter Bandbreite</b> in Ethernet-Netzen; nutzt PTP zur Taktsynchronisation."},
+{topic:"Abkürzungen", front:"Wofür steht PoE – und welche Leistungsklassen gibt es?", back:"<b>Power over Ethernet</b> – Strom UND Daten über ein TP-Kabel. Klassen: <b>0–3</b> = 6,49–12,95 W · <b>4 (PoE+)</b> = 12,95–25,5 W · <b>5–8 (4PPoE)</b> = 40–71 W. Dazu: <b>Injector</b> = PoE nachrüsten, <b>Extender</b> = Strecke verlängern (2× 90 m)."},
+{topic:"Abkürzungen", front:"Die SFP-Transceiver-Familie: Welche Typen und Geschwindigkeiten?", back:"<b>SFP</b> = 1 Gbit/s · <b>QSFP</b> (4× SFP) = 4 Gbit/s · <b>SFP+</b> = 10 Gbit/s · <b>SFP28</b> = 25 Gbit/s · <b>QSFP+</b> (4× SFP+) = 40 Gbit/s. Vorteil: Der Switch-Port bleibt gleich, nur das Modul wird passend zum Medium getauscht."},
+{topic:"Abkürzungen", front:"Wofür steht BLP – und wie lautet der Zusammenhang?", back:"<b>Bandbreite-Längen-Produkt</b> eines LWL: B = BLP / L – Bandbreite und Streckenlänge verhalten sich <b>invers</b>. Beispiel: BLP 20 MHz·km auf 4 km → nur noch 5 MHz. Ursache: Dispersion (Impulsverbreiterung) wächst mit der Länge."},
+{topic:"Abkürzungen", front:"Was beschreibt die Numerische Apertur (AN) einer Glasfaser?", back:"Den <b>Akzeptanzwinkel</b>, unter dem Licht noch erfolgreich in die Faser eingekoppelt wird – Licht außerhalb dieses Kegels geht in den Mantel verloren. Deshalb braucht LWL-Verbindungstechnik µm-genaue Präzision."},
+{topic:"Abkürzungen", front:"Was bedeuten ACR und AXT bei Kupferkabeln?", back:"<b>ACR</b> = Attenuation to Crosstalk Ratio – Verhältnis von Nebensprechdämpfung zu Leitungsdämpfung („Abstand“ Nutzsignal ↔ Störsignal). <b>AXT</b> = Alien Crosstalk – Übersprechen von <b>benachbarten Kabeln</b> (nicht im selben Kabel), relevant bei &gt;1 Gbit/s; Abhilfe: geschirmte Cat.-6a-Kabel."},
+{topic:"Abkürzungen", front:"Nenne die Twisted-Pair-Schirmvarianten und ihre Bedeutung.", back:"<b>UTP</b> = ungeschirmt · <b>S-UTP</b> = nur Gesamtschirm (Folie), Paare ungeschirmt · <b>STP</b> = jedes Adernpaar einzeln geschirmt · <b>S/FTP (S-STP)</b> = Paar-Schirme UND Gesamtschirm. Standard-Kabel: 4 Adernpaare / 8 Adern, Stecker RJ45."},
+{topic:"Abkürzungen", front:"Wofür steht KVM im AV-Kontext?", back:"<b>Keyboard, Video, Mouse</b> – Fernzugriff/-verlängerung von Bedienplätzen. MoIP-Topologien: KVM One-to-One (1 Encoder → 1 Decoder), KVM Many Servers (mehrere Quellen, Umschaltung), KVM Multiple Controls and Servers (mehrere Quellen UND Bedienplätze)."},
+{topic:"Abkürzungen", front:"Erkläre: AVoIP, MoIP, IPTV, OTT/SVoD, IToAV.", back:"<b>AVoIP</b> = Audio Video over IP (AV über Standard-IP-Netze) · <b>MoIP</b> = Media over IP (Oberbegriff) · <b>IPTV</b> = Fernsehen über IP · <b>OTT/SVoD</b> = „Over the Top“ / Streaming-Abo – Inhalte direkt übers offene Internet · <b>IToAV</b> = IT-Technologien ziehen in die AV-Welt ein."},
+{topic:"Abkürzungen", front:"Was sind SDVoE, AES67 und NDI?", back:"<b>SDVoE</b> = Software Defined Video over Ethernet: unkomprimiertes Video über 10G-Ethernet · <b>AES67</b> (und Ravenna) = Audio-over-IP-Standards mit Fokus auf Hersteller-Interoperabilität · <b>NDI</b> = Network Device Interface: Video over IP für Broadcast/Streaming. (Im Skript als Ergänzung gekennzeichnet.)"},
+{topic:"Abkürzungen", front:"Wofür steht IANA – und was verwaltet sie?", back:"<b>Internet Assigned Numbers Authority</b> – vergibt/verwaltet IP-Adressbereiche (private, Loopback, Multicast …) und <b>Portnummern</b> (0–1023 well-known, 1024–49151 registriert, 49152–65535 dynamisch)."},
+{topic:"Abkürzungen", front:"Wofür stehen EMV, AWG und 2FA?", back:"<b>EMV</b> = Elektromagnetische Verträglichkeit (Störfestigkeit/Störaussendung) · <b>AWG</b> = American Wire Gauge (Drahtdurchmesser-Norm; höhere Zahl = dünnerer Draht) · <b>2FA</b> = Two-Factor Authentication (Login mit zwei unabhängigen Faktoren)."},
+{topic:"Freitext-Klassiker", front:"Erkläre eine IP-Adresse mit Subnetzmaske anhand der Postanschrift-Analogie.", back:"Netz-Teil + Host-Teil = <b>Straße + Hausnummer</b>. Die Subnetzmaske legt die Grenze fest: bei /24 sind die ersten drei Oktette die „Straße“ (Netz), das letzte die „Hausnummer“ (Gerät). <b>Netz-ID</b> = Straßenname ohne Hausnummer · <b>Broadcast</b> = „an alle Hausnummern dieser Straße“."},
+{topic:"Freitext-Klassiker", front:"Warum braucht man DHCP? (Kellner-Analogie)", back:"DHCP ist wie ein <b>Kellner, der Gästen freie Tische zuweist</b>, statt dass jeder sich selbst einen sucht. Ohne DHCP: jedes Gerät manuell konfigurieren, Buch führen, Konflikt-Gefahr durch doppelt vergebene Adressen – bei hunderten Geräten unpraktisch und fehleranfällig."},
+{topic:"Freitext-Klassiker", front:"Erkläre NAT anschaulich. (Telefonzentrale-Analogie)", back:"NAT ist wie die <b>Telefonzentrale einer Firma</b>: nach außen EINE Nummer (öffentliche IP), intern hat jeder eine Durchwahl (private IP). Bei Anrufen nach draußen sieht der Empfänger nur die zentrale Nummer; Antworten vermittelt die Zentrale (der NAT-Router) an die richtige Durchwahl zurück."},
+{topic:"Freitext-Klassiker", front:"Erkläre VLANs bildlich. (Wohnungs-Analogie)", back:"Ein Switch mit VLANs = <b>Mehrfamilienhaus</b>: gemeinsames Treppenhaus (physische Infrastruktur), aber getrennte, abschließbare Wohnungen (VLANs) – Wohnung A kann nicht in Wohnung B hineinsehen. Der <b>Trunk-Port ist der Aufzug</b>, der Bewohner mehrerer Wohnungen gleichzeitig transportiert, mit Etikett (VLAN-Tag), damit klar bleibt, wer wohin gehört."},
+{topic:"Freitext-Klassiker", front:"Warum ist Spine-Leaf bei modernem Datenverkehr besser als 3-Tier? (Autobahn-Analogie)", back:"3-Tier = <b>Innenstadt mit Ampeln</b>: je nach Ziel unterschiedlich viele Kreuzungen (Ebenen) → variable Fahrzeit. Spine-Leaf = <b>Autobahnkreuz</b>: von jeder Ausfahrt (Leaf) über genau EINE Kreuzung (Spine) zu jeder anderen → immer 2 Hops, immer gleiche Latenz. Wichtig, weil moderner <b>East-West-Traffic</b> (Gerät ↔ Gerät) dominiert."},
+{topic:"Freitext-Klassiker", front:"Warum ist TCP „langsamer, aber sicherer“ als UDP? (Brief-Analogie)", back:"TCP = <b>Einschreiben</b>: Empfangsbestätigung, richtige Reihenfolge, verlorene Briefe werden neu geschickt – garantiert, aber langsamer. UDP = <b>Postkarte</b>: schnell abgeschickt, keine Bestätigung – Verluste merkt niemand automatisch. Für AV gilt: kleiner Bildfehler (UDP) ist besser als stockender Stream (TCP-Verzögerung)."},
+{topic:"Freitext-Klassiker", front:"Erkläre die Firewall-Konzepte Default Allow und Default Deny. (Türsteher-Analogie)", back:"<b>Default Allow</b> = jeder darf rein, außer er steht auf der <b>Verbotsliste</b> – benutzerfreundlich, riskanter. <b>Default Deny</b> = niemand darf rein, außer er steht auf der <b>Gästeliste</b> – sicherer, aber jeder Erlaubte muss eingetragen werden. Entscheidung per Paketfilterung (Adressen, Ports, Protokoll, Inhalt)."},
+{topic:"Freitext-Klassiker", front:"Wie funktioniert ARP anschaulich? (Treppenhaus-Analogie)", back:"Du kennst nur den <b>Namen</b> (IP), nicht die <b>Wohnung</b> (MAC). ARP = lauter <b>Zuruf ins Treppenhaus</b>: „Wer ist Frau Müller?“ – die richtige Person antwortet mit ihrer Wohnungsnummer (MAC), und du notierst es dir im Adressbuch (ARP-Tabelle), um nicht nochmal fragen zu müssen."},
+{topic:"Freitext-Klassiker", front:"Warum bleibt Licht in einer Glasfaser „gefangen“?", back:"Der Kern hat einen <b>höheren Brechungsindex</b> als der Mantel (nK &gt; nM). Trifft Licht flacher als der kritische Winkel γT auf die Kern-Mantel-Grenze (Quarzglas→Luft: ≈ 43,6°, aus sin γT = n2/n1), wird es zu <b>100 % totalreflektiert</b> – wie in einem innen verspiegelten Schlauch „hüpft“ es durch die Faser."},
+{topic:"Aufzählen können", front:"Nenne die 7 OSI-Schichten (mit Merksatz) und je ein Beispiel.", back:"7 <b>A</b>nwendung (HTTP) · 6 <b>D</b>arstellung (TLS) · 5 <b>S</b>itzung (SDP) · 4 <b>T</b>ransport (TCP/UDP) · 3 <b>V</b>ermittlung (Routing/IP) · 2 <b>S</b>icherung (Switch/Frame/MAC) · 1 <b>B</b>itübertragung (Kabel, WLAN-Normen). Merksatz: „<b>A</b>lle <b>D</b>eutschen <b>S</b>tudenten <b>t</b>rinken <b>v</b>erschiedene <b>S</b>orten <b>B</b>ier“. 1–4 = Transportsystem, 5–7 = Anwendungssystem."},
+{topic:"Aufzählen können", front:"Nenne die privaten IPv4-Bereiche sowie Loopback, APIPA und Multicast.", back:"Privat: <b>10.0.0.0/8</b> (groß) · <b>172.16.0.0/12</b> = 172.16–172.31 (mittel) · <b>192.168.0.0/16</b> (klein). <b>127.0.0.0/8</b> = Loopback/localhost · <b>169.254.0.0/16</b> = APIPA/Link-Local · <b>224.0.0.0/4</b> (224–239.x) = Multicast (geroutet!) · endet auf .255 im Subnetz = Broadcast."},
+{topic:"Aufzählen können", front:"Nenne die Standard-Ports: HTTP, HTTPS, FTP, SSH, Telnet, DNS, SNMP.", back:"<b>HTTP 80</b> · <b>HTTPS 443</b> · <b>FTP 20</b> (Daten) / <b>21</b> (Steuerung) · <b>SSH 22</b> · <b>Telnet 23</b> · <b>DNS 53</b> · <b>SNMP 161</b>. Bereiche: 0–1023 well-known · 1024–49151 registriert · 49152–65535 dynamisch."},
+{topic:"Aufzählen können", front:"Ethernet-Frame: maximale Größe, Nutzdatenbereich und grober Aufbau?", back:"Max. <b>1518 Byte</b>, Nutzdaten <b>46–1500 Byte</b>. Aufbau: Preamble → SFD → Ziel-MAC → Quell-MAC → EtherType/Size → Payload → CRC/FCS. Optionales <b>VLAN-Tag</b> (4 Byte, TPID 0x8100, IDs 1–4094) zwischen Quell-MAC und EtherType."},
+{topic:"Aufzählen können", front:"Erkläre Unicast, Broadcast und Multicast – je 1 Satz.", back:"<b>Unicast</b> = einer an einen (beste Latenz). <b>Broadcast</b> = einer an ALLE in der Broadcast-Domain (für Verbindungsaufbau: ARP, DHCP). <b>Multicast</b> = einer an viele <b>Abonnenten</b> (per IGMP-join) – bestes Bandbreitenmanagement für AV-Streams mit vielen Empfängern."},
+{topic:"Aufzählen können", front:"Switch vs. Router vs. Gateway – je 1 Satz.", back:"<b>Switch</b>: leitet im LAN anhand der <b>MAC</b>-Adresse (Layer 2); managed = VLAN/QoS-fähig. <b>Router</b>: verbindet Netzwerke anhand der <b>IP</b> (Layer 3), Grenze LAN↔WAN, stoppt Broadcasts. <b>Gateway</b>: Router, der zusätzlich zwischen Adressräumen/<b>Protokollen übersetzt</b>."},
+{topic:"Rechenweg erklären", front:"Beschreibe den 4-Schritte-Rechenweg beim Subnetting (Netz-ID, Broadcast, Hosts).", back:"① Host-Bits h = 32 − CIDR · ② Blockgröße = 2^h (oder 256 − Maskenoktett) · ③ In welchen Block fällt die Adresse? → Blockanfang = Netz-ID, nächster Blockanfang − 1 = Broadcast · ④ Nutzbar = dazwischen = <b>2^h − 2</b> Hosts. Beispiel: 192.168.10.77/26 → h=6, Block 64 → Netz .64, Broadcast .127, 62 Hosts."},
+{topic:"Rechenweg erklären", front:"Wie rechnet man ein Hex-Byte in Dezimal um? Rechne 7D vor.", back:"Wert = <b>16 × erste Ziffer + zweite Ziffer</b> (A=10 … F=15). 7D = 16·7 + 13 = 112 + 13 = <b>125</b>. Rückweg über Binär: Dezimal → 8 Bit (128/64/32/16/8/4/2/1) → je 4 Bit eine Hex-Ziffer (0111 1101 → 7D)."},
+{topic:"Rechenweg erklären", front:"Wie geht man bei „mindestens X Hosts pro Subnetz“ vor? Beispiel: 2000 Hosts im Klasse-B-Netz.", back:"Kleinstes h suchen mit <b>2^h − 2 ≥ X</b>: 2¹⁰−2 = 1022 ✗ · 2¹¹−2 = 2046 ✓ → 11 Host-Bits → /21 → Maske <b>255.255.248.0</b> (drittes Oktett 128+64+32+16+8 = 248). Die −2 (Netz-ID + Broadcast) nie vergessen!"},
+{topic:"Rechenweg erklären", front:"Widerstand eines Drahts: Formel und Vorgehen bei gegebenem Durchmesser?", back:"<b>R = ρ·l/A</b>. Bei Durchmesser d zuerst <b>A = (d²·π)/4</b> berechnen! Beispiel: Kupfer (ρ=0,017 Ω·mm²/m), 50 m, d=3 mm → A ≈ 7,07 mm² → R ≈ 0,12 Ω. ρ-Anker: Silber 0,016 &lt; Kupfer 0,017 &lt; Gold 0,022 &lt; Alu 0,027 &lt;&lt; Eisen 0,1."},
+{topic:"Rechenweg erklären", front:"dB-Rechnung: Formel für Dämpfung und die wichtigsten Merkwerte?", back:"<b>a = 10·log(P1/P2)</b> [dB], Pegel <b>L = 10·log(P/1mW)</b> [dBm]. Merkwerte: Faktor 10 = 10 dB · Faktor 100 = 20 dB · <b>Faktor 2 ≈ 3 dB</b> (3 dB Dämpfung = halbe Leistung!)."},
+{topic:"Konzepte", front:"Multimode vs. Singlemode – Kerndurchmesser, Dispersion, Einsatz?", back:"<b>Multimode</b> (OM): Kern 50–62,5 µm, viele Lichtwege → Modendispersion → kürzere Strecken, günstiger. <b>Singlemode</b> (OS): Kern 9–10 µm, ein Lichtweg, kaum Dispersion → sehr lange Strecken, teurer. Dämpfung: OM ~3,5 dB/km, OS2 nur 0,4 dB/km."},
+{topic:"Konzepte", front:"Managed vs. Unmanaged Switch?", back:"<b>Unmanaged</b>: anstecken, läuft – keine Konfiguration. <b>Managed</b>: konfigurierbar – <b>VLANs, QoS</b>, Verkehrsregeln, Monitoring (z. B. IGMP Snooping). Für AVoIP-Installationen praktisch Pflicht."},
+{topic:"Konzepte", front:"Access-Port vs. Trunk-Port?", back:"<b>Access-Port</b>: für Endgeräte ohne VLAN-Verständnis – eingehend feste <b>PVID</b>, ausgehend <b>untagged</b>. <b>Trunk-Port</b>: verbindet Switches, transportiert <b>mehrere VLANs getaggt</b>. Für VLAN-übergreifende Kommunikation: Router/L3-Switch (Inter-VLAN-Routing)."},
+{topic:"Konzepte", front:"Was ist ein Broadcast Storm und was verhindert ihn?", back:"Bei redundanter Verkabelung (Schleife) kreisen und vervielfachen sich Broadcasts endlos → Netz bricht zusammen. <b>STP (Spanning Tree Protocol)</b> verhindert das: redundante Verbindungen werden logisch deaktiviert, bis sie gebraucht werden. So gibt es Redundanz ohne Schleifen."},
+{topic:"Konzepte", front:"Was prüfst du als Erstes in einem fremden Netzwerk – und mit welchen Befehlen?", back:"Konfiguration feststellen: Netzadresse & Maske, Gateway, DHCP oder statisch, weitere Geräte, Proxy. Befehle: <code>ipconfig /all</code> (Win) / <code>ifconfig</code> (Unix) · <code>ping</code> (Erreichbarkeit) · <code>arp -a</code> (MAC-Tabelle) · <code>nslookup</code> (DNS) · <code>tracert/traceroute</code> (Route). Dann eigenen PC anpassen und testen – nie blind IPs vergeben."},
+{topic:"Konzepte", front:"Intra-Frame vs. Inter-Frame-Codec?", back:"<b>Intra-Frame</b>: jedes Bild wird unabhängig komprimiert – niedrige Latenz, schnittfreundlich, höhere Datenrate. <b>Inter-Frame</b>: speichert Referenzbilder + nur die <b>Unterschiede</b> dazwischen – bandbreiteneffizient, aber mehr Latenz. Live/KVM → Intra, Internet-Streaming → Inter."},
+{topic:"Konzepte", front:"Videowall vs. Multiviewer (MoIP-Topologien)?", back:"<b>Videowall</b>: 1 Encoder → mehrere Decoder, die sich EIN großes Bild <b>aufteilen</b>. <b>Multiviewer</b>: mehrere Encoder → 1 Decoder, der mehrere Quellen gleichzeitig auf EINEM Bildschirm zeigt. Richtung merken: Wall = ein Bild wird groß, Viewer = viele Bilder werden klein."},
+{topic:"Konzepte", front:"Dante Virtual Soundcard vs. Dante Via?", back:"<b>DVS</b>: bis <b>64 Kanäle</b> in/aus einem Computer – kein USB/Firewire, kein App-Routing. <b>Via</b>: nur bis <b>16 Kanäle</b>, kann dafür <b>USB/Firewire-Geräte einbinden</b>, Audio zwischen Geräten/Apps routen und mischen und ein Standalone-Dante-Netz nur mit Computern bilden."},
+{topic:"Konzepte", front:"Energie- vs. Informationstechnik: Ziel und was wird minimiert?", back:"<b>Energietechnik</b>: Ziel Leistungsübertragung → minimale <b>Leistungs</b>verluste (Hochspannung, Tieftemperaturkabel). <b>Informationstechnik</b>: Ziel Signalübertragung → minimale <b>Informations</b>verluste (hohe Sendeenergie, robuste Codierung, Fehlererkennung/-korrektur)."},
+{topic:"Konzepte", front:"Nenne die Übertragungskette (Schema einer Nachrichtenübertragung).", back:"<b>Quelle → Quellencodierer → Kanalcodierer → Kanal → Kanaldecodierer → Quellendecodierer → Sinke.</b> Quellencodierer entfernt Redundanz (Kompression), Kanalcodierer fügt Schutz-Redundanz hinzu; auf dem Kanal wirken Störungen (Rauschen, Nebensprechen, Verzerrungen); Empfängerseite spiegelverkehrt."}
+];
+
+let fcCards = [];
+let fcIndex = 0;
+let fcRevealed = false;
+let fcResults = [];
+
+function startCards(cardSet) {
+  fcCards = cardSet ? cardSet : [...FLASHCARDS];
+  const shouldShuffle = document.getElementById('shuffle-toggle').checked;
+  if (shouldShuffle && !cardSet) shuffleArray(fcCards);
+  fcIndex = 0;
+  fcResults = new Array(fcCards.length).fill(null);
+  fcRevealed = false;
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('results-screen').classList.add('hidden');
+  document.getElementById('cards-screen').classList.remove('hidden');
+  document.getElementById('quiz-title-display').textContent = "Karteikarten – Freitext-Training";
+  document.getElementById('quiz-desc-display').textContent = fcCards.length + " Karten · erst selbst erklären, dann aufdecken";
+  renderCard();
+}
+
+function renderCard() {
+  const c = fcCards[fcIndex];
+  document.getElementById('card-topic-tag').textContent = c.topic;
+  document.getElementById('card-front').textContent = (fcIndex+1) + ". " + c.front;
+  const backEl = document.getElementById('card-back');
+  const hintEl = document.getElementById('card-hint');
+  const knowRow = document.getElementById('card-know-row');
+  const actionBtn = document.getElementById('card-action-btn');
+  if (fcRevealed) {
+    backEl.innerHTML = c.back;
+    backEl.classList.remove('hidden');
+    hintEl.classList.add('hidden');
+    knowRow.classList.remove('hidden');
+    actionBtn.textContent = (fcIndex === fcCards.length - 1) ? 'Auswertung anzeigen' : 'Weiter ohne Bewertung ▶';
+  } else {
+    backEl.classList.add('hidden');
+    hintEl.classList.remove('hidden');
+    knowRow.classList.add('hidden');
+    actionBtn.textContent = 'Antwort aufdecken';
+  }
+  const pct = Math.round(((fcIndex+1) / fcCards.length) * 100);
+  document.getElementById('card-progress-bar').style.width = pct + '%';
+  const done = fcResults.filter(r => r !== null).length;
+  document.getElementById('card-progress-label').textContent = 'Karte ' + (fcIndex+1) + ' von ' + fcCards.length + ' · ' + done + ' bewertet';
+  document.getElementById('card-prev-btn').disabled = fcIndex === 0;
+  document.getElementById('card-next-btn').disabled = fcIndex === fcCards.length - 1;
+}
+
+function cardAction() {
+  if (!fcRevealed) { fcRevealed = true; renderCard(); return; }
+  if (fcIndex < fcCards.length - 1) { fcIndex++; fcRevealed = false; renderCard(); }
+  else { showCardResults(); }
+}
+
+function cardKnow(known) {
+  fcResults[fcIndex] = known;
+  if (fcIndex < fcCards.length - 1) { fcIndex++; fcRevealed = false; renderCard(); }
+  else { showCardResults(); }
+}
+
+function cardPrev() {
+  if (fcIndex > 0) { fcIndex--; fcRevealed = false; renderCard(); }
+}
+
+function cardNext() {
+  if (fcIndex < fcCards.length - 1) { fcIndex++; fcRevealed = false; renderCard(); }
+}
+
+function showCardResults() {
+  document.getElementById('cards-screen').classList.add('hidden');
+  const screen = document.getElementById('results-screen');
+  screen.classList.remove('hidden');
+  const known = fcResults.filter(r => r === true).length;
+  const unknown = fcCards.filter((c,i) => fcResults[i] === false);
+  const rated = fcResults.filter(r => r !== null).length;
+  let html = '<div class="card" style="text-align:center;">';
+  html += '<h3 style="color:var(--blue);">Karteikarten-Auswertung</h3>';
+  html += '<div class="score-circle"><span class="num">' + known + '/' + rated + '</span><span class="lbl">gewusst</span></div>';
+  if (rated < fcCards.length) html += '<p style="color:var(--gray); font-size:0.88rem;">' + (fcCards.length - rated) + ' Karte(n) ohne Bewertung übersprungen.</p>';
+  if (unknown.length > 0) {
+    html += '<p>' + unknown.length + ' Karte(n) zum Wiederholen.</p>';
+    html += '<button class="btn-primary big-btn" onclick="startCards(window._fcUnknownCards)">↻ Nur nicht gewusste wiederholen</button>';
+  } else if (rated === fcCards.length) {
+    html += '<p>Alle Karten gewusst – stark!</p>';
+  }
+  html += '<button class="btn-secondary big-btn" onclick="cardsRestartAll()">Alle Karten nochmal</button>';
+  html += '<button class="btn-secondary big-btn" onclick="cardsBackToMenu()">Zurück zum Hauptmenü</button>';
+  html += '</div>';
+  window._fcUnknownCards = unknown;
+  screen.innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+function cardsRestartAll() {
+  document.getElementById('results-screen').classList.add('hidden');
+  startCards();
+}
+
+function cardsBackToMenu() {
+  document.getElementById('cards-screen').classList.add('hidden');
   document.getElementById('results-screen').classList.add('hidden');
   document.getElementById('start-screen').classList.remove('hidden');
   document.getElementById('quiz-title-display').textContent = "Übertragungsmedien & Netzwerktechnik";
