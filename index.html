@@ -269,7 +269,7 @@
       </div>
       <div class="quiz-select-card learn-select-card" onclick="startLearn()">
         <h3>📖 Lernmodus: Themen-Debrief</h3>
-        <p class="quiz-card-meta">25 Themenkarten · Kein Quiz – nur Wissen</p>
+        <p class="quiz-card-meta">31 Themenkarten · Kein Quiz – nur Wissen</p>
         <p class="quiz-card-desc">Alle Themengebiete als kompakte Erklärungskarten zum Durchblättern: Definitionen, Tabellen, Merksätze, Abkürzungen, Rechenwege und typische Prüfungsfallen. Gleiche Bedienung wie im Quiz (◀ ▶), aber ohne Fragen – ideal als Vorbereitung, bevor du die Quizze machst.</p>
         <button class="btn-primary select-btn">Lernmodus starten</button>
       </div>
@@ -893,6 +893,20 @@ const LEARN_TOPICS = [
 <h4>Leitungsgebunden vs. drahtlos</h4>
 <p><b>Wired:</b> Zweidrahtleitung, Koaxialleitung, Hohlleiter, Streifenleiter, Lichtwellenleiter. <b>Wireless:</b> Rundfunk, Richtfunk, Mobilfunk, Satellitenfunk.</p>
 <div class='merkbox'><b>Frequenzspektrum grob:</b> je höher die Frequenz, desto kürzer die Wellenlänge, desto eher Sichtverbindung nötig. UHF (0,3–3 GHz) = TV, Mobilfunk, WLAN · SHF (3–30 GHz) = Radar, Satellit, Richtfunk · EHF (30–300 GHz) = mm-Wellen. Ganz unten: Langwelle/U-Boot-Funk.</div>`},
+{topic:"Grundlagen", title:"Funkspektrum: Frequenzbereiche von ELF bis EHF", html:`
+<p>Der grobe Überblick über das Funkspektrum aus dem Skript – Grundregel: <b>je höher die Frequenz, desto kürzer die Wellenlänge, desto eher ist eine Sichtverbindung („Richtfunk“) nötig</b>.</p>
+<table><tr><th>Frequenz</th><th>Bezeichnung</th><th>Beispiel-Anwendungen</th></tr>
+<tr><td>&lt; 3 kHz</td><td>ELF</td><td>U-Boot-Funk</td></tr>
+<tr><td>3–30 kHz</td><td>VLF (Längstwellen)</td><td>U-Boot-Funk, Navigation</td></tr>
+<tr><td>30–300 kHz</td><td>LF (LW, Langwelle)</td><td>Rundfunk, Navigation, Seefunk</td></tr>
+<tr><td>0,3–3 MHz</td><td>MF (MW, Mittelwelle)</td><td>Tonrundfunk, Navigation</td></tr>
+<tr><td>3–30 MHz</td><td>HF (KW, Kurzwelle)</td><td>Tonrundfunk, versch. Funkdienste</td></tr>
+<tr><td>30–300 MHz</td><td>VHF (UKW)</td><td>UKW-Rundfunk, TV, Navigation</td></tr>
+<tr><td><b>0,3–3 GHz</b></td><td><b>UHF (dm-Wellen)</b></td><td><b>TV, Mobilfunk, WLAN, Datenfunk</b></td></tr>
+<tr><td>3–30 GHz</td><td>SHF (cm-Wellen)</td><td>Radar, Satellitenfunk, Richtfunk</td></tr>
+<tr><td>30–300 GHz</td><td>EHF (mm-Wellen)</td><td>Radar, Richtfunk</td></tr></table>
+<div class='merkbox'><b>Orientierung merken:</b> Alltags-Funk (TV, Mobilfunk, 2,4-GHz-WLAN) lebt im <b>UHF</b>-Band. Darüber (SHF/EHF) wird es „richtfunkartig“ – 5-GHz- und 60-GHz-WLAN (802.11ad) zeigen genau deshalb kürzere Reichweiten. Ganz unten (ELF/VLF) sendet man zu U-Booten durchs Wasser.</div>
+<p>Dazu passend die <b>Funkmikrofonie</b>: Drahtlose Mikrofone/In-Ear-Systeme werden von der <b>Bundesnetzagentur</b> reguliert (VVnömL-Verwaltungsvorschrift).</p>`},
 {topic:"Übertragungsmedien", title:"Kupferkabel: Koax & Twisted Pair", html:`
 <h4>Koaxialkabel – die zwei Impedanzen</h4>
 <p><b>75 Ω = Videosignale</b> · <b>50 Ω = Daten/Kommunikation/Funkmikro-Antennen</b>. Die <b>Impedanz</b> (Wechselstromwiderstand) muss zwischen Sender, Kabel und Empfänger zusammenpassen (<b>Impedanzanpassung</b>), sonst entstehen Reflexionen und Signalverluste.</p>
@@ -915,6 +929,26 @@ const LEARN_TOPICS = [
 <div class='warnbox'><b>Falle:</b> Für 10 Gbit/s braucht es laut Tabelle mindestens <b>Cat. 6a</b>. Und: <b>Alien Crosstalk (AXT)</b> = Übersprechen <i>benachbarter Kabel</i> (nicht im selben Kabel!) – relevant bei &gt;1 Gbit/s, Abhilfe: geschirmte Cat.-6a-Kabel (schützen auch gegen EMI/RFI).</div>
 <h4>Steckverbinder-Übersicht</h4>
 <p><b>BNC</b> = Koax, Bajonett (Video/Daten) · <b>Cinch/RCA</b> = Consumer-AV · <b>TNC</b> = Koax verschraubt (vibrationssicher) · <b>RJ45</b> = Twisted Pair · <b>ST/SC/LC/E2000</b> = Glasfaser.</p>`},
+{topic:"Übertragungsmedien", title:"Leitungsphysik: Leitungsarten, Widerstand & Materialien", html:`
+<h4>Elektrische Leitungsarten (Teil B.1)</h4>
+<ul>
+<li><b>Draht/Litze:</b> z. B. Netz- oder Lautsprecherkabel, Mikrofonleitung, Netzwerkkabel.</li>
+<li><b>Koaxialkabel:</b> 75 Ω (Video) / 50 Ω (Daten, Kommunikation, Funkmikro-Antennen).</li>
+<li><b>Verdrillte Doppelleiter (Twisted Pair):</b> Verdrillung reduziert Übersprechen.</li>
+<li><b>Hohlleiter:</b> verlustarm bei sehr hohen Frequenzen.</li>
+<li><b>Streifenleiter:</b> Schaltungstechnik (auf Platinen).</li>
+</ul>
+<h4>Leitungswiderstand</h4>
+<p><code>R = (ρ·l)/A</code> bzw. <code>R = l/(K·A)</code> mit <code>A = r²·π = (d²·π)/4</code> — ρ = spezifischer Widerstand, K = Leitfähigkeit (1/ρ), l = Länge, A = Querschnittsfläche.</p>
+<h4>Die ρ-Werte-Tabelle aus dem Skript (Ω·mm²/m bei 20 °C)</h4>
+<table><tr><th>Stoff</th><th>ρ20</th><th>Stoff</th><th>ρ20</th></tr>
+<tr><td><b>Silber</b></td><td><b>0,016</b></td><td>Nickel</td><td>0,07</td></tr>
+<tr><td><b>Kupfer</b></td><td><b>0,017</b></td><td>Platin</td><td>0,098</td></tr>
+<tr><td>Gold</td><td>0,022</td><td><b>Eisen</b></td><td><b>0,1</b></td></tr>
+<tr><td>Aluminium</td><td>0,027</td><td>Zinn</td><td>0,12</td></tr>
+<tr><td>Blei</td><td>0,21</td><td>Quecksilber</td><td>0,97</td></tr></table>
+<div class='merkbox'><b>Reihenfolge merken:</b> Silber (0,016) ist knapp besser als Kupfer (0,017), dann Gold, Aluminium … Eisen leitet ca. <b>6× schlechter</b> als Kupfer. Beispielrechnung aus dem Skript: 50 m, d = 3 mm → A = (3²·π)/4 ≈ 7,07 mm² → Kupfer R ≈ 0,12 Ω, Eisen R ≈ 0,71 Ω.</div>
+<div class='warnbox'><b>Häufigster Fehler:</b> Bei gegebenem <b>Durchmesser</b> zuerst A = (d²·π)/4 ausrechnen – nicht den Durchmesser direkt als Fläche einsetzen! Die Formeln werden in der Klausur gegeben; du musst nur den Weg beherrschen.</div>`},
 {topic:"Übertragungsmedien", title:"Kabel-Kennwerte: Dämpfung, Übersprechen, Augendiagramm", html:`
 <p>Diese Kennwerte beschreiben, wie „gut“ eine Leitung ist:</p>
 <ul>
@@ -963,12 +997,16 @@ const LEARN_TOPICS = [
 </ul>
 <h4>Steckertypen</h4>
 <p><b>ST</b> = Bajonett („stecken und drehen“) · <b>SC</b> = „stecken und klicken“ · <b>LC</b> = Duplex, „push-pull“ · <b>E2000</b>. Schliffe: <b>UPC vs. APC</b> = unterschiedliche Steckerendflächen → unterschiedliche Rückreflexionsdämpfung.</p>
-<h4>Ethernet über Glasfaser (Auszug)</h4>
-<table><tr><th>Standard</th><th>Medium</th><th>Distanz</th></tr>
-<tr><td>1000Base-SX</td><td>Multimode, 850 nm</td><td>275–550 m</td></tr>
+<h4>Ethernet über Glasfaser (komplette Tabelle aus dem Skript)</h4>
+<table><tr><th>Standard</th><th>Medium</th><th>Max. Distanz</th></tr>
+<tr><td>100Base-FX</td><td>Multimode 62,5/125 µm, 1300 nm</td><td>2000 m (Vollduplex)</td></tr>
+<tr><td>100Base-SX</td><td>Multimode 62,5/125 µm, 850 nm</td><td>550 m</td></tr>
+<tr><td>1000Base-SX</td><td>Multimode, 850 nm</td><td>275–550 m (je Fasertyp)</td></tr>
 <tr><td>1000Base-LX</td><td>MM oder SM, 1300 nm</td><td>550 m / 5 km</td></tr>
-<tr><td>10GBase-LR</td><td>Singlemode, 1310 nm</td><td>10 km</td></tr>
-<tr><td>10GBase-ER</td><td>Singlemode, 1550 nm</td><td>40 km</td></tr></table>
+<tr><td>10GBase-LR</td><td>Singlemode 9 µm, 1310 nm</td><td>10 km</td></tr>
+<tr><td>10GBase-ER</td><td>Singlemode 9 µm, 1550 nm</td><td>40 km</td></tr>
+<tr><td>40GBase-SR4 / LR4</td><td>MM (OM3/OM4) / SM</td><td>100–150 m / 10 km</td></tr>
+<tr><td>100GBase-SR10 / LR4 / ER4</td><td>MM (OM3/OM4) / SM</td><td>100–150 m / 10 km / 40 km</td></tr></table>
 <div class='merkbox'><b>Namens-Logik:</b> S = Short (Multimode, 850 nm) · L = Long (10 km) · E = Extended (40 km). Die längsten Strecken laufen im 1550-nm-Fenster.</div>`},
 {topic:"Übertragungsmedien", title:"Drahtlos: WLAN-Standards & Funk", html:`
 <h4>WLAN-Standards (IEEE 802.11)</h4>
@@ -984,6 +1022,19 @@ const LEARN_TOPICS = [
 <p><b>Pro:</b> bequem, „ad-hoc“ verfügbar, geringe Infrastrukturanforderungen. <b>Contra:</b> reichweitenbegrenzt, störanfällig, <b>Bandbreite wird geteilt</b>, Gebäudematerialien dämpfen/reflektieren HF-Signale, teils aus Sicherheitsgründen verboten.</p>
 <h4>Funkmikrofonie</h4>
 <p>Drahtlose Mikrofone/In-Ear-Systeme werden von der <b>Bundesnetzagentur</b> reguliert (VVnömL-Verwaltungsvorschrift).</p>`},
+{topic:"Grundlagen", title:"Modulation & Leitungscodes – NICHT SS26-relevant", html:`
+<div class='warnbox'><b>Wichtig:</b> Laut Recap-Notizen sind Modulationsverfahren <b>explizit NICHT Teil der SS26-Klausur</b>. Diese Karte dient nur dazu, die Begriffe einordnen zu können, falls sie irgendwo auftauchen – nicht auswendig lernen!</div>
+<h4>Digitale Modulation (Signal auf Trägerfrequenz)</h4>
+<ul>
+<li><b>ASK</b> – Amplitudenumtastung (Amplitude wird verändert)</li>
+<li><b>FSK</b> – Frequenzumtastung (Frequenz wird verändert)</li>
+<li><b>PSK</b> – Phasenumtastung (Phase wird verändert)</li>
+</ul>
+<h4>Kanalcodierung / Leitungscodes</h4>
+<p><b>NRZ</b> (Non-Return-to-Zero), <b>RZ</b> (Return-to-Zero), <b>Manchester-Code</b> (u. a. zur Taktrückgewinnung).</p>
+<h4>Weitere Begriffe</h4>
+<p><b>Basisband- vs. Breitbandübertragung</b> · Multiplexverfahren: <b>FDM</b> (Frequenzmultiplex) und <b>TDM</b> (Zeitmultiplex).</p>
+<div class='merkbox'><b>Falls doch eine Frage kommt</b> (laut Skript): Bei NRZ gilt für die nötige Bandbreite <code>B ≥ n·k·f_max/2</code> – grob: „die digitale Bitrate braucht mindestens die halbe Bandbreite der höchsten Frequenz“. <b>RZ braucht doppelt so viel Bandbreite wie NRZ.</b> Mehr Tiefe ist nicht nötig.</div>`},
 {topic:"Verbindungstechnik", title:"PoE, Transceiver & strukturierte Verkabelung", html:`
 <h4>Power over Ethernet (PoE)</h4>
 <p>Strom UND Daten über <b>ein</b> Twisted-Pair-Kabel. Typische Geräte: Access Points, IP-/PTZ-Kameras, VoIP-Telefone, Lautsprecher, Displays, Leuchten, AV-Signalconverter.</p>
@@ -1003,6 +1054,24 @@ const LEARN_TOPICS = [
 <p>Der Switch-Port bleibt gleich – nur das Modul wird passend zum Medium (CAT / Multimode / Singlemode) getauscht.</p>
 <h4>Strukturierte Verkabelung</h4>
 <p>Einheitliches, herstellerunabhängiges Konzept für Gebäude/Campus – hierarchisch: <b>Primär- / Sekundär- / Tertiärverkabelung</b> (vergleichbar Core–Aggregation–Access). Twisted Pair für die Horizontale, <b>LWL für Backbone-Strecken</b>. Praxis: redundante (gestackte) Core-Switches, Access-Switches pro Gebäude/Etage per <b>LACP</b> (Link Aggregation) mehrfach angebunden – kein SPoF.</p>`},
+{topic:"Netzwerktechnik", title:"Netzwerk-Grundideen: Zutaten, Ethernet & IP als Postdienst", html:`
+<h4>Die drei Zutaten jedes Netzwerks</h4>
+<ul>
+<li><b>Knoten (Nodes):</b> die Geräte selbst – jeder Knoten hängt über eine Netzwerkkarte (<b>NIC</b>) am Netz.</li>
+<li><b>Verbindungen:</b> die Leitungen dazwischen. Wichtig: <b>physikalische</b> Verbindungen (das echte Kabel/Funk) vs. <b>logische</b> Verbindungen (die gedachte Verbindung zwischen zwei Geräten, egal wie viele Geräte physisch dazwischenliegen).</li>
+<li><b>Protokolle:</b> die „Sprache“ und Spielregeln der Kommunikation.</li>
+</ul>
+<div class='warnbox'><b>„Ethernet“ hat ZWEI Bedeutungen:</b> ① die <b>Hardware</b> (ETH-Spezifikation: Stecker, Kabel, Karten) und ② das <b>Protokoll</b> (Format der Datenrahmen/Frames). Aus dem Kontext erkennen, was gemeint ist!</div>
+<h4>Warum zwei Adressen? (MAC & IP)</h4>
+<p><b>MAC</b> = fest eingebrannte Hardware-Adresse der NIC – wie die <b>Seriennummer</b> des Geräts bzw. deine Person. <b>IP</b> = logische Adresse – wie die <b>Postanschrift</b>, die sich beim Umzug ändert. Post wird an die Adresse geschickt, nicht an die Person. Bei der MAC gilt: erste 3 Byte = OUI (Hersteller), <b>letzte 3 Byte = laufende Gerätenummer des Herstellers</b>.</p>
+<h4>IP als „Postdienst“ – die vier Aufgaben</h4>
+<table><tr><th>Aufgabe</th><th>Bedeutung</th></tr>
+<tr><td><b>Adressierung</b></td><td>wie jedes System identifiziert wird, wie Adressen aussehen, wer welche verwenden darf</td></tr>
+<tr><td><b>Verpackung</b></td><td>welche Informationen jedes Paket enthalten muss (Absender, Empfänger …)</td></tr>
+<tr><td><b>Fragmentierung</b></td><td>wie groß ein Paket sein darf und wie zu große Pakete zerlegt werden</td></tr>
+<tr><td><b>Routing</b></td><td>welchen Weg die Pakete von der Quelle zum Ziel nehmen</td></tr></table>
+<h4>Rollen im Netz</h4>
+<p><b>Server</b> = stellt Dienste bereit (Daten, Webseiten, DHCP …) · <b>Client</b> = nutzt Dienste · <b>Host</b> = Oberbegriff für jedes adressierbare Gerät. Der <b>Hub</b> (veralteter Vorgänger des Switch) verteilte Frames stumpf an alle Ports.</p>`},
 {topic:"Netzwerktechnik", title:"Netzwerk-Basics: MAC, IP & Geräte", html:`
 <h4>Die zwei Adressen jedes Netzwerkknotens</h4>
 <table><tr><th></th><th>MAC-Adresse</th><th>IP-Adresse</th></tr>
@@ -1030,6 +1099,11 @@ const LEARN_TOPICS = [
 <p><b>Hops</b> = Anzahl der Geräte, die ein Datenstrom auf dem Weg zum Ziel passiert. <b>QoS</b> = Priorisierung wichtiger Pakete (AV/VoIP) – Funktion von Managed Switches. <b>Broadcast-Domain</b> = alle Teilnehmer, die ein einziger Broadcast erreicht; Router begrenzen sie, jedes VLAN ist eine eigene.</p>`},
 {topic:"Zahlensysteme", title:"Binär · Dezimal · Hexadezimal – Schritt für Schritt", html:`
 <p>Die Basis für MAC-Adressen, IP-Adressen und Subnetting. Kernwissen: <b>1 Byte = 8 Bit = 2 Hex-Ziffern</b>, Wertebereich 0–255.</p>
+<table><tr><th>System</th><th>Basis</th><th>Ziffern</th><th>Verwendung</th></tr>
+<tr><td>Binär / Dual</td><td>2</td><td>0, 1</td><td>wie der Computer intern rechnet (Bits)</td></tr>
+<tr><td>Dezimal</td><td>10</td><td>0–9</td><td>Alltagszahlen; IPv4-Schreibweise</td></tr>
+<tr><td>Hexadezimal</td><td>16</td><td>0–9, A–F</td><td>kompakte Bit-Schreibweise; MAC-Adressen, IPv6</td></tr></table>
+<p><b>Nibble-Trick:</b> Ein Byte in zwei 4-Bit-Häppchen (Nibbles) teilen – jedes Nibble ergibt genau eine Hex-Ziffer: 0111 = 7, 1101 = D → <b>7D</b>. Runde Werte: 1111 1111 = 255 = FF · 0000 0000 = 0 = 00.</p>
 <h4>Die Bit-Wertetabelle (auswendig!)</h4>
 <table><tr><th>Bit</th><td>128</td><td>64</td><td>32</td><td>16</td><td>8</td><td>4</td><td>2</td><td>1</td></tr></table>
 <h4>Dezimal → Binär</h4>
@@ -1054,7 +1128,8 @@ const LEARN_TOPICS = [
 <div class='merkbox'>MAC-Beispiel: 94:18:65:7D:98:7C (OUI 94:18:65 = Netgear) → dezimal 148:24:101:125:152:124. Jede Gruppe einzeln umrechnen!</div>`},
 {topic:"IP-Adressierung", title:"IPv4, IPv6 & die IANA-Bereiche", html:`
 <h4>IPv4</h4>
-<p>32 Bit = 4 Oktette à 8 Bit, dezimal notiert (192.168.0.125). RFC 760 (1980). Knapper Adressraum (~4 Mrd.) → Workaround: <b>NAT</b>.</p>
+<p>32 Bit = 4 Oktette à 8 Bit, dezimal notiert (192.168.0.125); jedes Oktett 0–255. IETF-Standard <b>RFC 760 (1980)</b>. Rund 4 Mrd. Adressen, davon ca. 3,7 Mrd. öffentlich – zu wenig → Workaround: <b>NAT</b>. Min. Paketgröße 576 Byte (fragmentierbar).</p>
+<p><b>IPv6:</b> Standard von 1998 (<b>RFC 2460</b>). PCs fahren heute meist <b>Dual-Stack</b> (IPv4 und IPv6 gleichzeitig).</p>
 <h4>Die IANA-Tabelle (unbedingt sicher können!)</h4>
 <table><tr><th>Bereich</th><th>Zweck</th><th>Geroutet?</th></tr>
 <tr><td><b>10.0.0.0/8</b></td><td>privat – große Netze</td><td>nein</td></tr>
@@ -1078,6 +1153,16 @@ const LEARN_TOPICS = [
 <tr><td>Vergabe</td><td>manuell oder DHCP</td><td>Auto-Konfiguration ohne DHCP möglich</td></tr>
 <tr><td>Besonderheit</td><td>–</td><td>kann MAC enthalten → eindeutig; min. Paket 1280 Byte</td></tr></table>
 <p>IPv6-CIDR-Suffix: fast immer zwischen <b>/48 und /64</b>. Beispiel: FEDC:BA98:7654:3210:…</p>`},
+{topic:"IP-Adressierung", title:"IP-Adressen klassifizieren: die Übungstabelle", html:`
+<p>Diese Übungsaufgabe stammt direkt aus dem Skript und ist prüfungstypisch: Zu jeder Adresse ① Typ/Zweck bestimmen und ② entscheiden, ob sie einem AV-Gerät fest zugewiesen werden kann.</p>
+<table><tr><th>IP-Adresse</th><th>Typ / Zweck</th><th>AV-Gerät?</th></tr>
+<tr><td>10.36.192.13</td><td>Privat (10.0.0.0/8, große Netze)</td><td><b>Ja</b> – privat, frei nutzbar</td></tr>
+<tr><td>127.0.0.1</td><td>Loopback / localhost (Diagnose/Test)</td><td><b>Nein</b> – zeigt immer auf das Gerät selbst</td></tr>
+<tr><td>192.168.255.255</td><td>Privat, aber <b>Broadcast</b> (endet auf .255.255 im Netz 192.168.0.0/16)</td><td><b>Nein</b> – Broadcast, kein Host</td></tr>
+<tr><td>169.254.5.38</td><td>APIPA / Link-Local (DHCP hat nicht geantwortet)</td><td><b>Nein</b> – Notfall-Adresse, nicht fest vergeben</td></tr>
+<tr><td>169.127.232.17</td><td><b>Öffentlich!</b> (169.127 ≠ 169.254 → kein reservierter Bereich)</td><td><b>Nein</b> – öffentliche Adresse, nicht für internen Gebrauch</td></tr></table>
+<div class='merkbox'><b>Schnell-Erkennung (auswendig!):</b> Beginnt mit <b>10.</b> / <b>172.16–31.</b> / <b>192.168.</b> → privat (nutzbar) · <b>127.</b> → Loopback · <b>169.254.</b> → APIPA · endet auf <b>.255</b> (im jeweiligen Subnetz) → Broadcast · alles andere → öffentlich.</div>
+<div class='warnbox'><b>Die zwei Klausur-Fallen:</b> ① <b>169.127.x.x ist NICHT APIPA</b> – nur exakt 169.<b>254</b>.x.x! Immer das zweite Oktett prüfen. ② <b>172.32.x.x ist NICHT privat</b> – der private Bereich endet bei 172.<b>31</b>.255.254.</div>`},
 {topic:"Subnetting", title:"Subnetting Schritt für Schritt (mit allen Rechenwegen)", html:`
 <h4>Grundidee</h4>
 <p>Die <b>Subnetzmaske</b> teilt die IP-Adresse in <b>Netz-Bits</b> (welches Netz – „Straße“) und <b>Host-Bits</b> (welches Gerät – „Hausnummer“). <b>CIDR</b>-Schreibweise: /24 = 24 Netz-Bits = 255.255.255.0. <b>VLSM</b> = Subnetze dürfen unterschiedlich groß sein.</p>
@@ -1097,18 +1182,24 @@ const LEARN_TOPICS = [
 <p>Kleinstes h mit 2^h−2 ≥ 2000: 2¹⁰−2=1022 ✗, 2¹¹−2=2046 ✓ → <b>11 Host-Bits</b> → /21 → Maske <b>255.255.248.0</b> (drittes Oktett: 128+64+32+16+8=248).</p>
 <h4>Beispiel 4: 210.52.190.0, mindestens 10 Hosts</h4>
 <p>2⁴−2=14 ≥ 10 → 4 Host-Bits → <b>/28</b>, Maske <b>255.255.255.240</b> (256−16=240) → erstes Subnetz: Netz-ID .0, Broadcast .15, nutzbar <b>.1 bis .14</b>.</p>
+<h4>CIDR-Schnelltabelle (aus dem Lernheft)</h4>
+<table><tr><th>CIDR</th><th>Maske</th><th>Nutzbare Hosts</th></tr>
+<tr><td>/24</td><td>255.255.255.0</td><td>254</td></tr>
+<tr><td>/25</td><td>255.255.255.128</td><td>126</td></tr>
+<tr><td>/26</td><td>255.255.255.192</td><td>62</td></tr>
+<tr><td>/30</td><td>255.255.255.252</td><td>2 (z. B. Router-zu-Router)</td></tr></table>
 <div class='warnbox'><b>Häufigste Fehler:</b> die −2 vergessen · Blockgrenzen falsch (immer bei Vielfachen der Blockgröße!) · bei „mindestens X Hosts“ zu kleine Potenz wählen. Maskenwerte der letzten Bits: /25=128, /26=192, /27=224, /28=240, /29=248, /30=252.</div>`},
 {topic:"Protokolle & Dienste", title:"DHCP, APIPA, DNS & DDNS", html:`
 <h4>Statisch vs. dynamisch</h4>
 <table><tr><th>Dynamisch (DHCP)</th><th>Statisch</th></tr>
 <tr><td>einfacher zu verwalten, üblich in großen Netzen, vermeidet Fehlkonfigurationen</td><td>sinnvoll, wenn Ressourcen per fester IP gefunden werden müssen – <b>typisch für AV-Geräte/Mediensteuerung!</b></td></tr></table>
 <h4>DHCP (Dynamic Host Configuration Protocol)</h4>
-<p>Server verteilt auf Anfrage IP-Adressen aus einem <b>Adress-Pool</b>. Mitgeliefert werden auch Subnetzmaske und <b>DNS-Server-Infos</b>. Analogie: der Kellner, der Gästen automatisch freie Tische zuweist – niemand setzt sich versehentlich auf einen besetzten Platz (= IP-Konflikt).</p>
+<p>Server verteilt auf Anfrage IP-Adressen aus einem <b>Adress-Pool</b>. Mitgeliefert werden auch Subnetzmaske, <b>DNS-Server-Infos</b> und Standardgateway. Analogie: der Kellner, der Gästen automatisch freie Tische zuweist – niemand setzt sich versehentlich auf einen besetzten Platz (= IP-Konflikt).</p>
 <h4>Link-Local / APIPA</h4>
 <p>Antwortet der DHCP-Server nach <b>5 Sekunden</b> nicht, vergibt sich das Gerät selbst eine Adresse aus <b>169.254.x.x</b>. Vorher prüft es per ARP-Broadcast („Is anyone using 169.254.x.x?“), ob die Adresse frei ist. Eine 169.254er-Adresse ist in der Praxis fast immer ein <b>DHCP-Problem-Symptom</b>. Weitere Auto-Config-Verfahren: Apple Bonjour, NetBIOS Discovery, UPnP.</p>
 <h4>DNS & DDNS</h4>
 <ul>
-<li><b>DNS</b> löst Namen in IP-Adressen auf (Telefonbuch). Domainname = <b>Host + Domain + TLD</b>.</li>
+<li><b>DNS</b> löst Namen in IP-Adressen auf (Telefonbuch, z. B. www.beispiel.de → 93.184.…) und bietet zusätzlich Funktionen zur <b>Lastverteilung</b>. Domainname = <b>Host + Domain + TLD</b> (www . beispiel . de).</li>
 <li><b>DDNS</b> (Dynamic DNS) <b>verknüpft und synchronisiert DHCP- und DNS-Server</b>: ändert sich die IP, wird der Namenseintrag automatisch aktualisiert → Gerät bleibt unter seinem Namen erreichbar.</li>
 <li>AV-Praxis: Viele AV-Geräte unterstützen DNS nur unzureichend → ein Grund mehr für <b>statische IPs</b> im AV-Netz.</li>
 </ul>`},
@@ -1169,8 +1260,9 @@ const LEARN_TOPICS = [
 <tr><td>Nachteil</td><td>Overhead, höhere Latenz</td><td>Verluste unbemerkt</td></tr>
 <tr><td>Einsatz</td><td>Steuerung, garantierte Zustellung</td><td><b>Echtzeit-AV-Streams</b> (Timing schlägt Perfektion)</td></tr></table>
 <p>Analogie: TCP = Einschreiben mit Unterschrift · UDP = Postkarte. AV-Streams nutzen UDP, weil ein nachgesendetes Paket ohnehin zu spät käme.</p>
+<p><b>TCP-Ablauf in 3 Schritten:</b> ① <b>Handshake</b> (Verbindungsaufbau) → ② <b>Sliding Window</b> (Flusskontrolle) → ③ bei Fehler <b>Resend</b> (erneut senden).</p>
 <h4>Ports</h4>
-<p>Logische Endpunkt-Nummern, vergeben über die <b>IANA</b>. Bereiche: <b>0–1023</b> Systemports („well known“) · <b>1024–49151</b> registrierte User-Ports · <b>49152–65535</b> dynamische „high ports“.</p>
+<p>Ein Port ist eine <b>16-Bit-Nummer (0–65535)</b>: Die IP-Adresse führt zum Gerät, der Port zur richtigen Anwendung darauf. Vergabe über die <b>IANA</b>. Bereiche: <b>0–1023</b> Systemports („well known“) · <b>1024–49151</b> registrierte User-Ports · <b>49152–65535</b> dynamische „high ports“. Hinweis: SSH, DNS und SNMP laufen über TCP <i>und</i> UDP; HTTP/HTTPS/FTP/Telnet nur TCP.</p>
 <table><tr><th>Dienst</th><th>Port</th></tr>
 <tr><td>HTTP</td><td><b>80</b></td></tr>
 <tr><td>HTTPS</td><td><b>443</b></td></tr>
@@ -1181,9 +1273,9 @@ const LEARN_TOPICS = [
 <tr><td>SNMP</td><td><b>161</b></td></tr></table>
 <h4>VPN-Typen</h4>
 <table><tr><th>Typ</th><th>OSI-Schicht</th><th>Eigenschaften</th></tr>
-<tr><td><b>L2TP</b></td><td><b>2</b> – Sicherung</td><td>Client nötig, auch Nicht-IP-Daten, spürbare Latenz möglich, heute selten</td></tr>
-<tr><td><b>IPSec</b></td><td><b>3</b> – Vermittlung</td><td>Client nötig, sichert jedes IP-Transportprotokoll, üblich zwischen Standorten</td></tr>
-<tr><td><b>SSL-VPN</b></td><td><b>7</b> – Anwendung</td><td><b>keine Client-Software</b> (Browser!), nur TCP, granulare Kontrolle, mobil</td></tr></table>
+<tr><td><b>L2TP</b></td><td><b>2</b> – Sicherung</td><td>Client nötig · IP- und Nicht-IP-Daten · prüft Datenintegrität, authentifiziert die Herkunft, schützt gegen „Mitschnitt &amp; Wiedergabe“ · kann viel Latenz beisteuern · heute selten</td></tr>
+<tr><td><b>IPSec</b></td><td><b>3</b> – Vermittlung</td><td>Client nötig · sichert jedes IP-Transportprotokoll (TCP, UDP, ICMP) · kann nur authentifizieren ODER auch verschlüsseln · weist dem entfernten Gerät eine interne Adresse zu (virtuell im LAN) · üblich Standort-zu-Standort</td></tr>
+<tr><td><b>SSL-VPN</b></td><td><b>7</b> – Anwendung</td><td><b>keine Client-Software</b> (Zugriff per Browser) · braucht dedizierten SSL-VPN-Server · nur TCP · agiert als <b>Proxy</b> mit feiner Rechtevergabe · üblich für mobile Nutzer</td></tr></table>
 <div class='warnbox'><b>VPN + Echtzeit-AV:</b> Verschlüsselung + Tunnel-Wrapper = Overhead → Pakete werden größer → <b>Fragmentierung</b> droht → Lösung: Framegröße reduzieren.</div>`},
 {topic:"Multicast & Zeit", title:"Unicast/Multicast, IGMP, NTP & PTP", html:`
 <h4>Die drei Transportmethoden</h4>
@@ -1207,7 +1299,7 @@ const LEARN_TOPICS = [
 {topic:"Netzwerksicherheit", title:"Access Control, NAC/ACL & Firewall", html:`
 <h4>Grundbausteine</h4>
 <ul>
-<li><b>Authentifizierung & Autorisierung:</b> Benutzerprofil, Zugriffsrechte, Gruppenmitgliedschaft, Passwort / <b>2FA</b> / Biometrie.</li>
+<li><b>Authentifizierung</b> („Wer bist du?“) und <b>Autorisierung</b> („Was darfst du?“): Ein Benutzerprofil enthält E-Mail-Konto, Zugriffsrechte und Gruppenmitgliedschaften. Absicherung per Passwort, <b>2FA</b>, Zugangskarten oder biometrischen Scans.</li>
 <li><b>Least-Privilege-Prinzip:</b> nur so viele Rechte wie nötig; erweiterte Rechte nur per Genehmigungsprozess.</li>
 <li><b>NAC</b> (Network Access Control): was du darfst, hängt davon ab, <b>wer du bist</b> (Login-abhängig).</li>
 <li><b>ACL</b> (Access Control List): Regelliste, <b>was durch den Router geleitet</b> werden darf.</li>
@@ -1265,6 +1357,23 @@ const LEARN_TOPICS = [
 <tr><td>Dante-Controller-Routing</td><td>ja</td><td>ja</td></tr></table>
 <h4>Weitere Standards & Wissenswertes</h4>
 <p><b>SDVoE</b> = unkomprimiertes Video über 10G-Ethernet · <b>AES67/Ravenna</b> = Audio-over-IP-Interoperabilität · <b>NDI</b> = Video over IP (Broadcast) · <b>AVB</b> = IEEE-Familie mit garantierter Bandbreite/Sync. <b>Latenz:</b> höhere Netzwerkgeschwindigkeit = kürzere Wartezeit auf Sendegelegenheiten = geringere Latenz, besseres Clocking, mehr Kanäle. Codec-Wissen: <b>Intra-Frame</b> = jedes Bild einzeln (niedrige Latenz) · <b>Inter-Frame</b> = nur Differenzen (effizient, mehr Latenz).</p>`},
+{topic:"AVoIP", title:"AVoIP in der Praxis: Anwendungen, Latenz & Zusammenarbeit mit der IT", html:`
+<h4>Anwendungsbereiche (Teil E.4)</h4>
+<p>Broadcast · Videoproduktion · Live-Produktion/Veranstaltungen · eSports · religiöse Kultstätten · Bildungsbereich · Digital Signage · Videokonferenzen · Überwachung/Sicherheit · medizinische Anwendungen (Telemedizin) · Privathaushalte/VIP · Messen/Präsentationen.</p>
+<div class='merkbox'><b>Praxisbeispiel aus dem Skript:</b> Das <b>CBC Broadcasting Centre Toronto</b> nutzt eine vollständige AVoIP-Infrastruktur, um Audio/Video zwischen verschiedenen Standorten und Studios zu übertragen.</div>
+<h4>Latenz & Netzwerkgeschwindigkeit (Teil E.6)</h4>
+<ul>
+<li>Höhere Bandbreite verbessert nicht nur den Durchsatz, sondern auch das <b>Taktverhalten (Clocking)</b> zwischen Geräten.</li>
+<li>Bei niedriger Leitungsgeschwindigkeit (z. B. 100 Mbit statt 1/10 Gbit) muss ein fertiges Paket <b>länger auf die nächste Sendegelegenheit warten</b> → mehr Latenz.</li>
+<li>Höhere Netzwerkgeschwindigkeit = <b>mehr Kanäle bei geringerer Verzögerung</b>.</li>
+</ul>
+<h4>Zusammenarbeit AV ↔ IT (AV-Design-Praxis)</h4>
+<ul>
+<li>System-<b>Ports und Protokolle dokumentieren</b> und mit dem Netzwerkmanager/-administrator abstimmen.</li>
+<li>Abstimmen: Netzwerklayout, <b>eigene VLANs für AV</b>, IP-Adressierung (oft statisch für AV-Geräte), Sicherheitsregeln.</li>
+<li>AV-Störer kennen: <b>bursty traffic</b> fremder Anwendungen, zu viel Broadcast, fehlendes QoS/IGMP-Snooping.</li>
+</ul>
+<p>Kurs-Fazit aus dem Lernheft: Von der AV-Fachkraft wird erwartet, sich mit dem IT-Personal abzustimmen – <b>Netzwerk-Kompetenzen werden mit AVoIP immer wichtiger</b>.</p>`},
 {topic:"Rechenteil", title:"Rechen-Rezepte: alle Formeln mit Lösungsweg", html:`
 <p><i>Formeln werden in der Klausur gegeben – trainiere den WEG, nicht das Auswendiglernen.</i></p>
 <h4>① Leitungswiderstand</h4>
